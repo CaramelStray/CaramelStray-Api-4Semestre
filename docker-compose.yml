@@ -1,10 +1,45 @@
 version: '3.8'
+
 services:
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: tracker_db
+    restart: always
+    environment:
+      POSTGRES_USER: user_dev
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: tracker_database 
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: tracker_backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/tracker_database
+      - SPRING_DATASOURCE_USERNAME=user_dev
+      - SPRING_DATASOURCE_PASSWORD=password123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    volumes:
+      - ./backend:/usr/src/app
+      - ~/.m2:/root/.m2 
+
   frontend:
     build: ./frontend
     container_name: tracker_frontend
     ports:
       - "5173:5173"
+    depends_on:
+      - backend
     volumes:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
+
+volumes:
+  postgres_data:

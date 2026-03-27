@@ -1,12 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
+import AppSidebar from '@/components/layout/Sidebar.vue'
+</script>
 
 <template>
-  <div> <h1>You did it!</h1>
-    <p>
-      Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-      documentation
-    </p>
-  </div>
+  <SidebarProvider>
+    <AppSidebar />
+    <SidebarInset>
+      <RouterView />
+    </SidebarInset>
+  </SidebarProvider>
 </template>
-
-<style scoped></style>

@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --color-border: hsl(var(--border));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+}
+
+@layer base {
+  :root {
+    --background: 222 40% 5%;
+    --foreground: 213 31% 91%;
+    --popover: 222 40% 9%;
+    --popover-foreground: 213 31% 91%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 60%;
+    --accent: 217 50% 18%;
+    --accent-foreground: 213 31% 98%;
+    --border: 217 33% 22%;
+
+    --sidebar-background: 222 40% 8%;
+    --sidebar-foreground: 213 31% 85%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 50% 18%;
+    --sidebar-accent-foreground: 213 31% 98%;
+    --sidebar-ring: 217 91% 60%;
+
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: hsl(var(--border, 217 33% 14%));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}

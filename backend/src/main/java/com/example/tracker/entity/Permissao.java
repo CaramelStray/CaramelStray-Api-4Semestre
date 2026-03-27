@@ -3,14 +3,15 @@ package com.example.tracker.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "permissoes")
+@Table(name = "tb_cad_permissao")
 public class Permissao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "codigo")
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "descricao", nullable = false)
     private String nome;
 
     public Integer getId() 

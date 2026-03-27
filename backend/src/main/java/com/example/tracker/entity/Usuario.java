@@ -5,11 +5,12 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "tb_cad_usuario")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "codigo")
     private Integer id;
 
     @Column(nullable = false, unique = true)
@@ -26,11 +27,11 @@ public class Usuario {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "usuario_roles",
-        joinColumns = @JoinColumn(name = "usuario_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
+        name = "tb_cad_usuario_perfil",
+        joinColumns = @JoinColumn(name = "codigo_usuario"),
+        inverseJoinColumns = @JoinColumn(name = "codigo_perfil")
     )
-    private Set<Role> roles;
+    private Set<Perfil> perfis;
 
     public Integer getId() 
     { return id; }
@@ -62,9 +63,9 @@ public class Usuario {
     public void setDataCriacao(LocalDateTime dataCriacao) 
     { this.dataCriacao = dataCriacao; }
     
-    public Set<Role> getRoles() 
-    { return roles; }
+    public Set<Perfil> getPerfis() 
+    { return perfis; }
     
-    public void setRoles(Set<Role> roles) 
-    { this.roles = roles; }
+    public void setPerfis(Set<Perfil> perfis) 
+    { this.perfis = perfis; }
 }

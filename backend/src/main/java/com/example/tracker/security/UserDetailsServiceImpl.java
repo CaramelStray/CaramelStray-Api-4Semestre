@@ -22,8 +22,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
-        var authorities = usuario.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getNome()))
+        var authorities = usuario.getPerfis().stream()
+                .map(perfil -> new SimpleGrantedAuthority(perfil.getNome()))
                 .collect(Collectors.toList());
 
         return new User(

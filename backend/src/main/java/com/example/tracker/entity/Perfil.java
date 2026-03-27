@@ -4,21 +4,22 @@ import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(name = "tb_cad_perfil")
+public class Perfil {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "codigo")
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "descricao", nullable = false)
     private String nome;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "role_permissoes",
-        joinColumns = @JoinColumn(name = "role_id"),
-        inverseJoinColumns = @JoinColumn(name = "permissao_id")
+        name = "tb_cad_perfil_permissao",
+        joinColumns = @JoinColumn(name = "codigo_perfil"),
+        inverseJoinColumns = @JoinColumn(name = "codigo_permissao")
     )
     private Set<Permissao> permissoes;
 

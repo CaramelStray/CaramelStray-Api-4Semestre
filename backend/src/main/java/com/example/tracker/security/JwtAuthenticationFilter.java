@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import jakarta.servlet.FilterChain;
@@ -14,7 +15,14 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Component
 public class JwtAuthenticationFilter extends GenericFilterBean {
+
+    private final JwtService jwtService;
+
+    public JwtAuthenticationFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -24,7 +32,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             HttpServletRequest servletRequest = (HttpServletRequest) request;
             String authorization = servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
             if (authorization != null) {
-                Authentication credentials = JwtUtils
+                Authentication credentials = jwtService
                         .parseToken(authorization.replaceAll("Bearer ", ""));
                 SecurityContextHolder.getContext().setAuthentication(credentials);
             }

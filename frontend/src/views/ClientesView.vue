@@ -17,7 +17,7 @@ import {
   Pencil, Eye, Search,
   Info, XCircle, CheckCircle2, X
 } from 'lucide-vue-next'
-import ClienteCadastro from '@/views/ClienteCadastro.vue'
+import ClienteCadastro from '@/components/clientes/ClienteCadastro.vue'
 
 const isCadastroOpen = ref(false)
 const searchQuery = ref('')

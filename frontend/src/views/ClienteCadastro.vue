@@ -27,7 +27,6 @@ const emit = defineEmits(['fechar'])
 
 const step = ref(1)
 
-// --- FUNÇÕES DE MÁSCARA NATIVAS ---
 const applyPhoneMask = (val: any) => {
   if (!val) return ''
   const value = String(val)
@@ -49,7 +48,6 @@ const applyCnpjMask = (val: any) => {
   return digits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/, '$1.$2.$3/$4-$5')
 }
 
-// Schema de validação
 const formSchema = toTypedSchema(z.object({
   internacional: z.boolean().default(false),
   nomeEmpresa: z.string({ required_error: '*' }).min(1, '*'),
@@ -84,7 +82,7 @@ const form = useForm({
   validationSchema: formSchema,
   initialValues: {
     internacional: false,
-    contatos: [],
+    contatos: [{ nome: '', email: '', telefone: '' }],
     observacoes: '',
     documento: '',
     telefone: ''

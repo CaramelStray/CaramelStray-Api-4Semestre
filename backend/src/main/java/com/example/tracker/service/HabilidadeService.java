@@ -16,6 +16,16 @@ public class HabilidadeService {
         this.repository = repository;
     }
 
+    public Habilidade buscarPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Habilidade não encontrada"));
+    }
+
+    public Habilidade buscarPorDescricao(String descricao) {
+        return repository.findByDescricao(descricao)
+                .orElseThrow(() -> new RuntimeException("Habilidade não encontrada"));
+    }
+
     public List<Habilidade> listar() {
         return repository.findAll();
     }

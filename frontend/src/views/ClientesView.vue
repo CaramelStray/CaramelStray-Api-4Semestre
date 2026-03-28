@@ -98,7 +98,7 @@ const filteredClientes = computed(() => {
           <Download class="w-4 h-4 mr-2" /> Exportar Relatório
         </Button>
         
-        <Button size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#3B82F6] hover:opacity-90 text-white border-none shadow-md">
+        <Button size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
           <Plus class="w-4 h-4 mr-2" /> Novo Cliente
         </Button>
       </div>

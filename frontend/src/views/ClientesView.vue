@@ -12,37 +12,28 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-
 import { 
   Download, Plus, Users, Cpu, AlertTriangle, TrendingUp,
   Pencil, Eye, Search,
-  Info, XCircle, CheckCircle2 
+  Info, XCircle, CheckCircle2, X
 } from 'lucide-vue-next'
+import ClienteCadastro from '@/views/ClienteCadastro.vue'
 
-/**
- * ESTADO GLOBAL E FILTRAGEM
- */
+const isCadastroOpen = ref(false)
 const searchQuery = ref('')
 
-// Mapeamento de UI para os níveis de criticidade
-// Facilita a adição de novos níveis sem mexer na estrutura da tabela
 const criticidadeMap = {
   'CRÍTICO': { icon: XCircle, class: 'bg-red-500/20 text-red-400 border-red-500/30' },
   'ALERTA': { icon: Info, class: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
   'ÓTIMO': { icon: CheckCircle2, class: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
 } as Record<string, any>
 
-// Gera uma cor de avatar baseada no comprimento do nome para consistência visual
 const getAvatarColor = (name: string) => {
   const colors = ['bg-blue-500 text-white', 'bg-emerald-500 text-white', 'bg-rose-500 text-white', 'bg-indigo-500 text-white']
   const index = name.length % colors.length
   return colors[index]
 }
 
-/**
- * DADOS DE EXEMPLO (Mock Data)
- * Em produção, estes dados viriam de uma API
- */
 const stats = [
   { label: 'Total de Clientes', value: '38', sub: '+3 este mês', icon: Users, color: 'text-blue-400' },
   { label: 'Sistemas em Operação', value: '124', sub: 'Entre todos os clientes', icon: Cpu, color: 'text-green-400' },
@@ -58,7 +49,6 @@ const clientes = ref([
   { nome: 'Suzano Papel', cidade: 'Mucuri', estado: 'BA', pais: 'Brasil', contrato: 'MER-2024-201', statusContrato: 'Vencido', proximaManutencao: '—', criticidade: 'CRÍTICO', sistemas: 6 },
 ])
 
-// Lógica de busca reativa: filtra por nome, cidade ou número de contrato
 const filteredClientes = computed(() => {
   return clientes.value.filter(c => 
     c.nome.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -98,7 +88,7 @@ const filteredClientes = computed(() => {
           <Download class="w-4 h-4 mr-2" /> Exportar Relatório
         </Button>
         
-        <Button size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
+        <Button size="lg" @click="isCadastroOpen = true" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
           <Plus class="w-4 h-4 mr-2" /> Novo Cliente
         </Button>
       </div>
@@ -192,5 +182,47 @@ const filteredClientes = computed(() => {
         </TableBody>
       </Table>
     </div>
+
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
+          
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Novo Cliente</h2>
+                <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para cadastrar um novo cliente no sistema.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isCadastroOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <ClienteCadastro @fechar="isCadastroOpen = false" />
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
   </div>
 </template>
+
+<style scoped>
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .modal-content,
+.modal-leave-active .modal-content {
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: translateX(100vw);
+}
+</style>

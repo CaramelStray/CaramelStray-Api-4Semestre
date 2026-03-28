@@ -16,7 +16,7 @@ public class HabilidadeService {
         this.repository = repository;
     }
 
-    public Habilidade buscarPorId(Long id) {
+    public Habilidade buscarPorId(Integer id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Habilidade não encontrada"));
     }
@@ -37,7 +37,7 @@ public class HabilidadeService {
         return repository.save(habilidade);
     }
 
-    public Habilidade editar(Long id, Habilidade nova) {
+    public Habilidade editar(Integer id, Habilidade nova) {
         Habilidade habilidade = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Habilidade não encontrada"));
 
@@ -47,7 +47,7 @@ public class HabilidadeService {
         return repository.save(habilidade);
     }
 
-    public void remover(Long id) {
+    public void remover(Integer id) {
         repository.deleteById(id);
     }
 

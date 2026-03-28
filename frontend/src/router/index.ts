@@ -8,10 +8,7 @@ const router = createRouter({
   routes: [
     {
       path: '/clientes',
-      name: 'clientes',
-      component: ClienteCadastro
-      // Você também pode usar "lazy loading" (carregamento sob demanda) assim:
-      // component: () => import('../views/ClienteCadastro.vue')
+      component: () => import('@/views/ClientesView.vue'),
     }
   ],
 })

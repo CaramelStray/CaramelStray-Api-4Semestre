@@ -49,6 +49,18 @@ public class Cliente {
     @Column(nullable = false)
     private Boolean ativo = true;
 
+    @Column(name = "observacao")
+    private String observacao;
+
+    @Column(name = "rua", length = 255)
+    private String rua;
+
+    @Column(name = "numero", length = 50)
+    private String numero;
+
+    @Column(name = "internacional")
+    private Boolean internacional;
+
     @Column(name = "data_cadastro", nullable = false, insertable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
@@ -154,6 +166,38 @@ public class Cliente {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
+    }
+
+    public String getRua() {
+        return rua;
+    }
+
+    public void setRua(String rua) {
+        this.rua = rua;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public Boolean getInternacional() {
+        return internacional;
+    }
+
+    public void setInternacional(Boolean internacional) {
+        this.internacional = internacional;
     }
 
     public LocalDateTime getDataCadastro() {

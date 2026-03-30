@@ -23,4 +23,8 @@ public class ClienteCreateDTO {
     private String classificacaoDistancia;
     private String fusoHorario;
     private Boolean ativo;
+    private String observacao;
+    private String rua;
+    private String numero;
+    private Boolean internacional;
 }

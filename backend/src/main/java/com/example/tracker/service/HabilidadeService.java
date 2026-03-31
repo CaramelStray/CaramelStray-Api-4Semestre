@@ -2,7 +2,9 @@ package com.example.tracker.service;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.tracker.entity.Habilidade;
 import com.example.tracker.repository.HabilidadeRepository;
@@ -18,28 +20,33 @@ public class HabilidadeService {
 
     public Habilidade buscarPorId(Integer id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Habilidade não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Habilidade não encontrada"));
     }
 
     public Habilidade buscarPorDescricao(String descricao) {
         return repository.findByDescricao(descricao)
-                .orElseThrow(() -> new RuntimeException("Habilidade não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Habilidade não encontrada"));
     }
 
-    public List<Habilidade> listar() {
+    public List<Habilidade> listarTodas() {
         return repository.findAll();
     }
 
     public Habilidade adicionar(Habilidade habilidade) {
         if (repository.existsByDescricao(habilidade.getDescricao())) {
-            throw new RuntimeException("Habilidade já existe");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Habilidade já existe");
         }
         return repository.save(habilidade);
     }
 
-    public Habilidade editar(Integer id, Habilidade nova) {
+    public Habilidade atualizar(Integer id, Habilidade nova) {
         Habilidade habilidade = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Habilidade não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Habilidade não encontrada"));
+
+        if (repository.existsByDescricao(nova.getDescricao()) &&
+            !habilidade.getDescricao().equals(nova.getDescricao())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Habilidade já existe");
+        }
 
         habilidade.setDescricao(nova.getDescricao());
         habilidade.setObservacao(nova.getObservacao());
@@ -48,7 +55,9 @@ public class HabilidadeService {
     }
 
     public void remover(Integer id) {
+        if (!repository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Habilidade não encontrada");
+        }
         repository.deleteById(id);
     }
-
 }

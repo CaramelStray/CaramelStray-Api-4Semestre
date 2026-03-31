@@ -7,7 +7,7 @@ public class TecnicoResponseDTO {
 
     private Integer id;
     private Integer usuarioId;
-    private String emailUsuarioCadastro;
+    private String email;
     private String nome;
     private String cpf;
     private String cargo;
@@ -19,7 +19,7 @@ public class TecnicoResponseDTO {
         TecnicoResponseDTO dto = new TecnicoResponseDTO();
         dto.setId(tecnico.getId());
         dto.setUsuarioId(tecnico.getUsuario() != null ? tecnico.getUsuario().getId() : null);
-        dto.setEmailUsuarioCadastro(tecnico.getUsuario() != null ? tecnico.getUsuario().getEmail() : null);
+        dto.setEmail(tecnico.getUsuario() != null ? tecnico.getUsuario().getEmail() : null);
         dto.setNome(tecnico.getNome());
         dto.setCpf(tecnico.getCpf());
         dto.setCargo(tecnico.getCargo());
@@ -28,6 +28,8 @@ public class TecnicoResponseDTO {
         dto.setLongitude(tecnico.getLongitude());
         return dto;
     }
+
+    // GETTERS E SETTERS
 
     public Integer getId() {
         return id;
@@ -45,12 +47,12 @@ public class TecnicoResponseDTO {
         this.usuarioId = usuarioId;
     }
 
-    public String getEmailUsuarioCadastro() {
-        return emailUsuarioCadastro;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmailUsuarioCadastro(String emailUsuarioCadastro) {
-        this.emailUsuarioCadastro = emailUsuarioCadastro;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getNome() {

@@ -10,20 +10,21 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tecnicos")
 @RequiredArgsConstructor
+
 public class TecnicoController {
 
     private final TecnicoService tecnicoService;
 
     @PostMapping
-    public ResponseEntity<TecnicoResponseDTO> criar(@Valid @RequestBody TecnicoCreateDTO dto,
-                                                    Authentication authentication) {
-        Tecnico tecnico = tecnicoService.criar(dto, authentication.getName());
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<TecnicoResponseDTO> criar(@Valid @RequestBody TecnicoCreateDTO dto) {
+        Tecnico tecnico = tecnicoService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(TecnicoResponseDTO.fromEntity(tecnico));
     }

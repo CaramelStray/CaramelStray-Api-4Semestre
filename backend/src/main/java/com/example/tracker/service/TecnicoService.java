@@ -1,15 +1,19 @@
 package com.example.tracker.service;
 
 import com.example.tracker.dto.tecnico.TecnicoCreateDTO;
+import com.example.tracker.entity.Perfil;
 import com.example.tracker.entity.Tecnico;
 import com.example.tracker.entity.Usuario;
+import com.example.tracker.repository.PerfilRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -17,15 +21,26 @@ public class TecnicoService {
 
     private final TecnicoRepository tecnicoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PerfilRepository perfilRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Tecnico criar(TecnicoCreateDTO dto, String emailUsuarioLogado) {
+    public Tecnico criar(TecnicoCreateDTO dto) {
         validarTecnico(dto);
 
-        Usuario usuario = buscarUsuarioResponsavel(emailUsuarioLogado);
+        Perfil perfilTecnico = perfilRepository.findByNome("ROLE_TECNICO")
+                .orElseThrow(() -> new IllegalArgumentException("Perfil ROLE_TECNICO nao encontrado."));
+
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setEmail(normalizar(dto.getEmail()));
+        novoUsuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+        novoUsuario.setAtivo(true);
+        novoUsuario.setPerfis(Set.of(perfilTecnico));
+
+        Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
 
         Tecnico novoTecnico = new Tecnico();
-        novoTecnico.setUsuario(usuario);
+        novoTecnico.setUsuario(usuarioSalvo);
         novoTecnico.setNome(limpar(dto.getNome()));
         novoTecnico.setCpf(limpar(dto.getCpf()));
         novoTecnico.setCargo(limpar(dto.getCargo()));
@@ -96,6 +111,20 @@ public class TecnicoService {
             throw new IllegalArgumentException("Os dados do tecnico sao obrigatorios.");
         }
 
+        String emailNormalizado = normalizar(dto.getEmail());
+        if (emailNormalizado == null) {
+            throw new IllegalArgumentException("O email do usuario e obrigatorio.");
+        }
+
+        if (usuarioRepository.findByEmail(emailNormalizado).isPresent()) {
+            throw new IllegalArgumentException("Ja existe usuario cadastrado com este email.");
+        }
+
+        String senhaLimpa = limpar(dto.getSenha());
+        if (senhaLimpa == null) {
+            throw new IllegalArgumentException("A senha do usuario e obrigatoria.");
+        }
+
         String nomeNormalizado = limpar(dto.getNome());
         if (nomeNormalizado == null) {
             throw new IllegalArgumentException("O nome do tecnico e obrigatorio.");
@@ -119,16 +148,6 @@ public class TecnicoService {
         if (tecnicoExistente.isPresent() && !tecnicoExistente.get().getId().equals(idAtual)) {
             throw new IllegalArgumentException("Ja existe tecnico cadastrado com este CPF.");
         }
-    }
-
-    private Usuario buscarUsuarioResponsavel(String emailUsuarioLogado) {
-        String emailNormalizado = normalizar(emailUsuarioLogado);
-        if (emailNormalizado == null) {
-            throw new IllegalStateException("Nao foi possivel identificar o usuario autenticado.");
-        }
-
-        return usuarioRepository.findByEmail(emailNormalizado)
-                .orElseThrow(() -> new IllegalStateException("Usuario autenticado nao encontrado."));
     }
 
     private String normalizar(String valor) {

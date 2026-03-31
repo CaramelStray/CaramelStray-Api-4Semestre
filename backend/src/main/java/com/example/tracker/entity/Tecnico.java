@@ -12,8 +12,8 @@ public class Tecnico {
     @Column(name = "codigo")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "codigo_usuario")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "codigo_usuario", unique = true)
     private Usuario usuario;
 
     @Column(name = "nome", nullable = false)
@@ -33,8 +33,6 @@ public class Tecnico {
 
     @Column(name = "longitude", precision = 10, scale = 6)
     private BigDecimal longitude;
-
-    // GETTERS E SETTERS
 
     public Integer getId() {
         return id;
@@ -100,4 +98,3 @@ public class Tecnico {
         this.longitude = longitude;
     }
 }
-

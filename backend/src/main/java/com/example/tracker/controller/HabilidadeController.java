@@ -17,8 +17,8 @@ public class HabilidadeController {
     private final HabilidadeService service;
 
     @GetMapping
-    public ResponseEntity<List<Habilidade>> listar() {
-        return ResponseEntity.ok(service.listar());
+    public ResponseEntity<List<Habilidade>> listarTodas() {
+        return ResponseEntity.ok(service.listarTodas());
     }
 
     @GetMapping("/{id}")
@@ -38,9 +38,9 @@ public class HabilidadeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Habilidade> editar(@PathVariable Integer id,
+    public ResponseEntity<Habilidade> atualizar(@PathVariable Integer id,
             @RequestBody Habilidade habilidade) {
-        return ResponseEntity.ok(service.editar(id, habilidade));
+        return ResponseEntity.ok(service.atualizar(id, habilidade));
     }
 
     @DeleteMapping("/{id}")

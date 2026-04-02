@@ -19,6 +19,10 @@ public class ClienteResponseDTO {
     private String classificacaoDistancia;
     private String fusoHorario;
     private Boolean ativo;
+    private String observacao;
+    private String rua;
+    private String numero;
+    private Boolean internacional;
     private LocalDateTime dataCadastro;
 
     public static ClienteResponseDTO fromEntity(Cliente cliente) {
@@ -37,6 +41,10 @@ public class ClienteResponseDTO {
         dto.setClassificacaoDistancia(cliente.getClassificacaoDistancia());
         dto.setFusoHorario(cliente.getFusoHorario());
         dto.setAtivo(cliente.getAtivo());
+        dto.setObservacao(cliente.getObservacao());
+        dto.setRua(cliente.getRua());
+        dto.setNumero(cliente.getNumero());
+        dto.setInternacional(cliente.getInternacional());
         dto.setDataCadastro(cliente.getDataCadastro());
         return dto;
     }
@@ -151,6 +159,38 @@ public class ClienteResponseDTO {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
+    }
+
+    public String getRua() {
+        return rua;
+    }
+
+    public void setRua(String rua) {
+        this.rua = rua;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public Boolean getInternacional() {
+        return internacional;
+    }
+
+    public void setInternacional(Boolean internacional) {
+        this.internacional = internacional;
     }
 
     public LocalDateTime getDataCadastro() {

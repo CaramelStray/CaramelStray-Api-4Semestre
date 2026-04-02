@@ -276,7 +276,14 @@ CREATE TABLE public.tb_cad_catalogo_maquina_ferramenta_modelo (
 
 CREATE TABLE public.tb_cad_catalogo_software (
     codigo integer NOT NULL,
-    descricao character varying(255) NOT NULL
+    descricao character varying(255) NOT NULL,
+    versao character varying(100) NOT NULL,
+    tipo character varying(100) NOT NULL,
+    desenvolvedor_fornecedor character varying(255),
+    url_documentacao character varying(500),
+    descricao_tecnica text,
+    ativo boolean DEFAULT true NOT NULL,
+    data_cadastro timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 

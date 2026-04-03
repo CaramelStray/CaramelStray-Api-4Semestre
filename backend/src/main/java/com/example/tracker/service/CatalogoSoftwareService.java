@@ -8,8 +8,10 @@ import com.example.tracker.entity.CatalogoSoftwareChecklistPadraoId;
 import com.example.tracker.entity.CatalogoTarefa;
 import com.example.tracker.repository.CatalogoSoftwareRepository;
 import com.example.tracker.repository.CatalogoTarefaRepository;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -187,14 +189,32 @@ public class CatalogoSoftwareService {
             software.setAtivo(true);
         }
 
-        software.limparChecklistPadrao();
-
         if (dto.getChecklistPadrao() == null || dto.getChecklistPadrao().isEmpty()) {
+            software.limparChecklistPadrao();
             return;
         }
 
+        Map<Integer, CatalogoSoftwareChecklistPadrao> itensAtuaisPorTarefaId = new HashMap<>();
+        for (CatalogoSoftwareChecklistPadrao itemExistente : software.getChecklistPadrao()) {
+            if (itemExistente != null
+                    && itemExistente.getTarefa() != null
+                    && itemExistente.getTarefa().getId() != null) {
+                itensAtuaisPorTarefaId.put(itemExistente.getTarefa().getId(), itemExistente);
+            }
+        }
+
+        Set<Integer> tarefaIdsMantidos = new HashSet<>();
+
         for (SoftwareChecklistItemCreateDTO itemDto : dto.getChecklistPadrao()) {
             CatalogoTarefa tarefa = buscarOuCriarTarefa(limparString(itemDto.getDescricao()));
+            Integer tarefaId = tarefa.getId();
+            tarefaIdsMantidos.add(tarefaId);
+
+            CatalogoSoftwareChecklistPadrao itemExistente = itensAtuaisPorTarefaId.get(tarefaId);
+            if (itemExistente != null) {
+                itemExistente.setObrigatorio(Boolean.TRUE.equals(itemDto.getObrigatorio()));
+                continue;
+            }
 
             CatalogoSoftwareChecklistPadrao item = new CatalogoSoftwareChecklistPadrao();
             item.setId(new CatalogoSoftwareChecklistPadraoId());
@@ -203,6 +223,11 @@ public class CatalogoSoftwareService {
 
             software.adicionarChecklistPadraoItem(item);
         }
+
+        software.getChecklistPadrao().removeIf(itemExistente -> itemExistente == null
+                || itemExistente.getTarefa() == null
+                || itemExistente.getTarefa().getId() == null
+                || !tarefaIdsMantidos.contains(itemExistente.getTarefa().getId()));
     }
 
     private CatalogoTarefa buscarOuCriarTarefa(String descricao) {

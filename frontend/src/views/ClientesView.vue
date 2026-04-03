@@ -17,7 +17,9 @@ import {
   Pencil, Eye, Search,
   Info, XCircle, CheckCircle2, X
 } from 'lucide-vue-next'
-import ClienteCadastro from '@/components/clientes/ClienteCadastro.vue'
+import ClienteCadastro from '@/components/clientes/ClienteCadastroPopup.vue'
+import { onMounted } from 'vue'
+import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 
 const isCadastroOpen = ref(false)
 const searchQuery = ref('')
@@ -34,32 +36,68 @@ const getAvatarColor = (name: string) => {
   return colors[index]
 }
 
-const stats = [
-  { label: 'Total de Clientes', value: '38', sub: '+3 este mês', icon: Users, color: 'text-blue-400' },
-  { label: 'Sistemas em Operação', value: '124', sub: 'Entre todos os clientes', icon: Cpu, color: 'text-green-400' },
-  { label: 'Alertas Críticos', value: '07', sub: 'Ordens atrasadas', icon: AlertTriangle, color: 'text-red-400' },
-  { label: 'Contratos Ativos', value: '34', sub: '4 vencem em breve', icon: TrendingUp, color: 'text-purple-400' },
-]
+const clientes = ref<ClienteResponseDTO[]>([])
+const loading = ref(false)
+const erro = ref('')
 
-const clientes = ref([
-  { nome: 'Petrobras', cidade: 'Rio de Janeiro', estado: 'RJ', pais: 'Brasil', contrato: 'MER-2024-089', statusContrato: 'Ativo', proximaManutencao: '12/04/2026', criticidade: 'CRÍTICO', sistemas: 18 },
-  { nome: 'Vale S.A.', cidade: 'Nova Lima', estado: 'MG', pais: 'Brasil', contrato: 'NAV-2023-441', statusContrato: 'Vence em breve', proximaManutencao: '03/04/2026', criticidade: 'ALERTA', sistemas: 9 },
-  { nome: 'Embraer', cidade: 'São José dos Campos', estado: 'SP', pais: 'Brasil', contrato: 'MER-2024-112', statusContrato: 'Ativo', proximaManutencao: '28/04/2026', criticidade: 'ÓTIMO', sistemas: 14 },
-  { nome: 'Raizen Energia', cidade: 'Piracicaba', estado: 'SP', pais: 'Brasil', contrato: 'MER-2023-001', statusContrato: 'Ativo', proximaManutencao: '15/05/2026', criticidade: 'ÓTIMO', sistemas: 22 },
-  { nome: 'Suzano Papel', cidade: 'Mucuri', estado: 'BA', pais: 'Brasil', contrato: 'MER-2024-201', statusContrato: 'Vencido', proximaManutencao: '—', criticidade: 'CRÍTICO', sistemas: 6 },
+
+const stats = computed(() =>[
+  { label: 'Total de Clientes',
+    value: clientes.value.length.toString(),
+    sub: 'Cadastrados no sistema',
+    icon: Users, 
+    color: 'text-blue-400' 
+  },
+
+  { label: 'Contratos Ativos',
+    value: clientes.value.filter(c => c.ativo).length.toString(), 
+    sub: 'Clientes ativos', 
+    icon: TrendingUp, 
+    color: 'text-purple-400' 
+  },
+
+  { label: 'Contratos Inativos', 
+    value: clientes.value.filter(c => !c.ativo).length.toString(),
+    sub: 'Fora de operação',
+    icon: AlertTriangle, 
+    color: 'text-green-400' 
+  },
+
+  { label: 'Alertas Críticos', 
+    value: '—', 
+    sub: 'Ordens atrasadas',
+    icon: AlertTriangle, 
+    color: 'text-red-400' 
+  },
+
 ])
 
 const filteredClientes = computed(() => {
   return clientes.value.filter(c => 
-    c.nome.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    c.cidade.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    c.contrato.toLowerCase().includes(searchQuery.value.toLowerCase())
+    c.nomeEmpresa.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    c.cidade?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    c.emailContato?.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
+
+onMounted(async () => {
+  loading.value = true
+  try {
+    clientes.value = await clienteService.listar()
+  } catch (e: any) {
+    erro.value = e.message
+  } finally {
+    loading.value = false
+  }
+})
+
 </script>
 
 <template>
   <div class="p-6 space-y-6">
+
+    <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
+    <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
     
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
@@ -104,7 +142,7 @@ const filteredClientes = computed(() => {
           <TableRow class="hover:bg-transparent border-border text-xs uppercase font-bold text-muted-foreground">
             <TableHead class="pl-6 h-12">Cliente</TableHead>
             <TableHead class="h-12">Localização</TableHead>
-            <TableHead class="h-12">Sistemas</TableHead>
+            <TableHead class="h-12">Alcance</TableHead>
             <TableHead class="h-12">Contrato</TableHead>
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Próxima Manutenção</TableHead>
@@ -116,15 +154,15 @@ const filteredClientes = computed(() => {
         <TableBody>
           <TableRow 
             v-for="c in filteredClientes" 
-            :key="c.nome" 
+            :key="c.nomeEmpresa" 
             class="border-border hover:bg-muted/30 transition-colors even:bg-muted/50"
           >
             <TableCell class="pl-6 py-3">
               <div class="flex items-center gap-3">
-                <div :class="['flex items-center justify-center size-7 rounded-full text-xs font-bold', getAvatarColor(c.nome)]">
-                  {{ c.nome.substring(0, 2).toUpperCase() }}
+                <div :class="['flex items-center justify-center size-7 rounded-full text-xs font-bold', getAvatarColor(c.nomeEmpresa)]">
+                  {{ c.nomeEmpresa.substring(0, 2).toUpperCase() }}
                 </div>
-                <span class="text-sm font-normal text-foreground">{{ c.nome }}</span>
+                <span class="text-sm font-normal text-foreground">{{ c.nomeEmpresa }}</span>
               </div>
             </TableCell>
 
@@ -133,7 +171,7 @@ const filteredClientes = computed(() => {
                 <Tooltip>
                   <TooltipTrigger as-child>
                     <span class="text-sm text-foreground hover:opacity-80 transition-opacity cursor-default font-normal">
-                      {{ c.cidade }}, {{ c.estado }}
+                      {{ c.cidade }}, {{ c.estadoRegiao}}
                     </span>
                   </TooltipTrigger>
                   <TooltipContent 
@@ -146,27 +184,30 @@ const filteredClientes = computed(() => {
               </TooltipProvider>
             </TableCell>
 
-            <TableCell class="text-sm font-normal text-foreground">{{ c.sistemas }} sistemas</TableCell>
-            <TableCell class="font-mono text-sm font-normal text-foreground">{{ c.contrato }}</TableCell>
+            <TableCell>
+              <span class="px-2 py-1 rounded text-xs font-medium"
+                :class="c.classificacaoDistancia === 'Internacional'
+                  ? 'bg-purple-900 text-purple-300'
+                  : c.classificacaoDistancia === 'Nacional'
+                    ? 'bg-blue-900 text-blue-300'
+                    : 'bg-green-900 text-green-300'"
+              >
+                {{ c.classificacaoDistancia ?? '—' }}
+              </span>
+            </TableCell>
+
+            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
 
             <TableCell>
               <div class="flex items-center gap-2 text-foreground font-normal">
-                <div class="size-2 rounded-full" :class="c.statusContrato === 'Ativo' ? 'bg-emerald-500' : c.statusContrato === 'Vence em breve' ? 'bg-amber-500' : 'bg-red-500'"></div>
-                <span class="text-sm">{{ c.statusContrato }}</span>
+                <div class="size-2 rounded-full" :class="c.ativo ? 'bg-emerald-500' : 'bg-red-500'"></div>
+                <span class="text-sm">{{ c.ativo ? 'Ativo' : 'Inativo' }}</span>
               </div>
             </TableCell>
 
-            <TableCell class="text-sm font-normal text-foreground">{{ c.proximaManutencao }}</TableCell>
+            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
 
-            <TableCell>
-              <div v-if="criticidadeMap[c.criticidade]" 
-                class="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-tight" 
-                :class="criticidadeMap[c.criticidade].class"
-              >
-                <component :is="criticidadeMap[c.criticidade].icon" class="size-4" />
-                {{ c.criticidade }}
-              </div>
-            </TableCell>
+            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">

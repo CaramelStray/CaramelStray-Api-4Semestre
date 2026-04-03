@@ -49,10 +49,17 @@ const stats = computed(() =>[
     color: 'text-blue-400' 
   },
 
-  { label: 'Sistemas em Operação', 
-    value: clientes.value.length.toString(),
-    sub: 'Entre todos os clientes', 
-    icon: Cpu, 
+  { label: 'Contratos Ativos',
+    value: clientes.value.filter(c => c.ativo).length.toString(), 
+    sub: 'Clientes ativos', 
+    icon: TrendingUp, 
+    color: 'text-purple-400' 
+  },
+
+  { label: 'Contratos Inativos', 
+    value: clientes.value.filter(c => !c.ativo).length.toString(),
+    sub: 'Fora de operação',
+    icon: AlertTriangle, 
     color: 'text-green-400' 
   },
 
@@ -63,12 +70,6 @@ const stats = computed(() =>[
     color: 'text-red-400' 
   },
 
-  { label: 'Contratos Ativos',
-    value: clientes.value.filter(c => c.ativo).length.toString(), 
-    sub: 'Clientes ativos', 
-    icon: TrendingUp, 
-    color: 'text-purple-400' 
-  },
 ])
 
 const filteredClientes = computed(() => {

@@ -12,10 +12,6 @@ public class Cliente {
     @Column(name = "codigo")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "codigo_usuario")
-    private Usuario usuario;
-
     @Column(name = "descricao_empresa", nullable = false)
     private String nomeEmpresa;
 
@@ -70,14 +66,6 @@ public class Cliente {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
     }
 
     public String getNomeEmpresa() {

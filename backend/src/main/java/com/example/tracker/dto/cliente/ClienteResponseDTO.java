@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 public class ClienteResponseDTO {
 
     private Integer id;
-    private Integer usuarioId;
-    private String emailUsuarioCadastro;
     private String nomeEmpresa;
     private String documento;
     private String emailContato;
@@ -28,8 +26,6 @@ public class ClienteResponseDTO {
     public static ClienteResponseDTO fromEntity(Cliente cliente) {
         ClienteResponseDTO dto = new ClienteResponseDTO();
         dto.setId(cliente.getId());
-        dto.setUsuarioId(cliente.getUsuario() != null ? cliente.getUsuario().getId() : null);
-        dto.setEmailUsuarioCadastro(cliente.getUsuario() != null ? cliente.getUsuario().getEmail() : null);
         dto.setNomeEmpresa(cliente.getNomeEmpresa());
         dto.setDocumento(cliente.getDocumento());
         dto.setEmailContato(cliente.getEmailContato());
@@ -55,22 +51,6 @@ public class ClienteResponseDTO {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Integer usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
-    public String getEmailUsuarioCadastro() {
-        return emailUsuarioCadastro;
-    }
-
-    public void setEmailUsuarioCadastro(String emailUsuarioCadastro) {
-        this.emailUsuarioCadastro = emailUsuarioCadastro;
     }
 
     public String getNomeEmpresa() {

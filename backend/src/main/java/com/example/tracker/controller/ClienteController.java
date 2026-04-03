@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
@@ -24,9 +23,8 @@ public class ClienteController {
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ClienteResponseDTO> criarCliente(
-            @Valid @RequestBody ClienteCreateDTO dto,
-            Authentication authentication) {
-        Cliente clienteCriado = clienteService.criar(dto, authentication.getName());
+            @Valid @RequestBody ClienteCreateDTO dto) {
+        Cliente clienteCriado = clienteService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ClienteResponseDTO.fromEntity(clienteCriado));
     }
 

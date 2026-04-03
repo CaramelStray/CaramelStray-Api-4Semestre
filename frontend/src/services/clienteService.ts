@@ -7,7 +7,6 @@
 // Estrutura de dados que o Backend retorna
 export interface ClienteResponseDTO {
   id: number
-  usuarioId: number
   emailUsuarioCadastro: string
   nomeEmpresa: string
   documento: string

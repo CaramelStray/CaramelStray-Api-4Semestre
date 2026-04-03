@@ -2,9 +2,7 @@ package com.example.tracker.service;
 
 import com.example.tracker.dto.cliente.ClienteCreateDTO;
 import com.example.tracker.entity.Cliente;
-import com.example.tracker.entity.Usuario;
 import com.example.tracker.repository.ClienteRepository;
-import com.example.tracker.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
@@ -20,15 +18,12 @@ import lombok.RequiredArgsConstructor;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
-    private final UsuarioRepository usuarioRepository;
 
     @Transactional
-    public Cliente criar(ClienteCreateDTO dto, String emailUsuarioLogado) {
+    public Cliente criar(ClienteCreateDTO dto) {
         validarClienteParaCriacao(dto);
 
-        Usuario usuario = buscarUsuarioResponsavel(emailUsuarioLogado);
         Cliente novoCliente = new Cliente();
-        novoCliente.setUsuario(usuario);
         aplicarCampos(novoCliente, dto);
         novoCliente.setAtivo(dto.getAtivo() == null ? true : dto.getAtivo());
 
@@ -169,14 +164,6 @@ public class ClienteService {
         }
     }
 
-    private Usuario buscarUsuarioResponsavel(String emailUsuarioLogado) {
-        String emailNormalizado = normalizarString(emailUsuarioLogado);
-        if (emailNormalizado == null) {
-            throw new IllegalStateException("Nao foi possivel identificar o usuario autenticado.");
-        }
-        return usuarioRepository.findByEmail(emailNormalizado)
-                .orElseThrow(() -> new IllegalStateException("Usuario autenticado nao encontrado."));
-    }
 
     private String normalizarString(String valor) {
         if (valor == null) {

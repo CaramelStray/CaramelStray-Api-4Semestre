@@ -7,7 +7,6 @@
 // Estrutura de dados que o Backend retorna
 export interface ClienteResponseDTO {
   id: number
-  emailUsuarioCadastro: string
   nomeEmpresa: string
   documento: string
   emailContato: string
@@ -19,6 +18,10 @@ export interface ClienteResponseDTO {
   classificacaoDistancia: string
   fusoHorario: string
   ativo: boolean
+  observacao: string
+  rua: string
+  numero: string
+  internacional: boolean
   dataCadastro: string
 }
 
@@ -45,5 +48,12 @@ export const clienteService = {
   criar: (dto: ClienteCreateDTO) => apiFetch<ClienteResponseDTO>('/clientes', {
     method: 'POST',
     body: JSON.stringify(dto),
+  }),
+    atualizar: (id: number, dto: ClienteCreateDTO) => apiFetch<ClienteResponseDTO>(`/clientes/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(dto),
+  }),
+    remover: (id: number) => apiFetch<void>(`/clientes/${id}`, {
+    method: 'DELETE',
   }),
 }

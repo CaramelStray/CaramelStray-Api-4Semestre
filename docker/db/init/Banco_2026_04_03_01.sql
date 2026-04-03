@@ -246,6 +246,8 @@ CREATE TABLE public.tb_cad_catalogo_software (
     descricao character varying(255) NOT NULL,
     versao character varying(100),
     tipo character varying(100),
+    descricao_tecnica character varying(255),
+    desenvolvedor_fornecedor character varying(255),
     descricao_fornecedor character varying(255),
     url_documentacao character varying(500),
     especificacao text,

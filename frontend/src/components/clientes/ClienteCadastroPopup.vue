@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Plus, Trash2, ChevronRight, Building2, Users, ArrowRight } from 'lucide-vue-next'
+import { clienteService } from '@/services/clienteService'
 
 const emit = defineEmits(['fechar'])
 
@@ -89,7 +90,7 @@ const form = useForm({
   }
 })
 
-const { fields, push, remove } = useFieldArray('contatos')
+const { fields, push, remove } = useFieldArray<{ nome: string; email: string; telefone: string }>('contatos')
 
 watch(() => form.values.internacional, () => {
   form.setFieldValue('documento', ''); 
@@ -111,9 +112,24 @@ const nextStep = async () => {
   }
 }
 
-const onSubmit = form.handleSubmit((values) => {
-  console.log('Dados prontos para envio:', values)
-  emit('fechar')
+const onSubmit = form.handleSubmit(async (values) =>  {
+  try {
+    await clienteService.criar({
+      nomeEmpresa: values.nomeEmpresa,
+      documento: values.documento,
+      emailContato: values.email,
+      telefoneContato: values.telefone,
+      nomeResponsavel: values.responsavel,
+      pais: values.pais,
+      estadoRegiao: values.estado,
+      cidade: values.cidade,
+      fusoHorario: values.fusoHorario,
+      ativo: true,
+    })
+    emit('fechar')
+  } catch (e: any) {
+    console.error('Erro ao cadastrar cliente:', e.message)
+  }
 })
 </script>
 

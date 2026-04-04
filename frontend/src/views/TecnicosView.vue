@@ -64,21 +64,24 @@ const stats = computed(() => [
   },
   {
     label: 'Em Campo',
-    value: '0', // Seria necessário um campo 'status' no DTO futuramente
+    // Filtra técnicos cujo estado é exatamente 'EM CAMPO'
+    value: tecnicos.value.filter(t => t.estado === 'EM CAMPO').length.toString(),
     sub: 'Ordens em andamento',
     icon: MapPin,
     color: 'text-green-400',
   },
   {
     label: 'Cert. Expirando',
-    value: '0',
+    // Se o seu DTO tiver uma flag de expiração, você pode filtrar aqui
+    value: '0', 
     sub: 'Nos próximos 30 dias',
     icon: AlertTriangle,
     color: 'text-red-400',
   },
   {
     label: 'Disponíveis',
-    value: tecnicos.value.length.toString(),
+    // Filtra técnicos cujo estado é 'DISPONÍVEL' (ajuste a string conforme seu backend enviar)
+    value: tecnicos.value.filter(t => t.estado === 'DISPONÍVEL').length.toString(),
     sub: 'Prontos para acionamento',
     icon: ShieldCheck,
     color: 'text-purple-400',

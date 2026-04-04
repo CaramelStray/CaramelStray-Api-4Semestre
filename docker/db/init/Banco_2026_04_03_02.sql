@@ -663,6 +663,43 @@ ALTER TABLE public.tb_srv_tecnico_ferramenta_ativo ALTER COLUMN codigo ADD GENER
 
 
 --
+-- Name: tb_srv_ordem_servico; Type: TABLE; Schema: public; Owner: user_dev
+--
+
+CREATE TABLE public.tb_srv_ordem_servico (
+    codigo integer NOT NULL,
+    codigo_cliente integer NOT NULL,
+    codigo_funcionario integer,
+    codigo_software_instalado integer,
+    codigo_contrato integer NOT NULL,
+    codigo_maquina_contrato integer NOT NULL,
+    status character varying(100),
+    criticidade character varying(50),
+    data_abertura timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    data_agendamento timestamp without time zone,
+    data_inicio_execucao timestamp without time zone,
+    data_fim_execucao timestamp without time zone,
+    observacao_geral text
+);
+
+
+ALTER TABLE public.tb_srv_ordem_servico OWNER TO user_dev;
+
+--
+-- Name: tb_srv_ordem_servico_codigo_seq; Type: SEQUENCE; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_srv_ordem_servico ALTER COLUMN codigo ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.tb_srv_ordem_servico_codigo_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: tb_srv_maquina_checklist_manutencao; Type: TABLE; Schema: public; Owner: user_dev
 --
 
@@ -1060,6 +1097,14 @@ COPY public.tb_srv_tecnico_ferramenta_ativo (codigo, codigo_historico_manutencao
 
 
 --
+-- Data for Name: tb_srv_ordem_servico; Type: TABLE DATA; Schema: public; Owner: user_dev
+--
+
+COPY public.tb_srv_ordem_servico (codigo, codigo_cliente, codigo_funcionario, codigo_software_instalado, codigo_contrato, codigo_maquina_contrato, status, criticidade, data_abertura, data_agendamento, data_inicio_execucao, data_fim_execucao, observacao_geral) FROM stdin;
+\.
+
+
+--
 -- Data for Name: tb_srv_maquina_checklist_manutencao; Type: TABLE DATA; Schema: public; Owner: user_dev
 --
 
@@ -1266,6 +1311,13 @@ SELECT pg_catalog.setval('public.tb_cad_usuario_id_seq', 1, true);
 --
 
 SELECT pg_catalog.setval('public.tb_srv_tecnico_ferramenta_ativo_codigo_seq', 1, false);
+
+
+--
+-- Name: tb_srv_ordem_servico_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
+--
+
+SELECT pg_catalog.setval('public.tb_srv_ordem_servico_codigo_seq', 1, false);
 
 
 --
@@ -1581,6 +1633,14 @@ ALTER TABLE ONLY public.tb_srv_maquina_troca_imprevista_manutencao
 
 ALTER TABLE ONLY public.tb_srv_tecnico_ferramenta_ativo
     ADD CONSTRAINT tb_srv_tecnico_ferramenta_ativo_pkey PRIMARY KEY (codigo);
+
+
+--
+-- Name: tb_srv_ordem_servico tb_srv_ordem_servico_pkey; Type: CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_ordem_servico
+    ADD CONSTRAINT tb_srv_ordem_servico_pkey PRIMARY KEY (codigo);
 
 --
 -- Name: tb_cad_usuario uk632kb8n9udn5mba0exa9qs501; Type: CONSTRAINT; Schema: public; Owner: user_dev
@@ -1906,6 +1966,42 @@ ALTER TABLE ONLY public.tb_srv_tecnico_ferramenta_ativo
 
 ALTER TABLE ONLY public.tb_srv_tecnico_ferramenta_ativo
     ADD CONSTRAINT fk_tecnico_ferramenta_ativo_ativo FOREIGN KEY (codigo_ativo) REFERENCES public.tb_cad_ativo(codigo) ON DELETE CASCADE;
+
+
+--
+-- Name: tb_srv_ordem_servico fk_ordem_servico_cliente; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_ordem_servico
+    ADD CONSTRAINT fk_ordem_servico_cliente FOREIGN KEY (codigo_cliente) REFERENCES public.tb_cad_cliente(codigo) ON DELETE CASCADE;
+
+--
+-- Name: tb_srv_ordem_servico fk_ordem_servico_funcionario; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_ordem_servico
+    ADD CONSTRAINT fk_ordem_servico_funcionario FOREIGN KEY (codigo_funcionario) REFERENCES public.tb_cad_funcionario(codigo) ON DELETE CASCADE;
+
+--
+-- Name: tb_srv_ordem_servico fk_ordem_servico_software_instalado; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_ordem_servico
+    ADD CONSTRAINT fk_ordem_servico_software_instalado FOREIGN KEY (codigo_software_instalado) REFERENCES public.tb_srv_maquina_software_instalado(codigo) ON DELETE CASCADE;
+
+--
+-- Name: tb_srv_ordem_servico fk_ordem_servico_contrato; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_ordem_servico
+    ADD CONSTRAINT fk_ordem_servico_contrato FOREIGN KEY (codigo_contrato) REFERENCES public.tb_cad_contrato(codigo) ON DELETE CASCADE;
+
+--
+-- Name: tb_srv_ordem_servico fk_ordem_servico_maquina_contrato; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_ordem_servico
+    ADD CONSTRAINT fk_ordem_servico_maquina_contrato FOREIGN KEY (codigo_maquina_contrato) REFERENCES public.tb_srv_maquina_contrato(codigo) ON DELETE CASCADE;
 
 --
 -- PostgreSQL database dump complete

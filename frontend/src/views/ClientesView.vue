@@ -20,6 +20,7 @@ import {
 import ClienteCadastro from '@/components/clientes/ClienteCadastroPopup.vue'
 import { onMounted } from 'vue'
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
+import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
 
 const isCadastroOpen = ref(false)
 const searchQuery = ref('')
@@ -39,6 +40,7 @@ const getAvatarColor = (name: string) => {
 const clientes = ref<ClienteResponseDTO[]>([])
 const loading = ref(false)
 const erro = ref('')
+const contratosPorCliente = ref<Record<number, ContratoResponseDTO[]>>({})
 
 
 const stats = computed(() =>[
@@ -84,6 +86,14 @@ onMounted(async () => {
   loading.value = true
   try {
     clientes.value = await clienteService.listar()
+
+    // busca contratos de cada cliente em paralelo
+    const resultados = await Promise.all(
+      clientes.value.map(c => contratoService.buscarPorCliente(c.id))
+    )
+    clientes.value.forEach((c, i) => {
+      contratosPorCliente.value[c.id] = resultados[i] || []
+    })
   } catch (e: any) {
     erro.value = e.message
   } finally {
@@ -145,8 +155,6 @@ onMounted(async () => {
             <TableHead class="h-12">Alcance</TableHead>
             <TableHead class="h-12">Contrato</TableHead>
             <TableHead class="h-12">Status</TableHead>
-            <TableHead class="h-12">Próxima Manutenção</TableHead>
-            <TableHead class="h-12">Criticidade</TableHead>
             <TableHead class="text-right pr-14 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -196,7 +204,18 @@ onMounted(async () => {
               </span>
             </TableCell>
 
-            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
+            <TableCell>
+              <div v-if="contratosPorCliente[c.id]?.length">
+                <div v-for="contrato in contratosPorCliente[c.id]" :key="contrato.codigo" class="flex items-center gap-2">
+                  <div class="size-2 rounded-full"
+                    :class="contrato.status === 'ATIVO' ? 'bg-emerald-500' : contrato.status === 'VENCENDO' ? 'bg-amber-500' : 'bg-red-500'"
+                  />
+                  <span class="text-sm text-foreground">{{ contrato.status }}</span>
+                  <span class="text-xs text-muted-foreground font-mono">#{{ contrato.codigo }}</span>
+                </div>
+              </div>
+              <span v-else class="text-sm text-muted-foreground">—</span>
+            </TableCell>
 
             <TableCell>
               <div class="flex items-center gap-2 text-foreground font-normal">
@@ -204,10 +223,6 @@ onMounted(async () => {
                 <span class="text-sm">{{ c.ativo ? 'Ativo' : 'Inativo' }}</span>
               </div>
             </TableCell>
-
-            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
-
-            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">

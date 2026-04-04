@@ -156,7 +156,6 @@ onMounted(async () => {
             <TableHead class="pl-6 h-12">Cliente</TableHead>
             <TableHead class="h-12">Localização</TableHead>
             <TableHead class="h-12">Alcance</TableHead>
-            <TableHead class="h-12">Contrato</TableHead>
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="text-right pr-14 h-12">Ações</TableHead>
           </TableRow>
@@ -205,19 +204,6 @@ onMounted(async () => {
               >
                 {{ c.classificacaoDistancia ?? '—' }}
               </span>
-            </TableCell>
-
-            <TableCell>
-              <div v-if="contratosPorCliente[c.id]?.length">
-                <div v-for="contrato in contratosPorCliente[c.id]" :key="contrato.codigo" class="flex items-center gap-2">
-                  <div class="size-2 rounded-full"
-                    :class="contrato.status === 'ATIVO' ? 'bg-emerald-500' : contrato.status === 'VENCENDO' ? 'bg-amber-500' : 'bg-red-500'"
-                  />
-                  <span class="text-sm text-foreground">{{ contrato.status }}</span>
-                  <span class="text-xs text-muted-foreground font-mono">#{{ contrato.codigo }}</span>
-                </div>
-              </div>
-              <span v-else class="text-sm text-muted-foreground">—</span>
             </TableCell>
 
             <TableCell>

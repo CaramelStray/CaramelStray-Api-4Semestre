@@ -917,8 +917,6 @@ COPY public.tb_cad_ativo (codigo, codigo_catalogo_ativo, numero_serie, lote, des
 --
 
 COPY public.tb_cad_ativo_estoque (codigo_catalogo_ativo, quantidade) FROM stdin;
-
-
 \.
 COPY public.tb_srv_ordem_servico (codigo, codigo_cliente, codigo_funcionario, codigo_software_instalado, codigo_contrato, codigo_maquina_contrato, status, criticidade, data_abertura, data_agendamento, data_inicio_execucao, data_fim_execucao, observacao_geral) FROM stdin;
 \.

@@ -27,8 +27,6 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 
 ## 📋 Backlog do Produto <a id="backlog"></a>
 
-## Backlog
-
 # Backlog do Produto — Sistema de Gestão de Manutenções
 
 **Parceiro:** Altave  

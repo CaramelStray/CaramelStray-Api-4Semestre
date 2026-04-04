@@ -37,13 +37,14 @@ const data = {
     { title: "Mapa", url: "/mapa", icon: Map },
     { title: "Manutenção", url: "/manutencao", icon: Wrench },
     { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
-  ],
-  navCadastros: [
     { title: "Clientes", url: "/clientes", icon: Users },
     { title: "Máquinas", url: "/maquinas", icon: Bot },
     { title: "Técnicos", url: "/tecnicos", icon: UserCog },
     { title: "Sistemas", url: "/softwares", icon: Monitor },
     { title: "Contratos", url: "/contratos", icon: FileText },
+  ],
+  navCatalogo: [
+    { title: "Sistemas", url: "/softwares", icon: Monitor },
   ],
   navConfig: [
     { title: "Configurações", url: "/configuracoes", icon: Settings2 },
@@ -69,7 +70,7 @@ const data = {
     </div>
 
       <NavMain label="Geral" :items="data.navGeral" />
-      <NavMain label="Cadastros" :items="data.navCadastros" />
+      <NavMain label="Catálogo" :items="data.navCatalogo" />
       <NavMain label="" :items="data.navConfig" />
 
     </SidebarContent>

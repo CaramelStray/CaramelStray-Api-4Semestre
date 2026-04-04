@@ -3,7 +3,7 @@ import type { SidebarProps } from '@/components/ui/sidebar'
 import {
   LayoutDashboard, Map, Wrench, ClipboardList,
   Users, Bot, UserCog, FileText,
-  Settings2, GalleryVerticalEnd, Plus, Monitor
+  Settings2, GalleryVerticalEnd, Plus, Monitor, Award
 } from "lucide-vue-next"
 
 import NavMain from '@/components/NavMain.vue'
@@ -37,14 +37,17 @@ const data = {
     { title: "Mapa", url: "/mapa", icon: Map },
     { title: "Manutenção", url: "/manutencao", icon: Wrench },
     { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
+
+  ],
+    navCadastros: [
     { title: "Clientes", url: "/clientes", icon: Users },
     { title: "Máquinas", url: "/maquinas", icon: Bot },
     { title: "Técnicos", url: "/tecnicos", icon: UserCog },
-    { title: "Sistemas", url: "/softwares", icon: Monitor },
     { title: "Contratos", url: "/contratos", icon: FileText },
   ],
   navCatalogo: [
     { title: "Sistemas", url: "/softwares", icon: Monitor },
+    { title: "Habilidades", url: "/habilidades", icon: Award },
   ],
   navConfig: [
     { title: "Configurações", url: "/configuracoes", icon: Settings2 },
@@ -70,7 +73,8 @@ const data = {
     </div>
 
       <NavMain label="Geral" :items="data.navGeral" />
-      <NavMain label="Catálogo" :items="data.navCatalogo" />
+      <NavMain label="Cadastros" :items="data.navCadastros" />
+      <NavMain label="Catálogos" :items="data.navCatalogo" />
       <NavMain label="" :items="data.navConfig" />
 
     </SidebarContent>

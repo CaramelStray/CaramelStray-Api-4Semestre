@@ -14,6 +14,9 @@ public class TecnicoResponseDTO {
     private String telefone;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private String certificacao;
+    private String estado;
+    private String disponibilidade;
 
     public static TecnicoResponseDTO fromEntity(Tecnico tecnico) {
         TecnicoResponseDTO dto = new TecnicoResponseDTO();
@@ -26,6 +29,9 @@ public class TecnicoResponseDTO {
         dto.setTelefone(tecnico.getTelefone());
         dto.setLatitude(tecnico.getLatitude());
         dto.setLongitude(tecnico.getLongitude());
+        dto.setCertificacao(tecnico.getCertificacao());
+        dto.setEstado(tecnico.getEstado());
+        dto.setDisponibilidade(tecnico.getDisponibilidade());
         return dto;
     }
 
@@ -101,5 +107,29 @@ public class TecnicoResponseDTO {
 
     public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
+    }
+
+    public String getCertificacao() {
+        return certificacao;
+    }
+
+    public void setCertificacao(String certificacao) {
+        this.certificacao = certificacao;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getDisponibilidade() {
+        return disponibilidade;
+    }
+
+    public void setDisponibilidade(String disponibilidade) {
+        this.disponibilidade = disponibilidade;
     }
 }

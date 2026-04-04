@@ -28,11 +28,21 @@ public class Tecnico {
     @Column(name = "telefone", length = 30)
     private String telefone;
 
+    @Column(name = "certificacao", length = 255)
+    private String certificacao;
+
+    @Column(name = "estado", length = 100)
+    private String estado;
+
+    @Column(name = "disponibilidade", length = 100)
+    private String disponibilidade;
+
     @Column(name = "latitude", precision = 10, scale = 6)
     private BigDecimal latitude;
 
     @Column(name = "longitude", precision = 10, scale = 6)
     private BigDecimal longitude;
+
 
     public Integer getId() {
         return id;
@@ -97,4 +107,28 @@ public class Tecnico {
     public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
     }
+
+    public String getCertificacao() {
+        return certificacao;
+    }
+
+    public void setCertificacao(String certificacao) {
+        this.certificacao = certificacao;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getDisponibilidade() {
+        return disponibilidade;
+    }
+
+    public void setDisponibilidade(String disponibilidade) {
+        this.disponibilidade = disponibilidade;
+    }  
 }

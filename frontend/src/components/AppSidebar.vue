@@ -27,7 +27,7 @@ const data = {
   },
   teams: [
     {
-      name: "Altave Industrial",
+      name: "Altave",
       logo: GalleryVerticalEnd,
       plan: "Gestão de Ativos",
     },

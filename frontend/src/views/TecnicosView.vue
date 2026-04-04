@@ -64,21 +64,21 @@ const stats = computed(() => [
   },
   {
     label: 'Em Campo',
-    value: '—',
+    value: '0', // Seria necessário um campo 'status' no DTO futuramente
     sub: 'Ordens em andamento',
     icon: MapPin,
     color: 'text-green-400',
   },
   {
     label: 'Cert. Expirando',
-    value: '—',
+    value: '0',
     sub: 'Nos próximos 30 dias',
     icon: AlertTriangle,
     color: 'text-red-400',
   },
   {
     label: 'Disponíveis',
-    value: '—',
+    value: tecnicos.value.length.toString(),
     sub: 'Prontos para acionamento',
     icon: ShieldCheck,
     color: 'text-purple-400',
@@ -187,13 +187,29 @@ const filteredTecnicos = computed(() => {
               </div>
             </TableCell>
 
-            <TableCell class="text-sm font-normal text-foreground">{{ t.cargo ?? '—' }}</TableCell>
+            <TableCell class="text-sm font-normal text-foreground">
+              {{ t.cargo || 'Não informado' }}
+            </TableCell>
 
-            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
+            <TableCell class="text-sm font-normal text-muted-foreground">
+              <span v-if="t.certificacao" class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px]">
+                {{ t.certificacao }}
+              </span>
+              <span v-else class="text-muted-foreground/50">—</span>
+            </TableCell>
 
-            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
+            <TableCell>
+              <div class="flex items-center gap-2">
+                <div :class="['size-2 rounded-full', t.estado ? 'bg-emerald-500' : 'bg-slate-500']"></div>
+                <span class="text-xs font-medium uppercase tracking-wider text-foreground">
+                  {{ t.estado || 'Indisponível' }}
+                </span>
+              </div>
+            </TableCell>
 
-            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
+            <TableCell class="text-sm font-normal text-muted-foreground">
+              {{ t.disponibilidade || 'Não informada' }}
+            </TableCell>
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">

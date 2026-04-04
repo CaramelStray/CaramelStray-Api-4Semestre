@@ -10,6 +10,9 @@ export interface TecnicoResponseDTO {
   telefone: string
   latitude: number
   longitude: number
+  certificacao: string | null
+  estado: string | null
+  disponibilidade: string | null
 }
 
 export interface TecnicoCreateDTO {

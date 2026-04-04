@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Plus, Trash2, ChevronRight, Building2, Users, ArrowRight } from 'lucide-vue-next'
+import { clienteService } from '@/services/clienteService'
 
 const emit = defineEmits(['fechar'])
 
@@ -89,7 +90,11 @@ const form = useForm({
   }
 })
 
-const { fields, push, remove } = useFieldArray('contatos')
+watch(() => form.errors.value, (errors) => {
+  console.log('Erros atuais do formulário:', errors)
+}, { deep: true })
+
+const { fields, push, remove } = useFieldArray<{ nome: string; email: string; telefone: string }>('contatos')
 
 watch(() => form.values.internacional, () => {
   form.setFieldValue('documento', ''); 
@@ -111,10 +116,58 @@ const nextStep = async () => {
   }
 }
 
-const onSubmit = form.handleSubmit((values) => {
-  console.log('Dados prontos para envio:', values)
-  emit('fechar')
+const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
+  try {
+    await clienteService.criar({
+      nomeEmpresa: values.nomeEmpresa,
+      documento: values.documento,
+      emailContato: values.email,      
+      telefoneContato: values.telefone, 
+      nomeResponsavel: values.responsavel,
+      pais: values.pais,
+      estadoRegiao: values.estado,
+      cidade: values.cidade,
+      fusoHorario: values.fusoHorario,
+      rua: values.rua,              
+      numero: values.numero,       
+      internacional: values.internacional,
+      observacao: values.observacoes,
+      ativo: true
+    })
+
+    // Feedback e Reset
+    alert('Cliente cadastrado com sucesso!')
+    resetForm()
+    step.value = 1
+    emit('fechar')
+
+    } catch (error: any) {
+        console.error('Erro completo do servidor:', error.response?.data);
+
+        if (error.response?.status === 400 || error.response?.status === 409) {
+          // Extrai a mensagem de erro do backend (tenta vários caminhos comuns)
+          const data = error.response.data;
+          const msg = (data?.message || data?.error || JSON.stringify(data) || "").toLowerCase();
+          
+          // Verifica se o erro é de duplicidade
+          if (msg.includes('documento') || msg.includes('cnpj') || msg.includes('already exists')) {
+            form.setFieldError('documento', 'Este documento já está cadastrado no sistema.')
+            step.value = 1 // Volta para o passo 1 para o usuário ver o erro
+          } 
+          else if (msg.includes('email') || msg.includes('e-mail')) {
+            form.setFieldError('email', 'Este e-mail já está em uso por outro cliente.')
+            step.value = 1
+          } 
+          else {
+            // Se for outro erro de validação (ex: campo obrigatório que faltou)
+            alert('Erro na validação: ' + (data?.message || 'Verifique os dados informados.'))
+          }
+        } else {
+          alert('Ocorreu um erro de conexão com o servidor.')
+        }
+      }
 })
+
 </script>
 
 <template>

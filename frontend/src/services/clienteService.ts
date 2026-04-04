@@ -28,16 +28,20 @@ export interface ClienteResponseDTO {
 // Estrutura de dados para enviar ao criar um novo cliente (campos opcionais com ?)
 export interface ClienteCreateDTO {
   nomeEmpresa: string
-  documento?: string
-  emailContato?: string
-  telefoneContato?: string
-  nomeResponsavel?: string
-  pais?: string
-  estadoRegiao?: string
-  cidade?: string
+  documento: string
+  emailContato: string
+  telefoneContato: string
+  nomeResponsavel: string
+  pais: string
+  estadoRegiao: string
+  cidade: string
+  fusoHorario: string
+  ativo: boolean
+  rua: string      
+  numero: string  
+  internacional: boolean 
+  observacao?: string
   classificacaoDistancia?: string
-  fusoHorario?: string
-  ativo?: boolean
 }
 
 import { apiFetch } from './api'

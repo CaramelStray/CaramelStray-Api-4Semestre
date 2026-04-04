@@ -25,4 +25,7 @@ public class TecnicoCreateDTO {
     private String telefone;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private String certificacao;
+    private String estado;
+    private String disponibilidade;
 }

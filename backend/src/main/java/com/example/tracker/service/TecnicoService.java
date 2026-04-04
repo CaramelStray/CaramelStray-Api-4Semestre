@@ -47,6 +47,9 @@ public class TecnicoService {
         novoTecnico.setTelefone(limpar(dto.getTelefone()));
         novoTecnico.setLatitude(dto.getLatitude());
         novoTecnico.setLongitude(dto.getLongitude());
+        novoTecnico.setCertificacao(limpar(dto.getCertificacao()));
+        novoTecnico.setEstado(limpar(dto.getEstado()));
+        novoTecnico.setDisponibilidade(limpar(dto.getDisponibilidade()));
 
         return tecnicoRepository.save(novoTecnico);
     }
@@ -90,6 +93,9 @@ public class TecnicoService {
         tecnico.setTelefone(limpar(dto.getTelefone()));
         tecnico.setLatitude(dto.getLatitude());
         tecnico.setLongitude(dto.getLongitude());
+        tecnico.setCertificacao(limpar(dto.getCertificacao()));
+        tecnico.setEstado(limpar(dto.getEstado()));
+        tecnico.setDisponibilidade(limpar(dto.getDisponibilidade()));
 
         return tecnicoRepository.save(tecnico);
     }

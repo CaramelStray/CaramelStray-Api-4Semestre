@@ -48,6 +48,7 @@ const data = {
   navCatalogo: [
     { title: "Sistemas", url: "/softwares", icon: Monitor },
     { title: "Habilidades", url: "/habilidades", icon: Award },
+    { title: "Máquinas", url: "/catalogo-maquinas", icon: Award },
   ],
   navConfig: [
     { title: "Configurações", url: "/configuracoes", icon: Settings2 },

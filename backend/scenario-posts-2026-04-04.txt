@@ -1,0 +1,295 @@
+============================================================
+TITLE: LOGIN ADMIN
+ENDPOINT: /auth/login
+STATUS: 200
+BODY:
+{"email":"admin@tracker.com","password":"123456"}
+RESPONSE:
+{"email":"admin@tracker.com","auth":"ROLE_ADMIN","token":"eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20uZXhhbXBsZS50cmFja2VyIiwic3ViIjoiYWRtaW5AdHJhY2tlci5jb20iLCJhdXRob3JpdGllcyI6WyJST0xFX0FETUlOIl0sImV4cCI6MTc3NTM0ODY5OH0.KXGPKXxoV-P0qZ0-GprPI-B3ZRHCk7DdRiSTRwBZ1uM"}
+
+============================================================
+TITLE: CREATE CATALOGO MAQUINA (RECURSO COMPARTILHADO)
+ENDPOINT: /catalogo-maquinas
+STATUS: 201
+BODY:
+{
+  "descricao": "SCENARIO-MAQ-UNICA-2026-04-04",
+  "especificacao": "Modelo compartilhado para cenarios de contratos distintos",
+  "limiteManutencao": "A cada 180 dias",
+  "checklistPadrao": [
+    {"descricao": "Verificar aterramento"},
+    {"descricao": "Conferir alinhamento dos sensores"}
+  ]
+}
+RESPONSE:
+{"codigo":12,"descricao":"SCENARIO-MAQ-UNICA-2026-04-04","especificacao":"Modelo compartilhado para cenarios de contratos distintos","limiteManutencao":"A cada 180 dias","quantidadeChecklistPadrao":2,"checklistPadrao":[{"tarefaId":24,"descricao":"Verificar aterramento","categoria":"MAQUINA"},{"tarefaId":25,"descricao":"Conferir alinhamento dos sensores","categoria":"MAQUINA"}]}
+
+============================================================
+TITLE: CREATE CATALOGO SOFTWARE (RECURSO COMPARTILHADO)
+ENDPOINT: /catalogo-softwares
+STATUS: 201
+BODY:
+{
+  "nomeSoftware": "SCENARIO-SW-UNICO",
+  "versao": "1.0.0",
+  "tipo": "MONITORAMENTO",
+  "desenvolvedorFornecedor": "Equipe Tracker",
+  "urlDocumentacao": "https://tracker.local/docs/scenario-sw-unico",
+  "descricaoTecnica": "Software compartilhado para cenarios",
+  "ativo": true,
+  "checklistPadrao": [
+    {"descricao": "Validar comunicacao com o backend"},
+    {"descricao": "Executar sincronizacao inicial"}
+  ]
+}
+RESPONSE:
+{"id":16,"identificador":"SW-0016","status":"Ativo","nomeSoftware":"SCENARIO-SW-UNICO","versao":"1.0.0","tipo":"MONITORAMENTO","desenvolvedorFornecedor":"Equipe Tracker","urlDocumentacao":"https://tracker.local/docs/scenario-sw-unico","descricaoTecnica":"Software compartilhado para cenarios","ativo":true,"quantidadeChecklistPadrao":2,"quantidadeItensObrigatorios":0,"dataCadastro":null,"checklistPadrao":[{"tarefaId":27,"descricao":"Executar sincronizacao inicial","categoria":"SOFTWARE","obrigatorio":false},{"tarefaId":26,"descricao":"Validar comunicacao com o backend","categoria":"SOFTWARE","obrigatorio":false}]}
+
+============================================================
+TITLE: CENARIO A - CREATE CLIENTE A1
+ENDPOINT: /clientes
+STATUS: 201
+BODY:
+{
+  "nomeEmpresa": "Scenario Cliente A1",
+  "documento": "A1-0001",
+  "emailContato": "scenario.a1@tracker.com",
+  "telefoneContato": "+55-11-4000-1001",
+  "nomeResponsavel": "Responsavel A1",
+  "pais": "Brasil",
+  "estadoRegiao": "SP",
+  "cidade": "Sao Paulo",
+  "classificacaoDistancia": "PERTO",
+  "fusoHorario": "America/Sao_Paulo",
+  "ativo": true,
+  "observacao": "Cenario A cliente 1",
+  "rua": "Rua A1",
+  "numero": "101",
+  "internacional": false
+}
+RESPONSE:
+{"id":16,"nomeEmpresa":"Scenario Cliente A1","documento":"A1-0001","emailContato":"scenario.a1@tracker.com","telefoneContato":"+55-11-4000-1001","nomeResponsavel":"Responsavel A1","pais":"Brasil","estadoRegiao":"SP","cidade":"Sao Paulo","classificacaoDistancia":"PERTO","fusoHorario":"America/Sao_Paulo","ativo":true,"observacao":"Cenario A cliente 1","rua":"Rua A1","numero":"101","internacional":false,"dataCadastro":null,"contratos":null}
+
+============================================================
+TITLE: CENARIO A - CREATE CLIENTE A2
+ENDPOINT: /clientes
+STATUS: 201
+BODY:
+{
+  "nomeEmpresa": "Scenario Cliente A2",
+  "documento": "A2-0001",
+  "emailContato": "scenario.a2@tracker.com",
+  "telefoneContato": "+55-11-4000-1002",
+  "nomeResponsavel": "Responsavel A2",
+  "pais": "Brasil",
+  "estadoRegiao": "RJ",
+  "cidade": "Rio de Janeiro",
+  "classificacaoDistancia": "MEDIO",
+  "fusoHorario": "America/Sao_Paulo",
+  "ativo": true,
+  "observacao": "Cenario A cliente 2",
+  "rua": "Rua A2",
+  "numero": "202",
+  "internacional": false
+}
+RESPONSE:
+{"id":17,"nomeEmpresa":"Scenario Cliente A2","documento":"A2-0001","emailContato":"scenario.a2@tracker.com","telefoneContato":"+55-11-4000-1002","nomeResponsavel":"Responsavel A2","pais":"Brasil","estadoRegiao":"RJ","cidade":"Rio de Janeiro","classificacaoDistancia":"MEDIO","fusoHorario":"America/Sao_Paulo","ativo":true,"observacao":"Cenario A cliente 2","rua":"Rua A2","numero":"202","internacional":false,"dataCadastro":null,"contratos":null}
+
+============================================================
+TITLE: CENARIO A - CREATE CONTRATO A1
+ENDPOINT: /contratos
+STATUS: 201
+BODY:
+{"codigoCliente":16,"dataInicio":"2026-04-04","dataFim":"2027-04-04","status":"ATIVO","periodoManutencaoPreventiva":120,"conexaoInternet":true,"vencimentoManutencaoPreventiva":"2026-08-02"}
+RESPONSE:
+{"codigo":12,"dataInicio":"2026-04-04","dataFim":"2027-04-04","status":"ATIVO","periodoManutencaoPreventiva":120,"conexaoInternet":true,"vencimentoManutencaoPreventiva":"2026-08-02"}
+
+============================================================
+TITLE: CENARIO A - CREATE CONTRATO A2
+ENDPOINT: /contratos
+STATUS: 201
+BODY:
+{"codigoCliente":17,"dataInicio":"2026-04-04","dataFim":"2027-04-04","status":"ATIVO","periodoManutencaoPreventiva":120,"conexaoInternet":true,"vencimentoManutencaoPreventiva":"2026-08-02"}
+RESPONSE:
+{"codigo":13,"dataInicio":"2026-04-04","dataFim":"2027-04-04","status":"ATIVO","periodoManutencaoPreventiva":120,"conexaoInternet":true,"vencimentoManutencaoPreventiva":"2026-08-02"}
+
+============================================================
+TITLE: CENARIO A - CREATE MAQUINA_CONTRATO A1
+ENDPOINT: /maquinas-contrato
+STATUS: 201
+BODY:
+{"codigoContrato":12,"codigoCatalogoMaquina":12,"numeroSerie":"A1-SN-20260404","dataInstalacao":"2026-04-04","manutencaoFeita":"NAO","trabalhoEmAltura":false,"latitude":-23.550520,"longitude":-46.633308}
+RESPONSE:
+{"codigo":12,"codigoContrato":12,"codigoCatalogoMaquina":12,"numeroSerie":"A1-SN-20260404","dataInstalacao":"2026-04-04","manutencaoFeita":"NAO","trabalhoEmAltura":false,"latitude":-23.550520,"longitude":-46.633308}
+
+============================================================
+TITLE: CENARIO A - CREATE MAQUINA_CONTRATO A2
+ENDPOINT: /maquinas-contrato
+STATUS: 201
+BODY:
+{"codigoContrato":13,"codigoCatalogoMaquina":12,"numeroSerie":"A2-SN-20260404","dataInstalacao":"2026-04-04","manutencaoFeita":"NAO","trabalhoEmAltura":false,"latitude":-22.906847,"longitude":-43.172897}
+RESPONSE:
+{"codigo":13,"codigoContrato":13,"codigoCatalogoMaquina":12,"numeroSerie":"A2-SN-20260404","dataInstalacao":"2026-04-04","manutencaoFeita":"NAO","trabalhoEmAltura":false,"latitude":-22.906847,"longitude":-43.172897}
+
+============================================================
+TITLE: CENARIO A - CREATE SOFTWARE_INSTALADO A1
+ENDPOINT: /maquinas-softwares-instalados
+STATUS: 201
+BODY:
+{"codigoMaquinaContrato":12,"codigoSoftware":16,"chaveLicenca":"LIC-A1-20260404","versaoInstalada":"1.0.0"}
+RESPONSE:
+{"codigo":12,"codigoMaquinaContrato":12,"codigoSoftware":16,"chaveLicenca":"LIC-A1-20260404","versaoInstalada":"1.0.0"}
+
+============================================================
+TITLE: CENARIO A - CREATE SOFTWARE_INSTALADO A2
+ENDPOINT: /maquinas-softwares-instalados
+STATUS: 201
+BODY:
+{"codigoMaquinaContrato":13,"codigoSoftware":16,"chaveLicenca":"LIC-A2-20260404","versaoInstalada":"1.0.0"}
+RESPONSE:
+{"codigo":13,"codigoMaquinaContrato":13,"codigoSoftware":16,"chaveLicenca":"LIC-A2-20260404","versaoInstalada":"1.0.0"}
+
+============================================================
+TITLE: CENARIO B - CREATE CLIENTE B
+ENDPOINT: /clientes
+STATUS: 201
+BODY:
+{
+  "nomeEmpresa": "Scenario Cliente B MultiContrato",
+  "documento": "B-0001",
+  "emailContato": "scenario.b@tracker.com",
+  "telefoneContato": "+55-11-4000-2001",
+  "nomeResponsavel": "Responsavel B",
+  "pais": "Brasil",
+  "estadoRegiao": "MG",
+  "cidade": "Belo Horizonte",
+  "classificacaoDistancia": "LONGE",
+  "fusoHorario": "America/Sao_Paulo",
+  "ativo": true,
+  "observacao": "Cliente com dois contratos e stack igual",
+  "rua": "Rua B",
+  "numero": "303",
+  "internacional": false
+}
+RESPONSE:
+{"id":18,"nomeEmpresa":"Scenario Cliente B MultiContrato","documento":"B-0001","emailContato":"scenario.b@tracker.com","telefoneContato":"+55-11-4000-2001","nomeResponsavel":"Responsavel B","pais":"Brasil","estadoRegiao":"MG","cidade":"Belo Horizonte","classificacaoDistancia":"LONGE","fusoHorario":"America/Sao_Paulo","ativo":true,"observacao":"Cliente com dois contratos e stack igual","rua":"Rua B","numero":"303","internacional":false,"dataCadastro":null,"contratos":null}
+
+============================================================
+TITLE: CENARIO B - CREATE CONTRATO B1
+ENDPOINT: /contratos
+STATUS: 201
+BODY:
+{"codigoCliente":18,"dataInicio":"2026-04-04","dataFim":"2026-12-31","status":"ATIVO","periodoManutencaoPreventiva":90,"conexaoInternet":true,"vencimentoManutencaoPreventiva":"2026-07-03"}
+RESPONSE:
+{"codigo":14,"dataInicio":"2026-04-04","dataFim":"2026-12-31","status":"ATIVO","periodoManutencaoPreventiva":90,"conexaoInternet":true,"vencimentoManutencaoPreventiva":"2026-07-03"}
+
+============================================================
+TITLE: CENARIO B - CREATE CONTRATO B2
+ENDPOINT: /contratos
+STATUS: 201
+BODY:
+{"codigoCliente":18,"dataInicio":"2026-05-01","dataFim":"2027-05-01","status":"ATIVO","periodoManutencaoPreventiva":90,"conexaoInternet":true,"vencimentoManutencaoPreventiva":"2026-07-30"}
+RESPONSE:
+{"codigo":15,"dataInicio":"2026-05-01","dataFim":"2027-05-01","status":"ATIVO","periodoManutencaoPreventiva":90,"conexaoInternet":true,"vencimentoManutencaoPreventiva":"2026-07-30"}
+
+============================================================
+TITLE: CENARIO B - CREATE MAQUINA_CONTRATO B1
+ENDPOINT: /maquinas-contrato
+STATUS: 201
+BODY:
+{"codigoContrato":14,"codigoCatalogoMaquina":12,"numeroSerie":"B1-SN-20260404","dataInstalacao":"2026-04-04","manutencaoFeita":"SIM","trabalhoEmAltura":true,"latitude":-19.916681,"longitude":-43.934493}
+RESPONSE:
+{"codigo":14,"codigoContrato":14,"codigoCatalogoMaquina":12,"numeroSerie":"B1-SN-20260404","dataInstalacao":"2026-04-04","manutencaoFeita":"SIM","trabalhoEmAltura":true,"latitude":-19.916681,"longitude":-43.934493}
+
+============================================================
+TITLE: CENARIO B - CREATE MAQUINA_CONTRATO B2
+ENDPOINT: /maquinas-contrato
+STATUS: 201
+BODY:
+{"codigoContrato":15,"codigoCatalogoMaquina":12,"numeroSerie":"B2-SN-20260404","dataInstalacao":"2026-05-01","manutencaoFeita":"SIM","trabalhoEmAltura":true,"latitude":-19.916681,"longitude":-43.934493}
+RESPONSE:
+{"codigo":15,"codigoContrato":15,"codigoCatalogoMaquina":12,"numeroSerie":"B2-SN-20260404","dataInstalacao":"2026-05-01","manutencaoFeita":"SIM","trabalhoEmAltura":true,"latitude":-19.916681,"longitude":-43.934493}
+
+============================================================
+TITLE: CENARIO B - CREATE SOFTWARE_INSTALADO B1
+ENDPOINT: /maquinas-softwares-instalados
+STATUS: 201
+BODY:
+{"codigoMaquinaContrato":14,"codigoSoftware":16,"chaveLicenca":"LIC-B1-20260404","versaoInstalada":"1.0.0"}
+RESPONSE:
+{"codigo":14,"codigoMaquinaContrato":14,"codigoSoftware":16,"chaveLicenca":"LIC-B1-20260404","versaoInstalada":"1.0.0"}
+
+============================================================
+TITLE: CENARIO B - CREATE SOFTWARE_INSTALADO B2
+ENDPOINT: /maquinas-softwares-instalados
+STATUS: 201
+BODY:
+{"codigoMaquinaContrato":15,"codigoSoftware":16,"chaveLicenca":"LIC-B2-20260404","versaoInstalada":"1.0.0"}
+RESPONSE:
+{"codigo":15,"codigoMaquinaContrato":15,"codigoSoftware":16,"chaveLicenca":"LIC-B2-20260404","versaoInstalada":"1.0.0"}
+
+============================================================
+TITLE: EXTRA - CREATE CATALOGO SOFTWARE 2
+ENDPOINT: /catalogo-softwares
+STATUS: 201
+BODY:
+{
+  "nomeSoftware": "SCENARIO-SW-SECUNDARIO",
+  "versao": "2.0.1",
+  "tipo": "SEGURANCA",
+  "desenvolvedorFornecedor": "Equipe Tracker",
+  "urlDocumentacao": "https://tracker.local/docs/scenario-sw-secundario",
+  "descricaoTecnica": "Software adicional para teste de multiplos softwares",
+  "ativo": true,
+  "checklistPadrao": [
+    {"descricao": "Validar politica de senha"}
+  ]
+}
+RESPONSE:
+{"id":17,"identificador":"SW-0017","status":"Ativo","nomeSoftware":"SCENARIO-SW-SECUNDARIO","versao":"2.0.1","tipo":"SEGURANCA","desenvolvedorFornecedor":"Equipe Tracker","urlDocumentacao":"https://tracker.local/docs/scenario-sw-secundario","descricaoTecnica":"Software adicional para teste de multiplos softwares","ativo":true,"quantidadeChecklistPadrao":1,"quantidadeItensObrigatorios":0,"dataCadastro":null,"checklistPadrao":[{"tarefaId":28,"descricao":"Validar politica de senha","categoria":"SOFTWARE","obrigatorio":false}]}
+
+============================================================
+TITLE: EXTRA - CREATE SOFTWARE_INSTALADO ADICIONAL (MESMA MAQUINA_CONTRATO)
+ENDPOINT: /maquinas-softwares-instalados
+STATUS: 201
+BODY:
+{"codigoMaquinaContrato":14,"codigoSoftware":17,"chaveLicenca":"LIC-B1-ALT-20260404","versaoInstalada":"2.0.1"}
+RESPONSE:
+{"codigo":16,"codigoMaquinaContrato":14,"codigoSoftware":17,"chaveLicenca":"LIC-B1-ALT-20260404","versaoInstalada":"2.0.1"}
+
+============================================================
+TITLE: EXTRA - CREATE MAQUINA_CONTRATO ADICIONAL (MESMO CONTRATO)
+ENDPOINT: /maquinas-contrato
+STATUS: 201
+BODY:
+{"codigoContrato":14,"codigoCatalogoMaquina":12,"numeroSerie":"B1-SN-EXTRA-20260404","dataInstalacao":"2026-04-05","manutencaoFeita":"NAO","trabalhoEmAltura":false,"latitude":-19.920000,"longitude":-43.940000}
+RESPONSE:
+{"codigo":16,"codigoContrato":14,"codigoCatalogoMaquina":12,"numeroSerie":"B1-SN-EXTRA-20260404","dataInstalacao":"2026-04-05","manutencaoFeita":"NAO","trabalhoEmAltura":false,"latitude":-19.920000,"longitude":-43.940000}
+
+============================================================
+TITLE: EXTRA - CREATE SOFTWARE_INSTALADO PARA MAQUINA EXTRA
+ENDPOINT: /maquinas-softwares-instalados
+STATUS: 201
+BODY:
+{"codigoMaquinaContrato":16,"codigoSoftware":16,"chaveLicenca":"LIC-B1-EXTRA-20260404","versaoInstalada":"1.0.0"}
+RESPONSE:
+{"codigo":17,"codigoMaquinaContrato":16,"codigoSoftware":16,"chaveLicenca":"LIC-B1-EXTRA-20260404","versaoInstalada":"1.0.0"}
+
+============================================================
+RESUMO IDS CRIADOS
+CAT_MAQ_ID=12
+CAT_SW_ID=16
+CAT_SW2_ID=17
+CLIENTE_A1_ID=16
+CLIENTE_A2_ID=17
+CLIENTE_B_ID=18
+CONTRATO_A1_ID=12
+CONTRATO_A2_ID=13
+CONTRATO_B1_ID=14
+CONTRATO_B2_ID=15
+MAQ_CONT_A1_ID=12
+MAQ_CONT_A2_ID=13
+MAQ_CONT_B1_ID=14
+MAQ_CONT_B2_ID=15
+MAQ_CONT_EXTRA_ID=16
+ARQUIVO_RELATORIO=/tmp/scenario-posts-2026-04-04.txt

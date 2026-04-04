@@ -20,9 +20,12 @@ public class MaquinaHistoricoManutencaoResponseDTO {
     public static MaquinaHistoricoManutencaoResponseDTO fromEntity(MaquinaHistoricoManutencao entity) {
         MaquinaHistoricoManutencaoResponseDTO dto = new MaquinaHistoricoManutencaoResponseDTO();
         dto.setCodigo(entity.getCodigo());
-        dto.setCodigoMaquinaContrato(entity.getCodigoMaquinaContrato());
-        dto.setCodigoSoftwareInstalado(entity.getCodigoSoftwareInstalado());
-        dto.setCodigoTipoManutencao(entity.getCodigoTipoManutencao());
+        dto.setCodigoMaquinaContrato(
+                entity.getMaquinaContrato() != null ? entity.getMaquinaContrato().getCodigo() : null);
+        dto.setCodigoSoftwareInstalado(
+                entity.getSoftwareInstalado() != null ? entity.getSoftwareInstalado().getCodigo() : null);
+        dto.setCodigoTipoManutencao(
+                entity.getTipoManutencao() != null ? entity.getTipoManutencao().getCodigo() : null);
         dto.setStatus(entity.getStatus());
         dto.setCriticidade(entity.getCriticidade());
         dto.setVencimento(entity.getVencimento());

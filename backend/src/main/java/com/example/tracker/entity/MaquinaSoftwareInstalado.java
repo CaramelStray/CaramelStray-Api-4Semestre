@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,11 +18,13 @@ public class MaquinaSoftwareInstalado {
     @Column(name = "codigo")
     private Integer codigo;
 
-    @Column(name = "codigo_maquina_contrato", nullable = false)
-    private Integer codigoMaquinaContrato;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "codigo_maquina_contrato", nullable = false)
+    private MaquinaContrato maquinaContrato;
 
-    @Column(name = "codigo_software", nullable = false)
-    private Integer codigoSoftware;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "codigo_software", nullable = false)
+    private CatalogoSoftware software;
 
     @Column(name = "chave_licenca", length = 255)
     private String chaveLicenca;
@@ -36,20 +40,20 @@ public class MaquinaSoftwareInstalado {
         this.codigo = codigo;
     }
 
-    public Integer getCodigoMaquinaContrato() {
-        return codigoMaquinaContrato;
+    public MaquinaContrato getMaquinaContrato() {
+        return maquinaContrato;
     }
 
-    public void setCodigoMaquinaContrato(Integer codigoMaquinaContrato) {
-        this.codigoMaquinaContrato = codigoMaquinaContrato;
+    public void setMaquinaContrato(MaquinaContrato maquinaContrato) {
+        this.maquinaContrato = maquinaContrato;
     }
 
-    public Integer getCodigoSoftware() {
-        return codigoSoftware;
+    public CatalogoSoftware getSoftware() {
+        return software;
     }
 
-    public void setCodigoSoftware(Integer codigoSoftware) {
-        this.codigoSoftware = codigoSoftware;
+    public void setSoftware(CatalogoSoftware software) {
+        this.software = software;
     }
 
     public String getChaveLicenca() {

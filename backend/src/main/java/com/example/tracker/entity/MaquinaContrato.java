@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,11 +20,13 @@ public class MaquinaContrato {
     @Column(name = "codigo")
     private Integer codigo;
 
-    @Column(name = "codigo_contrato", nullable = false)
-    private Integer codigoContrato;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "codigo_contrato", nullable = false)
+    private Contrato contrato;
 
-    @Column(name = "codigo_catalogo_maquina", nullable = false)
-    private Integer codigoCatalogoMaquina;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "codigo_catalogo_maquina", nullable = false)
+    private CatalogoMaquina catalogoMaquina;
 
     @Column(name = "numero_serie")
     private String numeroSerie;
@@ -50,20 +54,20 @@ public class MaquinaContrato {
         this.codigo = codigo;
     }
 
-    public Integer getCodigoContrato() {
-        return codigoContrato;
+    public Contrato getContrato() {
+        return contrato;
     }
 
-    public void setCodigoContrato(Integer codigoContrato) {
-        this.codigoContrato = codigoContrato;
+    public void setContrato(Contrato contrato) {
+        this.contrato = contrato;
     }
 
-    public Integer getCodigoCatalogoMaquina() {
-        return codigoCatalogoMaquina;
+    public CatalogoMaquina getCatalogoMaquina() {
+        return catalogoMaquina;
     }
 
-    public void setCodigoCatalogoMaquina(Integer codigoCatalogoMaquina) {
-        this.codigoCatalogoMaquina = codigoCatalogoMaquina;
+    public void setCatalogoMaquina(CatalogoMaquina catalogoMaquina) {
+        this.catalogoMaquina = catalogoMaquina;
     }
 
     public String getNumeroSerie() {

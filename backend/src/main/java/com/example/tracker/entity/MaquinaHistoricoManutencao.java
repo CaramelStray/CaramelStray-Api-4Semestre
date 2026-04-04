@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -17,14 +19,17 @@ public class MaquinaHistoricoManutencao {
     @Column(name = "codigo")
     private Integer codigo;
 
-    @Column(name = "codigo_maquina_contrato", nullable = false)
-    private Integer codigoMaquinaContrato;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "codigo_maquina_contrato", nullable = false)
+    private MaquinaContrato maquinaContrato;
 
-    @Column(name = "codigo_software_instalado")
-    private Integer codigoSoftwareInstalado;
+    @ManyToOne
+    @JoinColumn(name = "codigo_software_instalado")
+    private MaquinaSoftwareInstalado softwareInstalado;
 
-    @Column(name = "codigo_tipo_manutencao", nullable = false)
-    private Integer codigoTipoManutencao;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "codigo_tipo_manutencao", nullable = false)
+    private TipoManutencao tipoManutencao;
 
     @Column(name = "status", length = 100)
     private String status;
@@ -55,28 +60,28 @@ public class MaquinaHistoricoManutencao {
         this.codigo = codigo;
     }
 
-    public Integer getCodigoMaquinaContrato() {
-        return codigoMaquinaContrato;
+    public MaquinaContrato getMaquinaContrato() {
+        return maquinaContrato;
     }
 
-    public void setCodigoMaquinaContrato(Integer codigoMaquinaContrato) {
-        this.codigoMaquinaContrato = codigoMaquinaContrato;
+    public void setMaquinaContrato(MaquinaContrato maquinaContrato) {
+        this.maquinaContrato = maquinaContrato;
     }
 
-    public Integer getCodigoSoftwareInstalado() {
-        return codigoSoftwareInstalado;
+    public MaquinaSoftwareInstalado getSoftwareInstalado() {
+        return softwareInstalado;
     }
 
-    public void setCodigoSoftwareInstalado(Integer codigoSoftwareInstalado) {
-        this.codigoSoftwareInstalado = codigoSoftwareInstalado;
+    public void setSoftwareInstalado(MaquinaSoftwareInstalado softwareInstalado) {
+        this.softwareInstalado = softwareInstalado;
     }
 
-    public Integer getCodigoTipoManutencao() {
-        return codigoTipoManutencao;
+    public TipoManutencao getTipoManutencao() {
+        return tipoManutencao;
     }
 
-    public void setCodigoTipoManutencao(Integer codigoTipoManutencao) {
-        this.codigoTipoManutencao = codigoTipoManutencao;
+    public void setTipoManutencao(TipoManutencao tipoManutencao) {
+        this.tipoManutencao = tipoManutencao;
     }
 
     public String getStatus() {

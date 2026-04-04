@@ -1,6 +1,8 @@
 package com.example.tracker.service;
 
 import com.example.tracker.dto.maquinasoftwareinstalado.MaquinaSoftwareInstaladoCreateDTO;
+import com.example.tracker.entity.CatalogoSoftware;
+import com.example.tracker.entity.MaquinaContrato;
 import com.example.tracker.entity.MaquinaSoftwareInstalado;
 import com.example.tracker.repository.CatalogoSoftwareRepository;
 import com.example.tracker.repository.MaquinaContratoRepository;
@@ -47,7 +49,7 @@ public class MaquinaSoftwareInstaladoServiceImpl implements MaquinaSoftwareInsta
     public List<MaquinaSoftwareInstalado> buscarPorMaquinaContrato(Integer codigoMaquinaContrato) {
         Integer codigoMaquinaContratoNaoNulo =
                 requireId(codigoMaquinaContrato, "Codigo da maquina do contrato e obrigatorio");
-        List<MaquinaSoftwareInstalado> itens = maquinaSoftwareInstaladoRepository.findByCodigoMaquinaContrato(
+        List<MaquinaSoftwareInstalado> itens = maquinaSoftwareInstaladoRepository.findByMaquinaContratoCodigo(
                 Objects.requireNonNull(codigoMaquinaContratoNaoNulo));
         if (itens.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum software instalado encontrado para a maquina");
@@ -60,7 +62,7 @@ public class MaquinaSoftwareInstaladoServiceImpl implements MaquinaSoftwareInsta
     public List<MaquinaSoftwareInstalado> buscarPorSoftware(Integer codigoSoftware) {
         Integer codigoSoftwareNaoNulo = requireId(codigoSoftware, "Codigo do software e obrigatorio");
         List<MaquinaSoftwareInstalado> itens =
-                maquinaSoftwareInstaladoRepository.findByCodigoSoftware(Objects.requireNonNull(codigoSoftwareNaoNulo));
+                maquinaSoftwareInstaladoRepository.findBySoftwareId(Objects.requireNonNull(codigoSoftwareNaoNulo));
         if (itens.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma instalacao encontrada para o software");
         }
@@ -109,18 +111,22 @@ public class MaquinaSoftwareInstaladoServiceImpl implements MaquinaSoftwareInsta
                 requireId(dto.getCodigoMaquinaContrato(), "Codigo da maquina do contrato e obrigatorio");
         Integer codigoSoftwareNaoNulo = requireId(dto.getCodigoSoftware(), "Codigo do software e obrigatorio");
 
-        if (!maquinaContratoRepository.existsById(Objects.requireNonNull(codigoMaquinaContratoNaoNulo))) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada");
-        }
-
-        if (!catalogoSoftwareRepository.existsById(Objects.requireNonNull(codigoSoftwareNaoNulo))) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Software de catalogo nao encontrado");
-        }
+        Objects.requireNonNull(codigoMaquinaContratoNaoNulo);
+        Objects.requireNonNull(codigoSoftwareNaoNulo);
     }
 
     private void mapearParaEntidade(MaquinaSoftwareInstaladoCreateDTO dto, MaquinaSoftwareInstalado entidade) {
-        entidade.setCodigoMaquinaContrato(dto.getCodigoMaquinaContrato());
-        entidade.setCodigoSoftware(dto.getCodigoSoftware());
+        Integer codigoMaquinaContratoNaoNulo =
+                requireId(dto.getCodigoMaquinaContrato(), "Codigo da maquina do contrato e obrigatorio");
+        Integer codigoSoftwareNaoNulo = requireId(dto.getCodigoSoftware(), "Codigo do software e obrigatorio");
+
+        MaquinaContrato maquinaContrato = maquinaContratoRepository.findById(Objects.requireNonNull(codigoMaquinaContratoNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada"));
+        CatalogoSoftware software = catalogoSoftwareRepository.findById(Objects.requireNonNull(codigoSoftwareNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Software de catalogo nao encontrado"));
+
+        entidade.setMaquinaContrato(maquinaContrato);
+        entidade.setSoftware(software);
         entidade.setChaveLicenca(dto.getChaveLicenca());
         entidade.setVersaoInstalada(dto.getVersaoInstalada());
     }

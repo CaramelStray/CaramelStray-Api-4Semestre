@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MaquinaSoftwareInstaladoRepository extends JpaRepository<MaquinaSoftwareInstalado, Integer> {
 
-    List<MaquinaSoftwareInstalado> findByCodigoMaquinaContrato(Integer codigoMaquinaContrato);
+    List<MaquinaSoftwareInstalado> findByMaquinaContratoCodigo(Integer codigoMaquinaContrato);
 
-    List<MaquinaSoftwareInstalado> findByCodigoSoftware(Integer codigoSoftware);
+    List<MaquinaSoftwareInstalado> findBySoftwareId(Integer codigoSoftware);
 }

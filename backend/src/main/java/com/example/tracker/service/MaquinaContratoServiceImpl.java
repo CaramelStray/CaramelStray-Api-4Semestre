@@ -1,6 +1,8 @@
 package com.example.tracker.service;
 
 import com.example.tracker.dto.maquinacontrato.MaquinaContratoCreateDTO;
+import com.example.tracker.entity.CatalogoMaquina;
+import com.example.tracker.entity.Contrato;
 import com.example.tracker.entity.MaquinaContrato;
 import com.example.tracker.repository.CatalogoMaquinaRepository;
 import com.example.tracker.repository.ContratoRepository;
@@ -48,7 +50,7 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
     public List<MaquinaContrato> buscarPorContrato(Integer codigoContrato) {
         Integer codigoContratoNaoNulo = requireId(codigoContrato, "Codigo do contrato e obrigatorio");
         List<MaquinaContrato> maquinas =
-                maquinaContratoRepository.findByCodigoContrato(Objects.requireNonNull(codigoContratoNaoNulo));
+                maquinaContratoRepository.findByContratoCodigo(Objects.requireNonNull(codigoContratoNaoNulo));
         if (maquinas.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma maquina encontrada para o contrato");
         }
@@ -60,7 +62,7 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
     public List<MaquinaContrato> buscarPorCatalogoMaquina(Integer codigoCatalogoMaquina) {
         Integer codigoCatalogoNaoNulo =
                 requireId(codigoCatalogoMaquina, "Codigo do catalogo de maquina e obrigatorio");
-        List<MaquinaContrato> maquinas = maquinaContratoRepository.findByCodigoCatalogoMaquina(
+        List<MaquinaContrato> maquinas = maquinaContratoRepository.findByCatalogoMaquinaCodigo(
                 Objects.requireNonNull(codigoCatalogoNaoNulo));
         if (maquinas.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma maquina encontrada para o catalogo informado");
@@ -71,9 +73,9 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
     @Override
     @Transactional
     public MaquinaContrato cadastrar(MaquinaContratoCreateDTO maquinaContratoDTO) {
-        validarEntrada(maquinaContratoDTO);
+        RelacoesMaquinaContrato relacoes = validarEntrada(maquinaContratoDTO);
         MaquinaContrato maquinaContrato = new MaquinaContrato();
-        mapearParaEntidade(maquinaContratoDTO, maquinaContrato);
+        mapearParaEntidade(maquinaContratoDTO, maquinaContrato, relacoes.contrato, relacoes.catalogoMaquina);
         return maquinaContratoRepository.save(maquinaContrato);
     }
 
@@ -81,11 +83,11 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
     @Transactional
     public MaquinaContrato atualizar(Integer id, MaquinaContratoCreateDTO maquinaContratoDTO) {
         Integer idNaoNulo = requireId(id, "Id da maquina do contrato e obrigatorio");
-        validarEntrada(maquinaContratoDTO);
+        RelacoesMaquinaContrato relacoes = validarEntrada(maquinaContratoDTO);
         MaquinaContrato maquinaContrato = maquinaContratoRepository.findById(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada"));
 
-        mapearParaEntidade(maquinaContratoDTO, maquinaContrato);
+        mapearParaEntidade(maquinaContratoDTO, maquinaContrato, relacoes.contrato, relacoes.catalogoMaquina);
         return maquinaContratoRepository.save(Objects.requireNonNull(maquinaContrato));
     }
 
@@ -99,7 +101,7 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
         maquinaContratoRepository.deleteById(Objects.requireNonNull(idNaoNulo));
     }
 
-    private void validarEntrada(MaquinaContratoCreateDTO dto) {
+    private RelacoesMaquinaContrato validarEntrada(MaquinaContratoCreateDTO dto) {
         if (dto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados da maquina do contrato sao obrigatorios");
         }
@@ -108,15 +110,13 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
         Integer codigoCatalogoNaoNulo =
                 requireId(dto.getCodigoCatalogoMaquina(), "Codigo do catalogo de maquina e obrigatorio");
 
-        if (!contratoRepository.existsById(Objects.requireNonNull(codigoContratoNaoNulo))) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrato nao encontrado");
-        }
-
-        if (!catalogoMaquinaRepository.existsById(Objects.requireNonNull(codigoCatalogoNaoNulo))) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Catalogo de maquina nao encontrado");
-        }
+        Contrato contrato = contratoRepository.findById(Objects.requireNonNull(codigoContratoNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrato nao encontrado"));
+        CatalogoMaquina catalogoMaquina = catalogoMaquinaRepository.findById(Objects.requireNonNull(codigoCatalogoNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Catalogo de maquina nao encontrado"));
 
         validarLatitudeLongitude(dto.getLatitude(), dto.getLongitude());
+        return new RelacoesMaquinaContrato(contrato, catalogoMaquina);
     }
 
     private void validarLatitudeLongitude(BigDecimal latitude, BigDecimal longitude) {
@@ -131,15 +131,22 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
         }
     }
 
-    private void mapearParaEntidade(MaquinaContratoCreateDTO dto, MaquinaContrato entidade) {
-        entidade.setCodigoContrato(dto.getCodigoContrato());
-        entidade.setCodigoCatalogoMaquina(dto.getCodigoCatalogoMaquina());
+    private void mapearParaEntidade(
+            MaquinaContratoCreateDTO dto,
+            MaquinaContrato entidade,
+            Contrato contrato,
+            CatalogoMaquina catalogoMaquina) {
+        entidade.setContrato(contrato);
+        entidade.setCatalogoMaquina(catalogoMaquina);
         entidade.setNumeroSerie(dto.getNumeroSerie());
         entidade.setDataInstalacao(dto.getDataInstalacao());
         entidade.setManutencaoFeita(dto.getManutencaoFeita());
         entidade.setTrabalhoEmAltura(dto.getTrabalhoEmAltura() != null ? dto.getTrabalhoEmAltura() : Boolean.FALSE);
         entidade.setLatitude(dto.getLatitude());
         entidade.setLongitude(dto.getLongitude());
+    }
+
+    private record RelacoesMaquinaContrato(Contrato contrato, CatalogoMaquina catalogoMaquina) {
     }
 
     private Integer requireId(Integer id, String mensagem) {

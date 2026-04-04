@@ -1,5 +1,6 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.catalogo.CatalogoMaquinaCreateDTO;
 import java.util.List;
 import com.example.tracker.entity.CatalogoMaquina;
 
@@ -9,9 +10,9 @@ public interface CatalogoMaquinaService {
 
     List<CatalogoMaquina> listarTodos();
 
-    CatalogoMaquina adicionar(CatalogoMaquina maquina);
+    CatalogoMaquina adicionar(CatalogoMaquinaCreateDTO dto);
 
-    CatalogoMaquina atualizar(Integer id, CatalogoMaquina maquina);
+    CatalogoMaquina atualizar(Integer id, CatalogoMaquinaCreateDTO dto);
 
     void remover(Integer id);
 }

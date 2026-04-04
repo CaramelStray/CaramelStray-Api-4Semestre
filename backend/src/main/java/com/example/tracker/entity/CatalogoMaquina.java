@@ -1,6 +1,16 @@
 package com.example.tracker.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_cad_catalogo_maquina")
@@ -19,6 +29,13 @@ public class CatalogoMaquina {
 
     @Column(name = "limite_manutencao")
     private String limiteManutencao;
+
+    @OneToMany(
+            mappedBy = "catalogoMaquina",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<CatalogoMaquinaChecklistPadrao> checklistPadrao = new ArrayList<>();
 
     public CatalogoMaquina() {
     }
@@ -59,5 +76,30 @@ public class CatalogoMaquina {
 
     public void setLimiteManutencao(String limiteManutencao) {
         this.limiteManutencao = limiteManutencao;
+    }
+
+    public List<CatalogoMaquinaChecklistPadrao> getChecklistPadrao() {
+        return checklistPadrao;
+    }
+
+    public void setChecklistPadrao(List<CatalogoMaquinaChecklistPadrao> checklistPadrao) {
+        limparChecklistPadrao();
+        if (checklistPadrao == null) {
+            return;
+        }
+        checklistPadrao.forEach(this::adicionarChecklistPadraoItem);
+    }
+
+    public void adicionarChecklistPadraoItem(CatalogoMaquinaChecklistPadrao item) {
+        if (item == null) {
+            return;
+        }
+        item.setCatalogoMaquina(this);
+        this.checklistPadrao.add(item);
+    }
+
+    public void limparChecklistPadrao() {
+        this.checklistPadrao.forEach(item -> item.setCatalogoMaquina(null));
+        this.checklistPadrao.clear();
     }
 }

@@ -19,8 +19,12 @@ public class MaquinaContratoResponseDTO {
     public static MaquinaContratoResponseDTO fromEntity(MaquinaContrato maquinaContrato) {
         MaquinaContratoResponseDTO dto = new MaquinaContratoResponseDTO();
         dto.setCodigo(maquinaContrato.getCodigo());
-        dto.setCodigoContrato(maquinaContrato.getCodigoContrato());
-        dto.setCodigoCatalogoMaquina(maquinaContrato.getCodigoCatalogoMaquina());
+        if (maquinaContrato.getContrato() != null) {
+            dto.setCodigoContrato(maquinaContrato.getContrato().getCodigo());
+        }
+        if (maquinaContrato.getCatalogoMaquina() != null) {
+            dto.setCodigoCatalogoMaquina(maquinaContrato.getCatalogoMaquina().getCodigo());
+        }
         dto.setNumeroSerie(maquinaContrato.getNumeroSerie());
         dto.setDataInstalacao(maquinaContrato.getDataInstalacao());
         dto.setManutencaoFeita(maquinaContrato.getManutencaoFeita());

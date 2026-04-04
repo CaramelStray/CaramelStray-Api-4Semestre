@@ -423,6 +423,9 @@ CREATE TABLE public.tb_cad_funcionario (
     cpf character varying(20),
     cargo character varying(100),
     telefone character varying(30),
+    certificacao character varying(255),
+    estado character varying(100),
+    disponibilidade character varying(100),
     latitude numeric(10,6),
     longitude numeric(10,6)
 );

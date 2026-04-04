@@ -1,7 +1,9 @@
 package com.example.tracker.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_cad_cliente")
@@ -23,7 +25,7 @@ public class Cliente {
 
     @Column(name = "telefone_contato", length = 30)
     private String telefoneContato;
-    
+
     @Column(name = "descricao_responsavel")
     private String nomeResponsavel;
 
@@ -59,6 +61,10 @@ public class Cliente {
 
     @Column(name = "data_cadastro", nullable = false, insertable = false, updatable = false)
     private LocalDateTime dataCadastro;
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<Contrato> contratos;
 
     public Integer getId() {
         return id;
@@ -194,5 +200,13 @@ public class Cliente {
 
     public void setDataCadastro(LocalDateTime dataCadastro) {
         this.dataCadastro = dataCadastro;
+    }
+
+    public List<Contrato> getContratos() {
+        return contratos;
+    }
+
+    public void setContratos(List<Contrato> contratos) {
+        this.contratos = contratos;
     }
 }

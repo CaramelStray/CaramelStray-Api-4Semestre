@@ -8,7 +8,7 @@ import com.example.tracker.entity.Contrato;
 
 public interface ContratoRepository extends JpaRepository<Contrato, Integer> {
 
-    List<Contrato> findByCodigoCliente(Integer codigoCliente);
+    List<Contrato> findByClienteId(Integer clienteId);
 
-    boolean existsByCodigoCliente(Integer codigoCliente);
+    boolean existsByClienteId(Integer clienteId);
 }

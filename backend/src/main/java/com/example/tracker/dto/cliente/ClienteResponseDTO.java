@@ -1,7 +1,10 @@
 package com.example.tracker.dto.cliente;
 
+import com.example.tracker.dto.contrato.ContratoResponseDTO;
 import com.example.tracker.entity.Cliente;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClienteResponseDTO {
 
@@ -22,6 +25,7 @@ public class ClienteResponseDTO {
     private String numero;
     private Boolean internacional;
     private LocalDateTime dataCadastro;
+    private List<ContratoResponseDTO> contratos; 
 
     public static ClienteResponseDTO fromEntity(Cliente cliente) {
         ClienteResponseDTO dto = new ClienteResponseDTO();
@@ -42,6 +46,14 @@ public class ClienteResponseDTO {
         dto.setNumero(cliente.getNumero());
         dto.setInternacional(cliente.getInternacional());
         dto.setDataCadastro(cliente.getDataCadastro());
+
+        dto.setContratos(
+                cliente.getContratos() != null
+                        ? cliente.getContratos().stream()
+                                .map(ContratoResponseDTO::fromEntity)
+                                .collect(Collectors.toList())
+                        : null);
+
         return dto;
     }
 
@@ -52,6 +64,8 @@ public class ClienteResponseDTO {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    
 
     public String getNomeEmpresa() {
         return nomeEmpresa;
@@ -179,5 +193,13 @@ public class ClienteResponseDTO {
 
     public void setDataCadastro(LocalDateTime dataCadastro) {
         this.dataCadastro = dataCadastro;
+    }
+
+    public List<ContratoResponseDTO> getContratos() {
+        return contratos;
+    }
+
+    public void setContratos(List<ContratoResponseDTO> contratos) {
+        this.contratos = contratos;
     }
 }

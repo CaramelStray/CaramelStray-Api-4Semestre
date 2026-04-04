@@ -29,13 +29,16 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 
 ## Backlog
 
-Rank,Prioridade,User Story,Estimativa,Sprint
-1,Alta,"Como gestor, quero criar uma ordem de manutenção vinculada a um sistema e a um contrato para iniciar o planejamento do atendimento",50,1
-2,Média,"Como gestor, quero cadastrar sistemas instalados nos clientes para registrar os equipamentos sob contrato de manutenção",40,1
-3,Média,"Como gestor, quero cadastrar contratos de manutenção vinculados a clientes e sistemas para definir intervalos e SLAs de atendimento",40,1
-4,Média,"Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio",40,3
-5,Baixa,"Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado",30,1
-6,Baixa,"Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado",30,1
+# Backlog Sprint 1 — Sistema de Gestão de Manutenções
+
+| Rank | Prioridade | User Story | Estimativa | Sprint |
+|------|------------|-----------|-----------|--------|
+| 1 | Alta | Como gestor, quero criar uma ordem de manutenção vinculada a um sistema e a um contrato para iniciar o planejamento do atendimento | 50 | 1 |
+| 2 | Média | Como gestor, quero cadastrar sistemas instalados nos clientes para registrar os equipamentos sob contrato de manutenção | 40 | 1 |
+| 3 | Média | Como gestor, quero cadastrar contratos de manutenção vinculados a clientes e sistemas para definir intervalos e SLAs de atendimento | 40 | 1 |
+| 4 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
+| 5 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 30 | 1 |
+| 6 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 30 | 1 |
 
 ## 🎓 Equipe <a id="equipe"></a>
 

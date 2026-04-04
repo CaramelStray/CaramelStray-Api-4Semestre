@@ -1,5 +1,6 @@
 package com.example.tracker.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -12,8 +13,10 @@ public class Contrato {
     @Column(name = "codigo")
     private Integer codigo;
 
-    @Column(name = "codigo_cliente", nullable = false)
-    private Integer codigoCliente;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "codigo_cliente")
+    @JsonBackReference
+    private Cliente cliente;
 
     @Column(name = "data_inicio", nullable = false)
     private LocalDate dataInicio;
@@ -36,10 +39,10 @@ public class Contrato {
     public Contrato() {
     }
 
-    public Contrato(Integer codigoCliente, LocalDate dataInicio, LocalDate dataFim,
+    public Contrato(Cliente cliente, LocalDate dataInicio, LocalDate dataFim,
             String status, Integer periodoManutencaoPreventiva, Boolean conexaoInternet,
             LocalDate vencimentoManutencaoPreventiva) {
-        this.codigoCliente = codigoCliente;
+        this.cliente = cliente;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.status = status;
@@ -56,12 +59,12 @@ public class Contrato {
         this.codigo = codigo;
     }
 
-    public Integer getCodigoCliente() {
-        return codigoCliente;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setCodigoCliente(Integer codigoCliente) {
-        this.codigoCliente = codigoCliente;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     public LocalDate getDataInicio() {

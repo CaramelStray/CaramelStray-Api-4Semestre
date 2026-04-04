@@ -6,7 +6,6 @@ import java.time.LocalDate;
 public class ContratoResponseDTO {
 
     private Integer codigo;
-    private Integer codigoCliente;
     private LocalDate dataInicio;
     private LocalDate dataFim;
     private String status;
@@ -17,7 +16,6 @@ public class ContratoResponseDTO {
     public static ContratoResponseDTO fromEntity(Contrato contrato) {
         ContratoResponseDTO dto = new ContratoResponseDTO();
         dto.setCodigo(contrato.getCodigo());
-        dto.setCodigoCliente(contrato.getCodigoCliente());
         dto.setDataInicio(contrato.getDataInicio());
         dto.setDataFim(contrato.getDataFim());
         dto.setStatus(contrato.getStatus());
@@ -33,14 +31,6 @@ public class ContratoResponseDTO {
 
     public void setCodigo(Integer codigo) {
         this.codigo = codigo;
-    }
-
-    public Integer getCodigoCliente() {
-        return codigoCliente;
-    }
-
-    public void setCodigoCliente(Integer codigoCliente) {
-        this.codigoCliente = codigoCliente;
     }
 
     public LocalDate getDataInicio() {

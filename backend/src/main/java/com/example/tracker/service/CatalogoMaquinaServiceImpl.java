@@ -1,6 +1,7 @@
 package com.example.tracker.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,8 @@ public class CatalogoMaquinaServiceImpl implements CatalogoMaquinaService {
 
     @Override
     public CatalogoMaquina buscarPorId(Integer id) {
-        return repository.findById(id)
+        Integer idNaoNulo = requireId(id, "Id da maquina e obrigatorio");
+        return repository.findById(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Máquina não encontrada"));
     }
 
@@ -31,12 +33,19 @@ public class CatalogoMaquinaServiceImpl implements CatalogoMaquinaService {
 
     @Override
     public CatalogoMaquina adicionar(CatalogoMaquina maquina) {
-        return repository.save(maquina);
+        if (maquina == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados da maquina sao obrigatorios");
+        }
+        return repository.save(Objects.requireNonNull(maquina));
     }
 
     @Override
     public CatalogoMaquina atualizar(Integer id, CatalogoMaquina nova) {
-        CatalogoMaquina maquina = repository.findById(id)
+        Integer idNaoNulo = requireId(id, "Id da maquina e obrigatorio");
+        if (nova == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados da maquina sao obrigatorios");
+        }
+        CatalogoMaquina maquina = repository.findById(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Máquina não encontrada"));
 
         maquina.setDescricao(nova.getDescricao());
@@ -48,9 +57,17 @@ public class CatalogoMaquinaServiceImpl implements CatalogoMaquinaService {
 
     @Override
     public void remover(Integer id) {
-        if (!repository.existsById(id)) {
+        Integer idNaoNulo = requireId(id, "Id da maquina e obrigatorio");
+        if (!repository.existsById(Objects.requireNonNull(idNaoNulo))) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Máquina não encontrada");
         }
-        repository.deleteById(id);
+        repository.deleteById(Objects.requireNonNull(idNaoNulo));
+    }
+
+    private Integer requireId(Integer id, String mensagem) {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, mensagem);
+        }
+        return id;
     }
 }

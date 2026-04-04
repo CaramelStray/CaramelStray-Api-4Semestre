@@ -8,6 +8,7 @@ import com.example.tracker.repository.PerfilRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.repository.UsuarioRepository;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -103,7 +104,7 @@ public class TecnicoService {
         Tecnico tecnico = tecnicoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tecnico nao encontrado."));
 
-        tecnicoRepository.delete(tecnico);
+        tecnicoRepository.delete(Objects.requireNonNull(tecnico));
     }
 
     private void validarTecnico(TecnicoCreateDTO dto) {

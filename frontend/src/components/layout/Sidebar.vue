@@ -29,7 +29,7 @@ const pageTitle = computed(() => {
     '/contratos': 'Contratos',
     '/configuracoes': 'Configurações',
   }
-  return titles[route.path] ?? 'Altave Industrial'
+  return titles[route.path] ?? 'Altave'
 })
 </script>
 

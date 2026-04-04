@@ -22,7 +22,11 @@ const router = createRouter({
     {
       path: '/habilidades',
       component: () => import('@/views/HabilidadesView.vue')
-    }
+    },
+    {
+      path: '/catalogo-maquinas',
+      component: () => import('../views/CatalogoMaquinasView.vue')
+    },
   ],
 })
 

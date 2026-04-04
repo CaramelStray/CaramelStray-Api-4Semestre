@@ -24,6 +24,9 @@ import {
   Eye, Pencil, Search, MoreVertical,
 } from 'lucide-vue-next'
 
+import { onMounted } from 'vue'
+import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
+
 /**
  * ESTADO GLOBAL E FILTRAGEM
  */
@@ -50,79 +53,72 @@ const getAvatarColor = (name: string) => {
   return colors[name.length % colors.length]
 }
 
-/**
- * DADOS DE EXEMPLO (Mock Data)
- * Em produção, estes dados viriam de uma API
- */
-const stats = [
-  { label: 'Total de Técnicos', value: '14',  sub: '+2 este mês',          icon: Users,         color: 'text-blue-400'   },
-  { label: 'Em Campo',          value: '05',  sub: 'Ordens em andamento',  icon: MapPin,         color: 'text-green-400'  },
-  { label: 'Cert. Expirando',   value: '03',  sub: 'Nos próximos 30 dias', icon: AlertTriangle,  color: 'text-red-400'    },
-  { label: 'Disponíveis',       value: '09',  sub: 'Prontos para acionamento', icon: ShieldCheck, color: 'text-purple-400' },
-]
 
-const tecnicos = ref([
+const stats = computed(() => [
   {
-    nome: 'Ricardo Ferreira',
-    email: 'ricardoferreira@gmail.com',
-    especialidade: 'Eletromecânica Sênior',
-    certificacoes: [
-      { nome: 'NR-10', validade: '12/2025' },
-      { nome: 'NR-35', validade: '08/2024' },
-    ],
-    status: 'DISPONÍVEL',
-    disponibilidade: 'Imediata',
-    detalhe: 'Base: Unidade-01',
+    label: 'Total de Técnicos',
+    value: tecnicos.value.length.toString(),
+    sub: 'Cadastrados no sistema',
+    icon: Users,
+    color: 'text-blue-400',
   },
   {
-    nome: 'André Luiz Santos',
-    email: 'andreluiz@gmail.com',
-    especialidade: 'Instrumentação',
-    certificacoes: [
-      { nome: 'NR-10', validade: '—', expirada: true },
-      { nome: 'SEP',   validade: '05/2026' },
-    ],
-    status: 'EM CAMPO',
-    disponibilidade: '18/06 – 17:00',
-    detalhe: 'OS: #992612',
+    label: 'Em Campo',
+    // Filtra técnicos cujo estado é exatamente 'EM CAMPO'
+    value: tecnicos.value.filter(t => t.estado === 'EM CAMPO').length.toString(),
+    sub: 'Ordens em andamento',
+    icon: MapPin,
+    color: 'text-green-400',
   },
   {
-    nome: 'Mariana Costa',
-    email: 'marianacosta@gmail.com',
-    especialidade: 'Telecom e Redes',
-    certificacoes: [
-      { nome: 'NR-35', validade: '11/2025' },
-    ],
-    status: 'FOLGA',
-    disponibilidade: '20/06 – 08:00',
-    detalhe: 'Férias/Descanso',
+    label: 'Cert. Expirando',
+    // Se o seu DTO tiver uma flag de expiração, você pode filtrar aqui
+    value: '0', 
+    sub: 'Nos próximos 30 dias',
+    icon: AlertTriangle,
+    color: 'text-red-400',
   },
   {
-    nome: 'Gabriel Souza',
-    email: 'gabrielsouza@gmail.com',
-    especialidade: 'Manutenção de Turbinas',
-    certificacoes: [
-      { nome: 'NR-10', validade: '—' },
-      { nome: 'NR-35', validade: 'Expira em 20d', expirando: true },
-    ],
-    status: 'DISPONÍVEL',
-    disponibilidade: 'Imediata',
-    detalhe: 'Base: Unidade-04',
+    label: 'Disponíveis',
+    // Filtra técnicos cujo estado é 'DISPONÍVEL' (ajuste a string conforme seu backend enviar)
+    value: tecnicos.value.filter(t => t.estado === 'DISPONÍVEL').length.toString(),
+    sub: 'Prontos para acionamento',
+    icon: ShieldCheck,
+    color: 'text-purple-400',
   },
 ])
 
-// Lógica de busca reativa: filtra por nome, especialidade ou ID
+const tecnicos = ref<TecnicoResponseDTO[]>([])
+const loading = ref(false)
+const erro = ref('')
+
+onMounted(async () => {
+  loading.value = true
+  try {
+    tecnicos.value = await tecnicoService.listar()
+  } catch (e: any) {
+    erro.value = e.message
+  } finally {
+    loading.value = false
+  }
+})
+
+// Lógica de busca reativa
 const filteredTecnicos = computed(() => {
   return tecnicos.value.filter(t =>
     t.nome.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    t.especialidade.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    t.id.toLowerCase().includes(searchQuery.value.toLowerCase())
+    t.cargo?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    t.email?.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
+
 </script>
 
 <template>
   <div class="p-6 space-y-6">
+
+  <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
+  <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
 
     <!-- Stats cards — mesmo padrão de Clientes -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -182,7 +178,6 @@ const filteredTecnicos = computed(() => {
             :key="t.id"
             class="border-border hover:bg-muted/30 transition-colors even:bg-muted/50"
           >
-            <!-- Nome + avatar -->
             <TableCell class="pl-6 py-3">
               <div class="flex items-center gap-3">
                 <div :class="['flex items-center justify-center size-7 rounded-full text-xs font-bold', getAvatarColor(t.nome)]">
@@ -195,60 +190,30 @@ const filteredTecnicos = computed(() => {
               </div>
             </TableCell>
 
-            <!-- Especialidade -->
-            <TableCell class="text-sm font-normal text-foreground">{{ t.especialidade }}</TableCell>
-
-            <!-- Certificações com tooltip de validade -->
-            <TableCell>
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <TooltipProvider v-for="cert in t.certificacoes" :key="cert.nome" :delay-duration="100">
-                  <Tooltip>
-                    <TooltipTrigger as-child>
-                      <span
-                        :class="['inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase cursor-default', certBadgeClass(cert)]"
-                      >
-                        {{ cert.nome }}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="top"
-                      class="bg-[#e2e8f0] text-[#0f172a] border-none font-medium rounded-lg px-3 py-1.5 text-xs shadow-xl"
-                    >
-                      VAL: {{ cert.validade }}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
+            <TableCell class="text-sm font-normal text-foreground">
+              {{ t.cargo || 'Não informado' }}
             </TableCell>
 
-            <!-- Status -->
+            <TableCell class="text-sm font-normal text-muted-foreground">
+              <span v-if="t.certificacao" class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px]">
+                {{ t.certificacao }}
+              </span>
+              <span v-else class="text-muted-foreground/50">—</span>
+            </TableCell>
+
             <TableCell>
               <div class="flex items-center gap-2">
-                <div class="size-2 rounded-full" :class="statusMap[t.status]?.dotClass" />
-                <span class="text-sm" :class="statusMap[t.status]?.textClass">{{ t.status }}</span>
+                <div :class="['size-2 rounded-full', t.estado ? 'bg-emerald-500' : 'bg-slate-500']"></div>
+                <span class="text-xs font-medium uppercase tracking-wider text-foreground">
+                  {{ t.estado || 'Indisponível' }}
+                </span>
               </div>
             </TableCell>
 
-            <!-- Disponibilidade com tooltip de detalhe -->
-            <TableCell>
-              <TooltipProvider :delay-duration="100">
-                <Tooltip>
-                  <TooltipTrigger as-child>
-                    <span class="text-sm text-foreground hover:opacity-80 transition-opacity cursor-default font-normal">
-                      {{ t.disponibilidade }}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="right"
-                    class="bg-[#e2e8f0] text-[#0f172a] border-none font-medium rounded-lg px-3 py-1.5 text-xs shadow-xl"
-                  >
-                    {{ t.detalhe }}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <TableCell class="text-sm font-normal text-muted-foreground">
+              {{ t.disponibilidade || 'Não informada' }}
             </TableCell>
 
-            <!-- Ações -->
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
@@ -259,7 +224,6 @@ const filteredTecnicos = computed(() => {
                 </Button>
               </div>
             </TableCell>
-
           </TableRow>
         </TableBody>
       </Table>

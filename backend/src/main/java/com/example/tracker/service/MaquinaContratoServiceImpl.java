@@ -7,6 +7,7 @@ import com.example.tracker.repository.ContratoRepository;
 import com.example.tracker.repository.MaquinaContratoRepository;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,16 +38,17 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
     @Override
     @Transactional(readOnly = true)
     public MaquinaContrato buscarPorId(Integer id) {
-        validarId(id, "Id da maquina do contrato e obrigatorio");
-        return maquinaContratoRepository.findById(id)
+        Integer idNaoNulo = requireId(id, "Id da maquina do contrato e obrigatorio");
+        return maquinaContratoRepository.findById(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada"));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<MaquinaContrato> buscarPorContrato(Integer codigoContrato) {
-        validarId(codigoContrato, "Codigo do contrato e obrigatorio");
-        List<MaquinaContrato> maquinas = maquinaContratoRepository.findByCodigoContrato(codigoContrato);
+        Integer codigoContratoNaoNulo = requireId(codigoContrato, "Codigo do contrato e obrigatorio");
+        List<MaquinaContrato> maquinas =
+                maquinaContratoRepository.findByCodigoContrato(Objects.requireNonNull(codigoContratoNaoNulo));
         if (maquinas.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma maquina encontrada para o contrato");
         }
@@ -56,8 +58,10 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
     @Override
     @Transactional(readOnly = true)
     public List<MaquinaContrato> buscarPorCatalogoMaquina(Integer codigoCatalogoMaquina) {
-        validarId(codigoCatalogoMaquina, "Codigo do catalogo de maquina e obrigatorio");
-        List<MaquinaContrato> maquinas = maquinaContratoRepository.findByCodigoCatalogoMaquina(codigoCatalogoMaquina);
+        Integer codigoCatalogoNaoNulo =
+                requireId(codigoCatalogoMaquina, "Codigo do catalogo de maquina e obrigatorio");
+        List<MaquinaContrato> maquinas = maquinaContratoRepository.findByCodigoCatalogoMaquina(
+                Objects.requireNonNull(codigoCatalogoNaoNulo));
         if (maquinas.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma maquina encontrada para o catalogo informado");
         }
@@ -76,23 +80,23 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
     @Override
     @Transactional
     public MaquinaContrato atualizar(Integer id, MaquinaContratoCreateDTO maquinaContratoDTO) {
-        validarId(id, "Id da maquina do contrato e obrigatorio");
+        Integer idNaoNulo = requireId(id, "Id da maquina do contrato e obrigatorio");
         validarEntrada(maquinaContratoDTO);
-        MaquinaContrato maquinaContrato = maquinaContratoRepository.findById(id)
+        MaquinaContrato maquinaContrato = maquinaContratoRepository.findById(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada"));
 
         mapearParaEntidade(maquinaContratoDTO, maquinaContrato);
-        return maquinaContratoRepository.save(maquinaContrato);
+        return maquinaContratoRepository.save(Objects.requireNonNull(maquinaContrato));
     }
 
     @Override
     @Transactional
     public void deletar(Integer id) {
-        validarId(id, "Id da maquina do contrato e obrigatorio");
-        if (!maquinaContratoRepository.existsById(id)) {
+        Integer idNaoNulo = requireId(id, "Id da maquina do contrato e obrigatorio");
+        if (!maquinaContratoRepository.existsById(Objects.requireNonNull(idNaoNulo))) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada");
         }
-        maquinaContratoRepository.deleteById(id);
+        maquinaContratoRepository.deleteById(Objects.requireNonNull(idNaoNulo));
     }
 
     private void validarEntrada(MaquinaContratoCreateDTO dto) {
@@ -100,14 +104,15 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados da maquina do contrato sao obrigatorios");
         }
 
-        validarId(dto.getCodigoContrato(), "Codigo do contrato e obrigatorio");
-        validarId(dto.getCodigoCatalogoMaquina(), "Codigo do catalogo de maquina e obrigatorio");
+        Integer codigoContratoNaoNulo = requireId(dto.getCodigoContrato(), "Codigo do contrato e obrigatorio");
+        Integer codigoCatalogoNaoNulo =
+                requireId(dto.getCodigoCatalogoMaquina(), "Codigo do catalogo de maquina e obrigatorio");
 
-        if (!contratoRepository.existsById(dto.getCodigoContrato())) {
+        if (!contratoRepository.existsById(Objects.requireNonNull(codigoContratoNaoNulo))) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrato nao encontrado");
         }
 
-        if (!catalogoMaquinaRepository.existsById(dto.getCodigoCatalogoMaquina())) {
+        if (!catalogoMaquinaRepository.existsById(Objects.requireNonNull(codigoCatalogoNaoNulo))) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Catalogo de maquina nao encontrado");
         }
 
@@ -137,9 +142,10 @@ public class MaquinaContratoServiceImpl implements MaquinaContratoService {
         entidade.setLongitude(dto.getLongitude());
     }
 
-    private void validarId(Integer id, String mensagem) {
+    private Integer requireId(Integer id, String mensagem) {
         if (id == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, mensagem);
         }
+        return id;
     }
 }

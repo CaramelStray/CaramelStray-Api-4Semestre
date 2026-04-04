@@ -2,6 +2,7 @@ package com.example.tracker.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_cad_funcionario")
@@ -43,6 +44,8 @@ public class Tecnico {
     @Column(name = "longitude", precision = 10, scale = 6)
     private BigDecimal longitude;
 
+    @OneToMany(mappedBy = "tecnico", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TecnicoHabilidade> habilidades;
 
     public Integer getId() {
         return id;
@@ -130,5 +133,13 @@ public class Tecnico {
 
     public void setDisponibilidade(String disponibilidade) {
         this.disponibilidade = disponibilidade;
-    }  
+    }
+
+    public List<TecnicoHabilidade> getHabilidades() {
+        return habilidades;
+    }
+
+    public void setHabilidades(List<TecnicoHabilidade> habilidades) {
+        this.habilidades = habilidades;
+    }
 }

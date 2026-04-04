@@ -1,11 +1,7 @@
 package com.example.tracker.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_cad_habilidade")
@@ -21,6 +17,9 @@ public class Habilidade {
 
     @Column(length = 255)
     private String observacao;
+
+    @OneToMany(mappedBy = "habilidade", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TecnicoHabilidade> tecnicos;
 
     public Habilidade() {
     }
@@ -52,5 +51,13 @@ public class Habilidade {
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public List<TecnicoHabilidade> getTecnicos() {
+        return tecnicos;
+    }
+
+    public void setTecnicos(List<TecnicoHabilidade> tecnicos) {
+        this.tecnicos = tecnicos;
     }
 }

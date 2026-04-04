@@ -15,6 +15,7 @@ import {
 } from 'lucide-vue-next'
 
 import { softwareService, type CatalogoSoftwareResponseDTO } from '@/services/softwareService'
+import SoftwareCadastroForm from '@/components/softwares/SoftwareCadastroPopup.vue'
 
 const isCadastroOpen = ref(false)
 const searchQuery = ref('')
@@ -82,6 +83,10 @@ const carregarSoftwares = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const onCadastroSucesso = () => {
+  carregarSoftwares()
 }
 
 const abrirDocumentacao = (url: string) => {
@@ -261,9 +266,10 @@ onMounted(() => {
             </div>
             
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
-              <div class="text-center text-muted-foreground py-10 border-2 border-dashed border-border rounded-lg">
-                Componente de Formulário Aqui
-              </div>
+              <SoftwareCadastroForm
+                @fechar="isCadastroOpen = false"
+                @sucesso="onCadastroSucesso"
+              />
             </div>
           </div>
         </div>

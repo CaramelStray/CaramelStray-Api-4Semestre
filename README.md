@@ -26,10 +26,11 @@
 
 ## 🏅 Desafio <a id="desafio"></a>
 
-
+A empresa opera cerca de 100 sistemas distribuídos mundialmente, cada um exigindo manutenções periódicas conforme suas horas de uso. Essas intervenções variam em duração conforme a localização - por exemplo, manutenções próximas, como em sistemas no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distantes, como na Ásia, demandam mais tempo.
 
 ## 🏅 Solução <a id="solucao"></a>
 
+A solução consiste em um Sistema de Gestão de Manutenções que centraliza o cadastro de clientes, sistemas, contratos, ativos e técnicos, permitindo planejar e registrar ordens de manutenção com base nas horas de uso dos equipamentos. O sistema organiza viagens e checklists para otimizar o atendimento considerando a localização global dos sistemas. Também oferece dashboard, histórico e relatórios para acompanhar prazos e SLAs. Dessa forma, possibilita priorizar atendimentos, evitar atrasos contratuais e melhorar a eficiência operacional da equipe técnica.
 
 ---
 
@@ -94,6 +95,7 @@
 
 ## 📦 Desing do Projeto <a id="figma"></a>
 
+[Figma](https://stitch.withgoogle.com/projects/8232220029481373226)
 
 ## 🎓 Equipe <a id="equipe"></a>
 
@@ -138,8 +140,8 @@
     <tr>
       <td>Pedro</td>
       <td>Desenvolvedor</td>
-      <td><a href="#"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href="#"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
+      <td><a href="https://github.com/pedrohenribeiro"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/pedrohenribeiro1?utm_source=share_via&utm_content=profile&utm_medium=member_ios"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
     </tr>
      <tr>
       <td>Thor</td>

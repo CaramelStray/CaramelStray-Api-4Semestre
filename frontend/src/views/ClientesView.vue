@@ -49,10 +49,17 @@ const stats = computed(() =>[
     color: 'text-blue-400' 
   },
 
-  { label: 'Sistemas em Operação', 
-    value: '—',
-    sub: 'Entre todos os clientes', 
-    icon: Cpu, 
+  { label: 'Contratos Ativos',
+    value: clientes.value.filter(c => c.ativo).length.toString(), 
+    sub: 'Clientes ativos', 
+    icon: TrendingUp, 
+    color: 'text-purple-400' 
+  },
+
+  { label: 'Contratos Inativos', 
+    value: clientes.value.filter(c => !c.ativo).length.toString(),
+    sub: 'Fora de operação',
+    icon: AlertTriangle, 
     color: 'text-green-400' 
   },
 
@@ -63,12 +70,6 @@ const stats = computed(() =>[
     color: 'text-red-400' 
   },
 
-  { label: 'Contratos Ativos',
-    value: clientes.value.filter(c => c.ativo).length.toString(), 
-    sub: 'Clientes ativos', 
-    icon: TrendingUp, 
-    color: 'text-purple-400' 
-  },
 ])
 
 const filteredClientes = computed(() => {
@@ -141,7 +142,7 @@ onMounted(async () => {
           <TableRow class="hover:bg-transparent border-border text-xs uppercase font-bold text-muted-foreground">
             <TableHead class="pl-6 h-12">Cliente</TableHead>
             <TableHead class="h-12">Localização</TableHead>
-            <TableHead class="h-12">Sistemas</TableHead>
+            <TableHead class="h-12">Alcance</TableHead>
             <TableHead class="h-12">Contrato</TableHead>
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Próxima Manutenção</TableHead>
@@ -183,7 +184,18 @@ onMounted(async () => {
               </TooltipProvider>
             </TableCell>
 
-            <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
+            <TableCell>
+              <span class="px-2 py-1 rounded text-xs font-medium"
+                :class="c.classificacaoDistancia === 'Internacional'
+                  ? 'bg-purple-900 text-purple-300'
+                  : c.classificacaoDistancia === 'Nacional'
+                    ? 'bg-blue-900 text-blue-300'
+                    : 'bg-green-900 text-green-300'"
+              >
+                {{ c.classificacaoDistancia ?? '—' }}
+              </span>
+            </TableCell>
+
             <TableCell class="text-sm font-normal text-muted-foreground">—</TableCell>
 
             <TableCell>

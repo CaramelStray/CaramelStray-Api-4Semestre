@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 public class ClienteResponseDTO {
 
     private Integer id;
-    private Integer usuarioId;
-    private String emailUsuarioCadastro;
     private String nomeEmpresa;
     private String documento;
     private String emailContato;
@@ -19,13 +17,15 @@ public class ClienteResponseDTO {
     private String classificacaoDistancia;
     private String fusoHorario;
     private Boolean ativo;
+    private String observacao;
+    private String rua;
+    private String numero;
+    private Boolean internacional;
     private LocalDateTime dataCadastro;
 
     public static ClienteResponseDTO fromEntity(Cliente cliente) {
         ClienteResponseDTO dto = new ClienteResponseDTO();
         dto.setId(cliente.getId());
-        dto.setUsuarioId(cliente.getUsuario() != null ? cliente.getUsuario().getId() : null);
-        dto.setEmailUsuarioCadastro(cliente.getUsuario() != null ? cliente.getUsuario().getEmail() : null);
         dto.setNomeEmpresa(cliente.getNomeEmpresa());
         dto.setDocumento(cliente.getDocumento());
         dto.setEmailContato(cliente.getEmailContato());
@@ -37,6 +37,10 @@ public class ClienteResponseDTO {
         dto.setClassificacaoDistancia(cliente.getClassificacaoDistancia());
         dto.setFusoHorario(cliente.getFusoHorario());
         dto.setAtivo(cliente.getAtivo());
+        dto.setObservacao(cliente.getObservacao());
+        dto.setRua(cliente.getRua());
+        dto.setNumero(cliente.getNumero());
+        dto.setInternacional(cliente.getInternacional());
         dto.setDataCadastro(cliente.getDataCadastro());
         return dto;
     }
@@ -47,22 +51,6 @@ public class ClienteResponseDTO {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Integer usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
-    public String getEmailUsuarioCadastro() {
-        return emailUsuarioCadastro;
-    }
-
-    public void setEmailUsuarioCadastro(String emailUsuarioCadastro) {
-        this.emailUsuarioCadastro = emailUsuarioCadastro;
     }
 
     public String getNomeEmpresa() {
@@ -151,6 +139,38 @@ public class ClienteResponseDTO {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
+    }
+
+    public String getRua() {
+        return rua;
+    }
+
+    public void setRua(String rua) {
+        this.rua = rua;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public Boolean getInternacional() {
+        return internacional;
+    }
+
+    public void setInternacional(Boolean internacional) {
+        this.internacional = internacional;
     }
 
     public LocalDateTime getDataCadastro() {

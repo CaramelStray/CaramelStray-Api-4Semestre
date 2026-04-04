@@ -1,5 +1,8 @@
 
+# Maven / Java build output
 target/
+**/target/
+backend/target_nobody_*/
 *.class
 *.war
 *.ear

@@ -1,6 +1,7 @@
 package com.example.tracker.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,8 @@ public class HabilidadeServiceImpl implements HabilidadeService {
 
     @Override
     public Habilidade buscarPorId(Integer id) {
-        return repository.findById(id)
+        Integer idNaoNulo = requireId(id, "Id da habilidade e obrigatorio");
+        return repository.findById(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Habilidade não encontrada"));
     }
 
@@ -37,15 +39,22 @@ public class HabilidadeServiceImpl implements HabilidadeService {
 
     @Override
     public Habilidade adicionar(Habilidade habilidade) {
+        if (habilidade == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados da habilidade sao obrigatorios");
+        }
         if (repository.existsByDescricao(habilidade.getDescricao())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Habilidade já existe");
         }
-        return repository.save(habilidade);
+        return repository.save(Objects.requireNonNull(habilidade));
     }
 
     @Override
     public Habilidade atualizar(Integer id, Habilidade nova) {
-        Habilidade habilidade = repository.findById(id)
+        Integer idNaoNulo = requireId(id, "Id da habilidade e obrigatorio");
+        if (nova == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados da habilidade sao obrigatorios");
+        }
+        Habilidade habilidade = repository.findById(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Habilidade não encontrada"));
 
         if (repository.existsByDescricao(nova.getDescricao()) &&
@@ -61,9 +70,17 @@ public class HabilidadeServiceImpl implements HabilidadeService {
 
     @Override
     public void remover(Integer id) {
-        if (!repository.existsById(id)) {
+        Integer idNaoNulo = requireId(id, "Id da habilidade e obrigatorio");
+        if (!repository.existsById(Objects.requireNonNull(idNaoNulo))) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Habilidade não encontrada");
         }
-        repository.deleteById(id);
+        repository.deleteById(Objects.requireNonNull(idNaoNulo));
+    }
+
+    private Integer requireId(Integer id, String mensagem) {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, mensagem);
+        }
+        return id;
     }
 }

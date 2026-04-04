@@ -3,10 +3,9 @@
 ## Caramel Stray
 
 <p align="center">
-      <img src="https://ibb.co/HLPpkBGY" width="50" align="center">
+      <img src="./assets/logo_v2 2.svg" width="50" align="center">
       <h2 align="center"> Tracker</h2>
 </p>
-
 
 ## Documentação - Sprints
 

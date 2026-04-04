@@ -193,7 +193,6 @@ class ContratoControllerTest {
     private Contrato criarContrato(Integer codigo, Integer codigoCliente, String status) {
         Contrato contrato = new Contrato();
         contrato.setCodigo(codigo);
-        contrato.setCodigoCliente(codigoCliente);
         contrato.setDataInicio(LocalDate.of(2026, 4, 1));
         contrato.setDataFim(LocalDate.of(2026, 12, 1));
         contrato.setStatus(status);

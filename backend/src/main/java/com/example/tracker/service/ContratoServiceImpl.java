@@ -1,7 +1,9 @@
 package com.example.tracker.service;
 
 import com.example.tracker.dto.contrato.ContratoCreateDTO;
+import com.example.tracker.entity.Cliente;
 import com.example.tracker.entity.Contrato;
+import com.example.tracker.repository.ClienteRepository;
 import com.example.tracker.repository.ContratoRepository;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -13,9 +15,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class ContratoServiceImpl implements ContratoService {
 
     private final ContratoRepository repository;
+    private final ClienteRepository clienteRepository;
 
-    public ContratoServiceImpl(ContratoRepository repository) {
+    public ContratoServiceImpl(ContratoRepository repository, ClienteRepository clienteRepository) {
         this.repository = repository;
+        this.clienteRepository = clienteRepository;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class ContratoServiceImpl implements ContratoService {
         if (codigoCliente == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código do cliente é obrigatório");
         }
-        List<Contrato> contratos = repository.findByCodigoCliente(codigoCliente);
+        List<Contrato> contratos = repository.findByClienteId(codigoCliente);
         if (contratos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum contrato encontrado para o cliente");
         }
@@ -95,7 +99,11 @@ public class ContratoServiceImpl implements ContratoService {
     }
 
     private void mapearParaEntidade(ContratoCreateDTO contratoDTO, Contrato contrato) {
-        contrato.setCodigoCliente(contratoDTO.getCodigoCliente());
+        Cliente cliente = clienteRepository.findById(contratoDTO.getCodigoCliente())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Cliente não encontrado com id: " + contratoDTO.getCodigoCliente()));
+        contrato.setCliente(cliente);
         contrato.setDataInicio(contratoDTO.getDataInicio());
         contrato.setDataFim(contratoDTO.getDataFim());
         contrato.setStatus(contratoDTO.getStatus());

@@ -3,7 +3,7 @@ import type { SidebarProps } from '@/components/ui/sidebar'
 import {
   LayoutDashboard, Map, Wrench, ClipboardList,
   Users, Bot, UserCog, FileText,
-  Settings2, GalleryVerticalEnd, Plus,
+  Settings2, GalleryVerticalEnd, Plus, Monitor
 } from "lucide-vue-next"
 
 import NavMain from '@/components/NavMain.vue'
@@ -42,6 +42,7 @@ const data = {
     { title: "Clientes", url: "/clientes", icon: Users },
     { title: "Máquinas", url: "/maquinas", icon: Bot },
     { title: "Técnicos", url: "/tecnicos", icon: UserCog },
+    { title: "Sistemas", url: "/softwares", icon: Monitor },
     { title: "Contratos", url: "/contratos", icon: FileText },
   ],
   navConfig: [

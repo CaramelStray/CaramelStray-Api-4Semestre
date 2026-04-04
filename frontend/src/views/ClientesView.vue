@@ -89,8 +89,11 @@ onMounted(async () => {
 
     // busca contratos de cada cliente em paralelo
     const resultados = await Promise.all(
-      clientes.value.map(c => contratoService.buscarPorCliente(c.id))
+      clientes.value.map(c =>
+        contratoService.buscarPorCliente(c.id).catch(() => [])
+      )
     )
+
     clientes.value.forEach((c, i) => {
       contratosPorCliente.value[c.id] = resultados[i] || []
     })

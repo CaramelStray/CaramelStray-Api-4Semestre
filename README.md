@@ -3,7 +3,7 @@
 ## Caramel Stray
 
 <p align="center">
-      <img src="./assets/logo_v2 2.svg" width="50" align="center">
+      <img src="./assets/logo_v2 2.png" width="50" align="center">
       <h2 align="center"> Tracker</h2>
 </p>
 
@@ -109,15 +109,15 @@
     </tr>
     <tr>
       <td>Pedro</td>
-      <td>Desenvolvedor(a)</td>
+      <td>Desenvolvedor</td>
       <td><a href="#"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="#"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
     </tr>
      <tr>
       <td>Thor</td>
       <td>Desenvolvedor</td>
-      <td><a href="#"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href="#"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
+      <td><a href="https://github.com/thorlyndgaard"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/thor-lyndgaard-b2155826b/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
     </tr>
   </table>
 </div>

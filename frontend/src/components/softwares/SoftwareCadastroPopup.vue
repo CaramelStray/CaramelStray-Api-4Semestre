@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Plus, Trash2, CheckSquare } from 'lucide-vue-next'
-import { softwareService } from '@/services/softwareService'
+import { catalogoSoftwareService } from '@/services/catalogoSoftwareService'
 
 const emit = defineEmits(['fechar', 'sucesso'])
 
@@ -65,7 +65,7 @@ const tiposDisponiveis = [
 
 const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
   try {
-    await softwareService.criar({
+    await catalogoSoftwareService.criar({
       nomeSoftware: values.nomeSoftware,
       versao: values.versao,
       tipo: values.tipo,

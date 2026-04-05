@@ -14,7 +14,7 @@ import {
   Pencil, Eye, Search, ExternalLink, X
 } from 'lucide-vue-next'
 
-import { softwareService, type CatalogoSoftwareResponseDTO } from '@/services/softwareService'
+import { catalogoSoftwareService, type CatalogoSoftwareResponseDTO } from '@/services/catalogoSoftwareService'
 import SoftwareCadastroForm from '@/components/softwares/SoftwareCadastroPopup.vue'
 
 const isCadastroOpen = ref(false)
@@ -77,7 +77,7 @@ const carregarSoftwares = async () => {
   loading.value = true
   erro.value = ''
   try {
-    softwares.value = await softwareService.listar()
+    softwares.value = await catalogoSoftwareService.listar()
   } catch (e: any) {
     erro.value = e.message || 'Erro ao carregar o catálogo de softwares.'
   } finally {

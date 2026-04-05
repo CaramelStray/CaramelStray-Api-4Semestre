@@ -19,10 +19,13 @@ import {
   Info, XCircle, CheckCircle2 
 } from 'lucide-vue-next'
 
+import ContratoCadastroPopup from '@/components/contrato/ContratoCadastroPopup.vue'
+
 /**
  * ESTADO GLOBAL E FILTRAGEM
  */
 const searchQuery = ref('')
+const showNovoContratoPopup = ref(false) // Controla a exibição do popup
 
 // Mapeamento de UI para os níveis de status conforme a imagem
 const criticidadeMap = {
@@ -93,7 +96,7 @@ const filteredClientes = computed(() => {
           <Download class="w-4 h-4 mr-2" /> Exportar Relatório
         </Button>
         
-        <Button size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
+        <Button @click="showNovoContratoPopup = true" size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
           <Plus class="w-4 h-4 mr-2" /> Novo Contrato
         </Button>
       </div>
@@ -166,5 +169,8 @@ const filteredClientes = computed(() => {
         </TableBody>
       </Table>
     </div>
+
+    <ContratoCadastroPopup v-model:open="showNovoContratoPopup" />
+
   </div>
 </template>

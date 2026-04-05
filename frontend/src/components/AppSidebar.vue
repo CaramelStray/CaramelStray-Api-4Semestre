@@ -41,7 +41,6 @@ const data = {
   ],
     navCadastros: [
     { title: "Clientes", url: "/clientes", icon: Users },
-    { title: "Máquinas", url: "/maquinas", icon: Bot },
     { title: "Técnicos", url: "/tecnicos", icon: UserCog },
     { title: "Contratos", url: "/contratos", icon: FileText },
   ],

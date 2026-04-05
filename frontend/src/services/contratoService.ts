@@ -10,8 +10,16 @@ export interface ContratoResponseDTO {
   vencimentoManutencaoPreventiva: string
 }
 
+export type ContratoRequestDTO = Omit<ContratoResponseDTO, 'codigo' | 'status'> & { 
+  clienteId: number 
+}
+
 export const contratoService = {
   listar: () => apiFetch<ContratoResponseDTO[]>('/contratos'),
   buscarPorId: (id: number) => apiFetch<ContratoResponseDTO>(`/contratos/${id}`),
   buscarPorCliente: (clienteId: number) => apiFetch<ContratoResponseDTO[]>(`/contratos/cliente/${clienteId}`),
+  criar: (dto: any) => apiFetch<ContratoResponseDTO>('/contratos', {
+    method: 'POST',
+    body: JSON.stringify(dto),
+  }),
 }

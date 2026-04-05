@@ -39,7 +39,7 @@ export interface CatalogoSoftwareCreateDTO {
   checklistPadrao?: SoftwareChecklistItemCreateDTO[];
 }
 
-export const softwareService = {
+export const catalogoSoftwareService = {
   async listar(termo?: string, tipo?: string, ativo?: boolean): Promise<CatalogoSoftwareResponseDTO[]> {
     const params = new URLSearchParams()
     if (termo) params.append('termo', termo)

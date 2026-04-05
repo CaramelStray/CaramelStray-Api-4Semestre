@@ -52,8 +52,19 @@ public class ContratoServiceImpl implements ContratoService {
     @Transactional
     public Contrato cadastrar(ContratoCreateDTO contratoDTO) {
         validarEntrada(contratoDTO);
+
         Contrato contrato = new Contrato();
         mapearParaEntidade(contratoDTO, contrato);
+
+        contrato = repository.save(contrato);
+
+        String descricao = String.format(
+                "MER-%d-%04d",
+                contrato.getDataInicio().getYear(),
+                contrato.getCodigo());
+
+        contrato.setDescricao(descricao);
+
         return repository.save(contrato);
     }
 

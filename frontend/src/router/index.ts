@@ -20,7 +20,7 @@ const router = createRouter({
       component: () => import('@/views/SoftwareView.vue'),
     },
     {
-      path: '/habilidades',
+      path: '/certificacoes',
       component: () => import('@/views/HabilidadesView.vue')
     },
     {

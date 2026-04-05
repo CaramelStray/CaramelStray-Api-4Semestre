@@ -26,14 +26,14 @@ public class ContratoServiceImpl implements ContratoService {
     @Override
     @Transactional(readOnly = true)
     public List<Contrato> listarTodos() {
-        return repository.findAll();
+        return repository.findAllByOrderByCodigoDesc();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Contrato buscarPorId(Integer id) {
         Integer idNaoNulo = requireId(id, "Id do contrato é obrigatório");
-        return repository.findById(Objects.requireNonNull(idNaoNulo))
+        return repository.findWithClienteByCodigo(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrato não encontrado"));
     }
 

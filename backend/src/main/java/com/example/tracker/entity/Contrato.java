@@ -3,6 +3,7 @@ package com.example.tracker.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_cad_contrato")
@@ -38,6 +39,9 @@ public class Contrato {
 
     @Column(name = "vencimento_manutencao_preventiva")
     private LocalDate vencimentoManutencaoPreventiva;
+
+    @OneToMany(mappedBy = "contrato", fetch = FetchType.LAZY)
+    private List<MaquinaContrato> maquinas;
 
     public Contrato() {
     }
@@ -127,5 +131,13 @@ public class Contrato {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public List<MaquinaContrato> getMaquinas() {
+        return maquinas;
+    }
+
+    public void setMaquinas(List<MaquinaContrato> maquinas) {
+        this.maquinas = maquinas;
     }
 }

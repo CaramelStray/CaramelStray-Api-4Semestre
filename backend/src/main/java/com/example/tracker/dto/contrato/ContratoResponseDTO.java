@@ -2,6 +2,8 @@ package com.example.tracker.dto.contrato;
 
 import com.example.tracker.entity.Contrato;
 import java.time.LocalDate;
+import java.util.List;
+import com.example.tracker.dto.maquinacontrato.MaquinaContratoResponseDTO;
 
 public class ContratoResponseDTO {
 
@@ -14,8 +16,11 @@ public class ContratoResponseDTO {
     private LocalDate vencimentoManutencaoPreventiva;
     private String descricao;
 
+    private List<MaquinaContratoResponseDTO> maquinas;
+
     public static ContratoResponseDTO fromEntity(Contrato contrato) {
         ContratoResponseDTO dto = new ContratoResponseDTO();
+
         dto.setCodigo(contrato.getCodigo());
         dto.setDataInicio(contrato.getDataInicio());
         dto.setDataFim(contrato.getDataFim());
@@ -24,6 +29,16 @@ public class ContratoResponseDTO {
         dto.setConexaoInternet(contrato.getConexaoInternet());
         dto.setVencimentoManutencaoPreventiva(contrato.getVencimentoManutencaoPreventiva());
         dto.setDescricao(contrato.getDescricao());
+
+        if (contrato.getMaquinas() != null) {
+            dto.setMaquinas(
+                contrato.getMaquinas()
+                    .stream()
+                    .map(MaquinaContratoResponseDTO::fromEntity)
+                    .toList()
+            );
+        }
+
         return dto;
     }
 
@@ -89,5 +104,13 @@ public class ContratoResponseDTO {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public List<MaquinaContratoResponseDTO> getMaquinas() {
+        return maquinas;
+    }
+
+    public void setMaquinas(List<MaquinaContratoResponseDTO> maquinas) {
+        this.maquinas = maquinas;
     }
 }

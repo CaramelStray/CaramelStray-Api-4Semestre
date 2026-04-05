@@ -21,15 +21,17 @@ import {
 
 import {
   Download, UserPlus, Users, MapPin, AlertTriangle, ShieldCheck,
-  Eye, Pencil, Search, MoreVertical,
+  Eye, Pencil, Search, MoreVertical, X
 } from 'lucide-vue-next'
 
 import { onMounted } from 'vue'
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
+import TecnicoCadastro from '@/components/tecnicos/TecnicoCadastroPopup.vue'
 
 /**
  * ESTADO GLOBAL E FILTRAGEM
  */
+const isCadastroOpen = ref(false)
 const searchQuery = ref('')
 
 // Mapeamento de UI para os status dos técnicos
@@ -120,7 +122,6 @@ const filteredTecnicos = computed(() => {
   <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
   <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
 
-    <!-- Stats cards — mesmo padrão de Clientes -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
         <CardHeader class="flex flex-row items-center justify-between pb-2">
@@ -134,7 +135,6 @@ const filteredTecnicos = computed(() => {
       </Card>
     </div>
 
-    <!-- Barra de busca + ações -->
     <div class="flex items-center justify-between gap-4 w-full">
       <div class="relative flex-1">
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
@@ -148,13 +148,12 @@ const filteredTecnicos = computed(() => {
         <Button variant="outline" size="lg" class="h-12 font-bold uppercase text-[11px] px-6 border-border hover:bg-muted/20">
           <Download class="w-4 h-4 mr-2" /> Exportar Relatório
         </Button>
-        <Button size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
+        <Button size="lg" @click="isCadastroOpen = true" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
           <UserPlus class="w-4 h-4 mr-2" /> Novo Técnico
         </Button>
       </div>
     </div>
 
-    <!-- Tabela -->
     <div class="rounded-md border border-border bg-sidebar overflow-hidden">
       <div class="p-4 border-b border-border bg-muted/5">
         <h2 class="text-sm font-normal tracking-tight text-muted-foreground">Técnicos cadastrados</h2>
@@ -229,5 +228,46 @@ const filteredTecnicos = computed(() => {
       </Table>
     </div>
 
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
+          
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Novo Técnico</h2>
+                <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para cadastrar um novo técnico no sistema.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isCadastroOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <TecnicoCadastro @fechar="isCadastroOpen = false" />
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
   </div>
 </template>
+
+<style scoped>
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .modal-content,
+.modal-leave-active .modal-content {
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: translateX(100vw);
+}
+</style>

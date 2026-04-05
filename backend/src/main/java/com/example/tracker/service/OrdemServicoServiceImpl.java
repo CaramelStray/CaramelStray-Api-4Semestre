@@ -67,7 +67,7 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
                 requireId(codigoCliente, "Codigo do cliente e obrigatorio");
 
         List<OrdemServico> itens =
-                ordemServicoRepository.findByClienteCodigo(Objects.requireNonNull(codigoClienteNaoNulo));
+                ordemServicoRepository.findByClienteId(Objects.requireNonNull(codigoClienteNaoNulo));
 
         if (itens.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma ordem de servico encontrada para o cliente");
@@ -83,7 +83,7 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
                 requireId(codigoFuncionario, "Codigo do funcionario e obrigatorio");
 
         List<OrdemServico> itens =
-                ordemServicoRepository.findByFuncionarioCodigo(Objects.requireNonNull(codigoFuncionarioNaoNulo));
+                ordemServicoRepository.findByFuncionarioId(Objects.requireNonNull(codigoFuncionarioNaoNulo));
 
         if (itens.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma ordem de servico encontrada para o funcionario");

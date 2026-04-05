@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Integer> {
 
-    List<OrdemServico> findByClienteCodigo(Integer codigoCliente);
+    List<OrdemServico> findByClienteId(Integer codigoCliente);
 
-    List<OrdemServico> findByFuncionarioCodigo(Integer codigoFuncionario);
+    List<OrdemServico> findByFuncionarioId(Integer codigoFuncionario);
 
     List<OrdemServico> findBySoftwareInstaladoCodigo(Integer codigoSoftwareInstalado);
 

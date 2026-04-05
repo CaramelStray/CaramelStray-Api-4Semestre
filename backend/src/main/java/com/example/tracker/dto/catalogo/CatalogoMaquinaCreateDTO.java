@@ -1,6 +1,8 @@
 package com.example.tracker.dto.catalogo;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,4 +16,7 @@ public class CatalogoMaquinaCreateDTO {
     private String especificacao;
 
     private String limiteManutencao;
+
+    @Valid
+    private List<MaquinaChecklistItemCreateDTO> checklistPadrao;
 }

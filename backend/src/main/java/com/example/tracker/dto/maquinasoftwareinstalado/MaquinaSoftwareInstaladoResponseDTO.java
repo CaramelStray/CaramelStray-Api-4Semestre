@@ -13,8 +13,9 @@ public class MaquinaSoftwareInstaladoResponseDTO {
     public static MaquinaSoftwareInstaladoResponseDTO fromEntity(MaquinaSoftwareInstalado entity) {
         MaquinaSoftwareInstaladoResponseDTO dto = new MaquinaSoftwareInstaladoResponseDTO();
         dto.setCodigo(entity.getCodigo());
-        dto.setCodigoMaquinaContrato(entity.getCodigoMaquinaContrato());
-        dto.setCodigoSoftware(entity.getCodigoSoftware());
+        dto.setCodigoMaquinaContrato(
+                entity.getMaquinaContrato() != null ? entity.getMaquinaContrato().getCodigo() : null);
+        dto.setCodigoSoftware(entity.getSoftware() != null ? entity.getSoftware().getId() : null);
         dto.setChaveLicenca(entity.getChaveLicenca());
         dto.setVersaoInstalada(entity.getVersaoInstalada());
         return dto;

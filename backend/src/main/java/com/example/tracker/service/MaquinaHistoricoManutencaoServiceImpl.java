@@ -1,7 +1,10 @@
 package com.example.tracker.service;
 
 import com.example.tracker.dto.maquinahistoricomanutencao.MaquinaHistoricoManutencaoCreateDTO;
+import com.example.tracker.entity.MaquinaContrato;
 import com.example.tracker.entity.MaquinaHistoricoManutencao;
+import com.example.tracker.entity.MaquinaSoftwareInstalado;
+import com.example.tracker.entity.TipoManutencao;
 import com.example.tracker.repository.MaquinaContratoRepository;
 import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
 import com.example.tracker.repository.MaquinaSoftwareInstaladoRepository;
@@ -51,7 +54,7 @@ public class MaquinaHistoricoManutencaoServiceImpl implements MaquinaHistoricoMa
     public List<MaquinaHistoricoManutencao> buscarPorMaquinaContrato(Integer codigoMaquinaContrato) {
         Integer codigoMaquinaContratoNaoNulo =
                 requireId(codigoMaquinaContrato, "Codigo da maquina do contrato e obrigatorio");
-        List<MaquinaHistoricoManutencao> itens = maquinaHistoricoManutencaoRepository.findByCodigoMaquinaContrato(
+        List<MaquinaHistoricoManutencao> itens = maquinaHistoricoManutencaoRepository.findByMaquinaContratoCodigo(
                 Objects.requireNonNull(codigoMaquinaContratoNaoNulo));
         if (itens.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum historico encontrado para a maquina");
@@ -65,7 +68,7 @@ public class MaquinaHistoricoManutencaoServiceImpl implements MaquinaHistoricoMa
         Integer codigoSoftwareInstaladoNaoNulo =
                 requireId(codigoSoftwareInstalado, "Codigo do software instalado e obrigatorio");
         List<MaquinaHistoricoManutencao> itens =
-                maquinaHistoricoManutencaoRepository.findByCodigoSoftwareInstalado(codigoSoftwareInstaladoNaoNulo);
+                maquinaHistoricoManutencaoRepository.findBySoftwareInstaladoCodigo(codigoSoftwareInstaladoNaoNulo);
         if (itens.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum historico encontrado para o software instalado");
         }
@@ -115,18 +118,12 @@ public class MaquinaHistoricoManutencaoServiceImpl implements MaquinaHistoricoMa
         Integer codigoTipoManutencaoNaoNulo =
                 requireId(dto.getCodigoTipoManutencao(), "Codigo do tipo de manutencao e obrigatorio");
 
-        if (!maquinaContratoRepository.existsById(Objects.requireNonNull(codigoMaquinaContratoNaoNulo))) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada");
-        }
-
-        if (!tipoManutencaoRepository.existsById(Objects.requireNonNull(codigoTipoManutencaoNaoNulo))) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tipo de manutencao nao encontrado");
-        }
+        Objects.requireNonNull(codigoMaquinaContratoNaoNulo);
+        Objects.requireNonNull(codigoTipoManutencaoNaoNulo);
 
         Integer codigoSoftwareInstalado = dto.getCodigoSoftwareInstalado();
-        if (codigoSoftwareInstalado != null
-                && !maquinaSoftwareInstaladoRepository.existsById(codigoSoftwareInstalado)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Software instalado nao encontrado");
+        if (codigoSoftwareInstalado != null) {
+            Objects.requireNonNull(codigoSoftwareInstalado);
         }
 
         if (dto.getDataInicioExecucao() != null
@@ -139,9 +136,29 @@ public class MaquinaHistoricoManutencaoServiceImpl implements MaquinaHistoricoMa
     }
 
     private void mapearParaEntidade(MaquinaHistoricoManutencaoCreateDTO dto, MaquinaHistoricoManutencao entidade) {
-        entidade.setCodigoMaquinaContrato(dto.getCodigoMaquinaContrato());
-        entidade.setCodigoSoftwareInstalado(dto.getCodigoSoftwareInstalado());
-        entidade.setCodigoTipoManutencao(dto.getCodigoTipoManutencao());
+        Integer codigoMaquinaContratoNaoNulo =
+                requireId(dto.getCodigoMaquinaContrato(), "Codigo da maquina do contrato e obrigatorio");
+        Integer codigoTipoManutencaoNaoNulo =
+                requireId(dto.getCodigoTipoManutencao(), "Codigo do tipo de manutencao e obrigatorio");
+
+        MaquinaContrato maquinaContrato = maquinaContratoRepository.findById(Objects.requireNonNull(codigoMaquinaContratoNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada"));
+        TipoManutencao tipoManutencao = tipoManutencaoRepository.findById(Objects.requireNonNull(codigoTipoManutencaoNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tipo de manutencao nao encontrado"));
+
+        entidade.setMaquinaContrato(maquinaContrato);
+        entidade.setTipoManutencao(tipoManutencao);
+
+        Integer codigoSoftwareInstalado = dto.getCodigoSoftwareInstalado();
+        if (codigoSoftwareInstalado != null) {
+            MaquinaSoftwareInstalado softwareInstalado =
+                    maquinaSoftwareInstaladoRepository.findById(codigoSoftwareInstalado).orElseThrow(
+                            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Software instalado nao encontrado"));
+            entidade.setSoftwareInstalado(softwareInstalado);
+        } else {
+            entidade.setSoftwareInstalado(null);
+        }
+
         entidade.setStatus(dto.getStatus());
         entidade.setCriticidade(dto.getCriticidade());
         entidade.setVencimento(dto.getVencimento());

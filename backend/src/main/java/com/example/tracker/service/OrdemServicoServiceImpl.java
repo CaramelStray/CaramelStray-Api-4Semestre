@@ -13,13 +13,13 @@ import com.example.tracker.repository.MaquinaContratoRepository;
 import com.example.tracker.repository.MaquinaSoftwareInstaladoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.TecnicoRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import java.time.LocalDateTime;
 
 @Service
 public class OrdemServicoServiceImpl implements OrdemServicoService {
@@ -141,29 +141,30 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     }
 
     @Override
-@Transactional
-public OrdemServico cadastrar(OrdemServicoCreateDTO dto) {
-    validarEntrada(dto);
+    @Transactional
+    public OrdemServico cadastrar(OrdemServicoCreateDTO dto) {
+        RelacoesOrdemServico relacoes = validarEntrada(dto);
 
-    OrdemServico entidade = new OrdemServico();
-    mapearParaEntidade(dto, entidade);
+        OrdemServico entidade = new OrdemServico();
+        mapearParaEntidade(dto, entidade, relacoes);
 
-    if (entidade.getDataAbertura() == null) {
-        entidade.setDataAbertura(LocalDateTime.now());
+        if (entidade.getDataAbertura() == null) {
+            entidade.setDataAbertura(LocalDateTime.now());
+        }
+
+        return ordemServicoRepository.save(entidade);
     }
 
-    return ordemServicoRepository.save(entidade);
-}
     @Override
     @Transactional
     public OrdemServico atualizar(Integer id, OrdemServicoCreateDTO dto) {
         Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
-        validarEntrada(dto);
+        RelacoesOrdemServico relacoes = validarEntrada(dto);
 
         OrdemServico entidade = ordemServicoRepository.findById(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
 
-        mapearParaEntidade(dto, entidade);
+        mapearParaEntidade(dto, entidade, relacoes);
         return ordemServicoRepository.save(Objects.requireNonNull(entidade));
     }
 
@@ -179,7 +180,7 @@ public OrdemServico cadastrar(OrdemServicoCreateDTO dto) {
         ordemServicoRepository.deleteById(Objects.requireNonNull(idNaoNulo));
     }
 
-    private void validarEntrada(OrdemServicoCreateDTO dto) {
+    private RelacoesOrdemServico validarEntrada(OrdemServicoCreateDTO dto) {
         if (dto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados da ordem de servico sao obrigatorios");
         }
@@ -191,18 +192,48 @@ public OrdemServico cadastrar(OrdemServicoCreateDTO dto) {
         Integer codigoMaquinaContratoNaoNulo =
                 requireId(dto.getCodigoMaquinaContrato(), "Codigo da maquina do contrato e obrigatorio");
 
-        Objects.requireNonNull(codigoClienteNaoNulo);
-        Objects.requireNonNull(codigoContratoNaoNulo);
-        Objects.requireNonNull(codigoMaquinaContratoNaoNulo);
+        Cliente cliente = clienteRepository.findById(Objects.requireNonNull(codigoClienteNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente nao encontrado"));
 
-        Integer codigoFuncionario = dto.getCodigoFuncionario();
-        if (codigoFuncionario != null) {
-            Objects.requireNonNull(codigoFuncionario);
+        Contrato contrato = contratoRepository.findById(Objects.requireNonNull(codigoContratoNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrato nao encontrado"));
+
+        if (contrato.getCliente() == null
+                || !Objects.equals(contrato.getCliente().getId(), cliente.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "O contrato informado nao pertence ao cliente informado");
         }
 
+        MaquinaContrato maquinaContrato = maquinaContratoRepository.findById(Objects.requireNonNull(codigoMaquinaContratoNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada"));
+
+        if (maquinaContrato.getContrato() == null
+                || !Objects.equals(maquinaContrato.getContrato().getCodigo(), contrato.getCodigo())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A maquina do contrato informada nao pertence ao contrato informado");
+        }
+
+        Tecnico funcionario = null;
+        Integer codigoFuncionario = dto.getCodigoFuncionario();
+        if (codigoFuncionario != null) {
+            funcionario = tecnicoRepository.findById(codigoFuncionario)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario nao encontrado"));
+        }
+
+        MaquinaSoftwareInstalado softwareInstalado = null;
         Integer codigoSoftwareInstalado = dto.getCodigoSoftwareInstalado();
         if (codigoSoftwareInstalado != null) {
-            Objects.requireNonNull(codigoSoftwareInstalado);
+            softwareInstalado = maquinaSoftwareInstaladoRepository.findById(codigoSoftwareInstalado)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Software instalado nao encontrado"));
+
+            if (softwareInstalado.getMaquinaContrato() == null
+                    || !Objects.equals(softwareInstalado.getMaquinaContrato().getCodigo(), maquinaContrato.getCodigo())) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "O software instalado informado nao pertence a maquina do contrato informada");
+            }
         }
 
         if (dto.getDataAgendamento() != null
@@ -220,46 +251,19 @@ public OrdemServico cadastrar(OrdemServicoCreateDTO dto) {
                     HttpStatus.BAD_REQUEST,
                     "A data de fim da execucao nao pode ser anterior a data de inicio");
         }
+
+        return new RelacoesOrdemServico(cliente, contrato, maquinaContrato, funcionario, softwareInstalado);
     }
 
-    private void mapearParaEntidade(OrdemServicoCreateDTO dto, OrdemServico entidade) {
-        Integer codigoClienteNaoNulo =
-                requireId(dto.getCodigoCliente(), "Codigo do cliente e obrigatorio");
-        Integer codigoContratoNaoNulo =
-                requireId(dto.getCodigoContrato(), "Codigo do contrato e obrigatorio");
-        Integer codigoMaquinaContratoNaoNulo =
-                requireId(dto.getCodigoMaquinaContrato(), "Codigo da maquina do contrato e obrigatorio");
-
-        Cliente cliente = clienteRepository.findById(Objects.requireNonNull(codigoClienteNaoNulo))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente nao encontrado"));
-
-        Contrato contrato = contratoRepository.findById(Objects.requireNonNull(codigoContratoNaoNulo))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contrato nao encontrado"));
-
-        MaquinaContrato maquinaContrato = maquinaContratoRepository.findById(Objects.requireNonNull(codigoMaquinaContratoNaoNulo))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada"));
-
-        entidade.setCliente(cliente);
-        entidade.setContrato(contrato);
-        entidade.setMaquinaContrato(maquinaContrato);
-
-        Integer codigoFuncionario = dto.getCodigoFuncionario();
-        if (codigoFuncionario != null) {
-            Tecnico funcionario = tecnicoRepository.findById(codigoFuncionario)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario nao encontrado"));
-            entidade.setFuncionario(funcionario);
-        } else {
-            entidade.setFuncionario(null);
-        }
-
-        Integer codigoSoftwareInstalado = dto.getCodigoSoftwareInstalado();
-        if (codigoSoftwareInstalado != null) {
-            MaquinaSoftwareInstalado softwareInstalado = maquinaSoftwareInstaladoRepository.findById(codigoSoftwareInstalado)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Software instalado nao encontrado"));
-            entidade.setSoftwareInstalado(softwareInstalado);
-        } else {
-            entidade.setSoftwareInstalado(null);
-        }
+    private void mapearParaEntidade(
+            OrdemServicoCreateDTO dto,
+            OrdemServico entidade,
+            RelacoesOrdemServico relacoes) {
+        entidade.setCliente(relacoes.cliente());
+        entidade.setContrato(relacoes.contrato());
+        entidade.setMaquinaContrato(relacoes.maquinaContrato());
+        entidade.setFuncionario(relacoes.funcionario());
+        entidade.setSoftwareInstalado(relacoes.softwareInstalado());
 
         entidade.setStatus(dto.getStatus());
         entidade.setCriticidade(dto.getCriticidade());
@@ -275,5 +279,13 @@ public OrdemServico cadastrar(OrdemServicoCreateDTO dto) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, mensagem);
         }
         return id;
+    }
+
+    private record RelacoesOrdemServico(
+            Cliente cliente,
+            Contrato contrato,
+            MaquinaContrato maquinaContrato,
+            Tecnico funcionario,
+            MaquinaSoftwareInstalado softwareInstalado) {
     }
 }

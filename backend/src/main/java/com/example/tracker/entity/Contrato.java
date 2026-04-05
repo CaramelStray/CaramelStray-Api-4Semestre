@@ -27,6 +27,9 @@ public class Contrato {
     @Column(name = "status", nullable = false)
     private String status;
 
+    @Column(name = "descricao")
+    private String descricao;
+
     @Column(name = "periodo_manutencao_preventiva")
     private Integer periodoManutencaoPreventiva;
 
@@ -40,12 +43,15 @@ public class Contrato {
     }
 
     public Contrato(Cliente cliente, LocalDate dataInicio, LocalDate dataFim,
-            String status, Integer periodoManutencaoPreventiva, Boolean conexaoInternet,
+            String status, String descricao,
+            Integer periodoManutencaoPreventiva, Boolean conexaoInternet,
             LocalDate vencimentoManutencaoPreventiva) {
+
         this.cliente = cliente;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.status = status;
+        this.descricao = descricao;
         this.periodoManutencaoPreventiva = periodoManutencaoPreventiva;
         this.conexaoInternet = conexaoInternet;
         this.vencimentoManutencaoPreventiva = vencimentoManutencaoPreventiva;
@@ -113,5 +119,13 @@ public class Contrato {
 
     public void setVencimentoManutencaoPreventiva(LocalDate vencimentoManutencaoPreventiva) {
         this.vencimentoManutencaoPreventiva = vencimentoManutencaoPreventiva;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }

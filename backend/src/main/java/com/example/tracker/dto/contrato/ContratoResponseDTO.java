@@ -12,6 +12,7 @@ public class ContratoResponseDTO {
     private Integer periodoManutencaoPreventiva;
     private Boolean conexaoInternet;
     private LocalDate vencimentoManutencaoPreventiva;
+    private String descricao;
 
     public static ContratoResponseDTO fromEntity(Contrato contrato) {
         ContratoResponseDTO dto = new ContratoResponseDTO();
@@ -22,6 +23,7 @@ public class ContratoResponseDTO {
         dto.setPeriodoManutencaoPreventiva(contrato.getPeriodoManutencaoPreventiva());
         dto.setConexaoInternet(contrato.getConexaoInternet());
         dto.setVencimentoManutencaoPreventiva(contrato.getVencimentoManutencaoPreventiva());
+        dto.setDescricao(contrato.getDescricao());
         return dto;
     }
 
@@ -79,5 +81,13 @@ public class ContratoResponseDTO {
 
     public void setVencimentoManutencaoPreventiva(LocalDate vencimentoManutencaoPreventiva) {
         this.vencimentoManutencaoPreventiva = vencimentoManutencaoPreventiva;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }

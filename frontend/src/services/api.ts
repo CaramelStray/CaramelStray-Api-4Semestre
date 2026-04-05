@@ -6,7 +6,6 @@
 
 const BASE_URL = 'http://localhost:8080'
 
-// Busca o token JWT salvo no navegador
 function getToken() {
   return localStorage.getItem('token') ?? ''
 }

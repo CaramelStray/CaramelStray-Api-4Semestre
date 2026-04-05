@@ -25,7 +25,7 @@ import { tecnicoService } from '@/services/tecnicoService'
 import { habilidadeService, type HabilidadeResponseDTO } from '@/services/habilidadeService'
 import { apiFetch } from '@/services/api'
 
-const emit = defineEmits(['fechar'])
+const emit = defineEmits(['fechar', 'cadastrado'])
 
 const step = ref(1)
 const habilidadesDisponiveis = ref<HabilidadeResponseDTO[]>([])
@@ -61,7 +61,6 @@ const applyCpfMask = (val: any) => {
 
 // Schema de Validação
 const formSchema = toTypedSchema(z.object({
-  // Passo 1 (removidos latitude e longitude daqui, pois não vão mais na tela)
   nome: z.string({ required_error: '*' }).min(1, '*'),
   cpf: z.string({ required_error: '*' }).min(14, '*'),
   email: z.string({ required_error: '*' }).min(1, '*').email('*'),
@@ -70,7 +69,6 @@ const formSchema = toTypedSchema(z.object({
   telefone: z.string({ required_error: '*' }).min(14, '*'),
   estado: z.string({ required_error: '*' }).min(2, '*'),
   disponibilidade: z.string({ required_error: '*' }).min(1, '*'),
-  certificacao: z.string().optional().default(''),
   
   // Passo 2
   habilidades: z.array(z.object({
@@ -85,7 +83,6 @@ const form = useForm({
   initialValues: {
     nome: '', cpf: '', email: '', senha: '',
     cargo: '', telefone: '', estado: '', disponibilidade: '',
-    certificacao: '',
     habilidades: []
   }
 })
@@ -116,9 +113,9 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       cpf: values.cpf.replace(/\D/g, ''), 
       cargo: values.cargo,
       telefone: values.telefone.replace(/\D/g, ''), 
-      certificacao: values.certificacao,
       estado: values.estado,
       disponibilidade: values.disponibilidade,
+      certificacao: 'NR 10 NR 12 NR 35', // Passado internamente sem estar na tela
       latitude: -23.223700, // Passado internamente sem estar na tela
       longitude: -45.900900 // Passado internamente sem estar na tela
     })
@@ -145,6 +142,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
     alert('Técnico e Habilidades cadastrados com sucesso!')
     resetForm()
     step.value = 1
+    emit('cadastrado')
     emit('fechar')
 
   } catch (error: any) {
@@ -178,7 +176,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
         <div class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm" :class="step === 2 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-muted-foreground bg-muted/20'">
           <Wrench class="w-4 h-4" />
         </div>
-        <span class="text-sm">Vincular Habilidades (Opcional)</span>
+        <span class="text-sm">Vincular Certificações (Opcional)</span>
       </div>
     </div>
 
@@ -293,25 +291,16 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
             </Select>
           </FormItem>
         </FormField>
-
-        <FormField v-slot="{ componentField }" name="certificacao">
-          <FormItem>
-            <FormLabel class="flex items-center gap-1">
-              Certificações Principais <span class="text-red-500 font-bold">*</span>
-            </FormLabel>
-            <FormControl><Input type="text" placeholder="Ex: NR 10 NR 12 NR 35" v-bind="componentField" /></FormControl>
-          </FormItem>
-        </FormField>
       </div>
 
       <div v-show="step === 2" class="space-y-6">
         <div class="mb-4">
-          <h3 class="text-lg font-medium">Habilidades do Técnico</h3>
-          <p class="text-sm text-muted-foreground">Selecione as habilidades do catálogo e informe o nível de proficiência (opcional).</p>
+          <h3 class="text-lg font-medium">Certificações do Técnico</h3>
+          <p class="text-sm text-muted-foreground">Selecione as certificações do catálogo e informe o nível de proficiência (opcional).</p>
         </div>
 
         <div v-if="fields.length === 0" class="text-center p-8 border border-dashed rounded-lg bg-muted/10">
-          <p class="text-sm text-muted-foreground">Nenhuma habilidade vinculada ainda.</p>
+          <p class="text-sm text-muted-foreground">Nenhuma certificação vinculada ainda.</p>
         </div>
 
         <div v-for="(field, index) in fields" :key="field.key" class="relative p-5 border rounded-lg bg-card shadow-sm group">
@@ -323,7 +312,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
             <FormField :name="`habilidades[${index}].habilidadeId`" v-slot="{ value, handleChange }">
               <FormItem>
                 <FormLabel class="flex items-center gap-1">
-                  Habilidade do Catálogo <span class="text-red-500 font-bold">*</span>
+                  Certificação do Catálogo <span class="text-red-500 font-bold">*</span>
                 </FormLabel>
                 <Select :model-value="value" @update:model-value="handleChange">
                   <FormControl><SelectTrigger><SelectValue placeholder="Selecione a habilidade" /></SelectTrigger></FormControl>
@@ -359,7 +348,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
         </div>
 
         <Button type="button" variant="outline" class="w-full border-dashed border-2 bg-muted/5 hover:bg-muted/20" @click="push({ habilidadeId: '', nivel: 1, dataValidade: '' })">
-          <Plus class="w-4 h-4 mr-2" /> Vincular Nova Habilidade
+          <Plus class="w-4 h-4 mr-2" /> Vincular Nova Certificação
         </Button>
       </div>
       

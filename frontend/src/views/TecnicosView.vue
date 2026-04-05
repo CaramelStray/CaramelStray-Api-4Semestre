@@ -55,7 +55,6 @@ const getAvatarColor = (name: string) => {
   return colors[name.length % colors.length]
 }
 
-
 const stats = computed(() => [
   {
     label: 'Total de Técnicos',
@@ -66,7 +65,6 @@ const stats = computed(() => [
   },
   {
     label: 'Em Campo',
-    // Filtra técnicos cujo estado é exatamente 'EM CAMPO'
     value: tecnicos.value.filter(t => t.estado === 'EM CAMPO').length.toString(),
     sub: 'Ordens em andamento',
     icon: MapPin,
@@ -74,7 +72,6 @@ const stats = computed(() => [
   },
   {
     label: 'Cert. Expirando',
-    // Se o seu DTO tiver uma flag de expiração, você pode filtrar aqui
     value: '0', 
     sub: 'Nos próximos 30 dias',
     icon: AlertTriangle,
@@ -82,7 +79,6 @@ const stats = computed(() => [
   },
   {
     label: 'Disponíveis',
-    // Filtra técnicos cujo estado é 'DISPONÍVEL' (ajuste a string conforme seu backend enviar)
     value: tecnicos.value.filter(t => t.estado === 'DISPONÍVEL').length.toString(),
     sub: 'Prontos para acionamento',
     icon: ShieldCheck,
@@ -94,7 +90,7 @@ const tecnicos = ref<TecnicoResponseDTO[]>([])
 const loading = ref(false)
 const erro = ref('')
 
-onMounted(async () => {
+const carregarTecnicos = async () => {
   loading.value = true
   try {
     tecnicos.value = await tecnicoService.listar()
@@ -103,6 +99,10 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+}
+
+onMounted(() => {
+  carregarTecnicos()
 })
 
 // Lógica de busca reativa
@@ -245,7 +245,7 @@ const filteredTecnicos = computed(() => {
             </div>
             
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
-              <TecnicoCadastro @fechar="isCadastroOpen = false" />
+              <TecnicoCadastro @fechar="isCadastroOpen = false" @cadastrado="carregarTecnicos" />
             </div>
           </div>
         </div>

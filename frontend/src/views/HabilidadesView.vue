@@ -106,20 +106,20 @@ const getAvatarColor = (name: string) => {
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
         <Input 
           v-model="searchQuery" 
-          placeholder="Buscar habilidade..." 
+          placeholder="Buscar certificação..." 
           class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary" 
         />
       </div>
       <div class="flex gap-3 shrink-0">
         <Button size="lg" @click="isCadastroOpen = true" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
-          <Plus class="w-4 h-4 mr-2" /> Nova Habilidade
+          <Plus class="w-4 h-4 mr-2" /> Nova Certificação
         </Button>
       </div>
     </div>
 
     <div class="rounded-md border border-border bg-sidebar overflow-hidden">
       <div class="p-4 border-b border-border bg-muted/5">
-        <h2 class="text-sm font-normal tracking-tight text-muted-foreground">Habilidades Cadastradas</h2>
+        <h2 class="text-sm font-normal tracking-tight text-muted-foreground">Certificações Cadastradas</h2>
       </div>
       
       <Table>
@@ -170,7 +170,7 @@ const getAvatarColor = (name: string) => {
           </TableRow>
           <TableRow v-if="filteredHabilidades.length === 0">
              <TableCell colspan="4" class="h-24 text-center text-muted-foreground">
-              Nenhuma habilidade encontrada.
+              Nenhuma certificação encontrada.
              </TableCell>
           </TableRow>
         </TableBody>

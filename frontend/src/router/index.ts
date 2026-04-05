@@ -17,7 +17,7 @@ const router = createRouter({
     },
     {
       path: '/softwares',
-      component: () => import('@/views/SoftwareView.vue'),
+      component: () => import('@/views/CatalogoSoftwareView.vue'),
     },
     {
       path: '/certificacoes',

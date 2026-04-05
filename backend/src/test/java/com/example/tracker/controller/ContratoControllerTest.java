@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.tracker.entity.Cliente;
 import com.example.tracker.entity.Contrato;
 import com.example.tracker.security.JwtService;
 import com.example.tracker.service.ContratoService;
@@ -192,7 +193,13 @@ class ContratoControllerTest {
 
     private Contrato criarContrato(Integer codigo, Integer codigoCliente, String status) {
         Contrato contrato = new Contrato();
+        Cliente cliente = new Cliente();
+        cliente.setId(codigoCliente);
+        cliente.setNomeEmpresa("Cliente " + codigoCliente);
+        cliente.setEmailContato("cliente" + codigoCliente + "@tracker.com");
+
         contrato.setCodigo(codigo);
+        contrato.setCliente(cliente);
         contrato.setDataInicio(LocalDate.of(2026, 4, 1));
         contrato.setDataFim(LocalDate.of(2026, 12, 1));
         contrato.setStatus(status);

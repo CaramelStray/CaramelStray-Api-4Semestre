@@ -378,9 +378,9 @@ const onSubmit = form.handleSubmit(async (values) => {
       vencimentoManutencaoPreventiva: values.vencimentoManutencaoPreventiva
     })
     
-    const contratoId = contratoSalvo.codigo || contratoSalvo.id 
+    const contratoId = contratoSalvo.codigo
 
-    const maquinasGeradasIds = []
+    const maquinasGeradasIds: number[] = []
     for (const maq of values.maquinas) {
       const maquinaSalva = await maquinaContratoService.criar({
         codigoContrato: contratoId,
@@ -391,13 +391,16 @@ const onSubmit = form.handleSubmit(async (values) => {
         dataInstalacao: maq.dataInstalacao,
         status: 'ATIVO'
       })
-      maquinasGeradasIds.push(maquinaSalva.codigo || maquinaSalva.id)
+      maquinasGeradasIds.push(maquinaSalva.codigo)
     }
 
     if (values.softwares && values.softwares.length > 0) {
       const promisesSoftwares = values.softwares.map(soft => {
-        const idRealMaquina = maquinasGeradasIds[soft.maquinaIndex] 
-        
+        const idRealMaquina = maquinasGeradasIds[soft.maquinaIndex]
+        if (idRealMaquina === undefined) {
+          throw new Error('Nao foi possivel identificar a maquina vinculada ao software.')
+        }
+
         return maquinaSoftwareInstaladoService.criar({
           codigoMaquinaContrato: idRealMaquina,
           codigoSoftware: Number(soft.codigoSoftware),

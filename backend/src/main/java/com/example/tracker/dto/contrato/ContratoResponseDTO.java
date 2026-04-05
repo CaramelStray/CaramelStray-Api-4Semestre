@@ -8,6 +8,9 @@ import com.example.tracker.dto.maquinacontrato.MaquinaContratoResponseDTO;
 public class ContratoResponseDTO {
 
     private Integer codigo;
+    private Integer codigoCliente;
+    private String nomeCliente;
+    private String emailContatoCliente;
     private LocalDate dataInicio;
     private LocalDate dataFim;
     private String status;
@@ -22,6 +25,11 @@ public class ContratoResponseDTO {
         ContratoResponseDTO dto = new ContratoResponseDTO();
 
         dto.setCodigo(contrato.getCodigo());
+        if (contrato.getCliente() != null) {
+            dto.setCodigoCliente(contrato.getCliente().getId());
+            dto.setNomeCliente(contrato.getCliente().getNomeEmpresa());
+            dto.setEmailContatoCliente(contrato.getCliente().getEmailContato());
+        }
         dto.setDataInicio(contrato.getDataInicio());
         dto.setDataFim(contrato.getDataFim());
         dto.setStatus(contrato.getStatus());
@@ -48,6 +56,30 @@ public class ContratoResponseDTO {
 
     public void setCodigo(Integer codigo) {
         this.codigo = codigo;
+    }
+
+    public Integer getCodigoCliente() {
+        return codigoCliente;
+    }
+
+    public void setCodigoCliente(Integer codigoCliente) {
+        this.codigoCliente = codigoCliente;
+    }
+
+    public String getNomeCliente() {
+        return nomeCliente;
+    }
+
+    public void setNomeCliente(String nomeCliente) {
+        this.nomeCliente = nomeCliente;
+    }
+
+    public String getEmailContatoCliente() {
+        return emailContatoCliente;
+    }
+
+    public void setEmailContatoCliente(String emailContatoCliente) {
+        this.emailContatoCliente = emailContatoCliente;
     }
 
     public LocalDate getDataInicio() {
@@ -105,7 +137,6 @@ public class ContratoResponseDTO {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
-
     public List<MaquinaContratoResponseDTO> getMaquinas() {
         return maquinas;
     }

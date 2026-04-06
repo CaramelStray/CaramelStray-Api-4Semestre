@@ -66,9 +66,9 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 ---
 
 ## 📅 Cronograma de Sprints <a id="sprint"></a>
-| Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Vídeo Entrega                                  |
+| Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Site Tracker                                  |
 | --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------- |----------------------------------------------- |
-| 🔖 **SPRINT 1** | 08/09 - 28/09 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Tasks](#)  |[Sprint 1 entrega](./documentacao/sprints/sprint-1/README.md) |
+| 🔖 **SPRINT 1** | 08/09 - 28/09 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Jira](https://patriciamoraesviegas.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZDkzMDgzMDkzMzZiNGU2NTk0NDgwZjZhODZjNGRlOGQiLCJwIjoiaiJ9)  |[Sprint 1 entrega](http://tracker.pedrohenribeiro.com/) |
 
 
 ## 💻 Tecnologias <a id="tecnologias"></a>

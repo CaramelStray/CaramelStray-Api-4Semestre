@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,6 +20,21 @@ const showNovoContratoPopup = ref(false)
 const contratos = ref<ContratoResponseDTO[]>([])
 const loading = ref(false)
 const erro = ref('')
+const sucessoCadastro = ref('')
+let sucessoTimeout: ReturnType<typeof setTimeout> | null = null
+
+const mostrarSucessoCadastro = (mensagem: string) => {
+  sucessoCadastro.value = mensagem
+
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+  }
+
+  sucessoTimeout = setTimeout(() => {
+    sucessoCadastro.value = ''
+    sucessoTimeout = null
+  }, 4000)
+}
 
 const criticidadeMap = {
   EXPIRANDO: { icon: XCircle, class: 'bg-red-500/20 text-red-400 border-red-500/30' },
@@ -93,6 +108,26 @@ onMounted(() => {
   carregarContratos()
 })
 
+onBeforeUnmount(() => {
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+  }
+})
+
+const fecharSucessoCadastro = () => {
+  sucessoCadastro.value = ''
+
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+    sucessoTimeout = null
+  }
+}
+
+const onCadastroSucesso = async (contrato: ContratoResponseDTO) => {
+  mostrarSucessoCadastro(`Contrato "${buildContratoId(contrato)}" cadastrado com sucesso.`)
+  await carregarContratos()
+}
+
 const filteredContratos = computed(() => {
   const query = searchQuery.value.toLowerCase()
 
@@ -148,6 +183,31 @@ const stats = computed(() => [
 
 <template>
   <div class="p-6 space-y-6">
+    <Transition name="toast">
+      <div
+        v-if="sucessoCadastro"
+        class="fixed top-6 right-6 z-[120] max-w-md rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 shadow-2xl backdrop-blur-md"
+      >
+        <div class="flex items-start gap-3">
+          <div class="mt-0.5 rounded-full bg-emerald-500/20 p-1.5 text-emerald-300">
+            <CheckCircle2 class="size-4" />
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-emerald-200">Cadastro concluído</p>
+            <p class="mt-1 text-sm text-emerald-100/90">{{ sucessoCadastro }}</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            class="size-8 shrink-0 text-emerald-100/80 hover:bg-emerald-500/10 hover:text-emerald-50"
+            @click="fecharSucessoCadastro"
+          >
+            <X class="size-4" />
+          </Button>
+        </div>
+      </div>
+    </Transition>
+
     <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
     <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
 
@@ -260,6 +320,19 @@ const stats = computed(() => [
       </Table>
     </div>
 
-    <ContratoCadastroPopup v-model:open="showNovoContratoPopup" @success="carregarContratos" />
+    <ContratoCadastroPopup v-model:open="showNovoContratoPopup" @success="onCadastroSucesso" />
   </div>
 </template>
+
+<style scoped>
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.25s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-12px) scale(0.98);
+}
+</style>

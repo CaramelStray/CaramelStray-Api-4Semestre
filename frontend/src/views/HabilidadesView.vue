@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
-import { 
-  Plus, Search, Pencil, Trash2, Code2, Layers
+import {
+  Plus, Search, Pencil, Trash2, Code2, Layers, X, CheckCircle2
 } from 'lucide-vue-next'
 import HabilidadeCadastro from '@/components/habilidades/HabilidadeCadastroPopup.vue'
 import { habilidadeService, type HabilidadeResponseDTO } from '@/services/habilidadeService'
@@ -18,6 +18,21 @@ const searchQuery = ref('')
 const habilidades = ref<HabilidadeResponseDTO[]>([])
 const loading = ref(false)
 const erro = ref('')
+const sucessoCadastro = ref('')
+let sucessoTimeout: ReturnType<typeof setTimeout> | null = null
+
+const mostrarSucessoCadastro = (mensagem: string) => {
+  sucessoCadastro.value = mensagem
+
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+  }
+
+  sucessoTimeout = setTimeout(() => {
+    sucessoCadastro.value = ''
+    sucessoTimeout = null
+  }, 4000)
+}
 
 const carregarHabilidades = async () => {
   loading.value = true
@@ -46,6 +61,12 @@ onMounted(() => {
   carregarHabilidades()
 })
 
+onBeforeUnmount(() => {
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+  }
+})
+
 const stats = computed(() =>[
   { 
     label: 'Total de Habilidades',
@@ -70,8 +91,17 @@ const filteredHabilidades = computed(() => {
   )
 })
 
-const fecharModalERecarregar = () => {
-  isCadastroOpen.value = false
+const fecharSucessoCadastro = () => {
+  sucessoCadastro.value = ''
+
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+    sucessoTimeout = null
+  }
+}
+
+const onCadastroSucesso = (habilidade: HabilidadeResponseDTO) => {
+  mostrarSucessoCadastro(`Certificação "${habilidade.descricao}" cadastrada com sucesso.`)
   carregarHabilidades()
 }
 
@@ -84,6 +114,30 @@ const getAvatarColor = (name: string) => {
 
 <template>
   <div class="p-6 space-y-6">
+    <Transition name="toast">
+      <div
+        v-if="sucessoCadastro"
+        class="fixed top-6 right-6 z-[120] max-w-md rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 shadow-2xl backdrop-blur-md"
+      >
+        <div class="flex items-start gap-3">
+          <div class="mt-0.5 rounded-full bg-emerald-500/20 p-1.5 text-emerald-300">
+            <CheckCircle2 class="size-4" />
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-emerald-200">Cadastro concluído</p>
+            <p class="mt-1 text-sm text-emerald-100/90">{{ sucessoCadastro }}</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            class="size-8 shrink-0 text-emerald-100/80 hover:bg-emerald-500/10 hover:text-emerald-50"
+            @click="fecharSucessoCadastro"
+          >
+            <X class="size-4" />
+          </Button>
+        </div>
+      </div>
+    </Transition>
 
     <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
     <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
@@ -191,7 +245,10 @@ const getAvatarColor = (name: string) => {
             </div>
             
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
-              <HabilidadeCadastro @fechar="fecharModalERecarregar" />
+              <HabilidadeCadastro
+                @fechar="isCadastroOpen = false"
+                @sucesso="onCadastroSucesso"
+              />
             </div>
           </div>
         </div>
@@ -215,5 +272,16 @@ const getAvatarColor = (name: string) => {
 .modal-enter-from .modal-content,
 .modal-leave-to .modal-content {
   transform: translateY(20px);
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.25s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-12px) scale(0.98);
 }
 </style>

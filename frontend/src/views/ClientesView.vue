@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -41,6 +41,21 @@ const clientes = ref<ClienteResponseDTO[]>([])
 const loading = ref(false)
 const erro = ref('')
 const contratosPorCliente = ref<Record<number, ContratoResponseDTO[]>>({})
+const sucessoCadastro = ref('')
+let sucessoTimeout: ReturnType<typeof setTimeout> | null = null
+
+const mostrarSucessoCadastro = (mensagem: string) => {
+  sucessoCadastro.value = mensagem
+
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+  }
+
+  sucessoTimeout = setTimeout(() => {
+    sucessoCadastro.value = ''
+    sucessoTimeout = null
+  }, 4000)
+}
 
 
 const stats = computed(() =>[
@@ -104,10 +119,72 @@ onMounted(async () => {
   }
 })
 
+onBeforeUnmount(() => {
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+  }
+})
+
+const fecharSucessoCadastro = () => {
+  sucessoCadastro.value = ''
+
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+    sucessoTimeout = null
+  }
+}
+
+const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
+  mostrarSucessoCadastro(`Cliente "${cliente.nomeEmpresa}" cadastrado com sucesso.`)
+
+  loading.value = true
+  try {
+    clientes.value = await clienteService.listar()
+
+    const resultados = await Promise.all(
+      clientes.value.map(c =>
+        contratoService.buscarPorCliente(c.id).catch(() => [])
+      )
+    )
+
+    clientes.value.forEach((c, i) => {
+      contratosPorCliente.value[c.id] = resultados[i] || []
+    })
+  } catch (e: any) {
+    erro.value = e.message
+  } finally {
+    loading.value = false
+  }
+}
+
 </script>
 
 <template>
   <div class="p-6 space-y-6">
+    <Transition name="toast">
+      <div
+        v-if="sucessoCadastro"
+        class="fixed top-6 right-6 z-[120] max-w-md rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 shadow-2xl backdrop-blur-md"
+      >
+        <div class="flex items-start gap-3">
+          <div class="mt-0.5 rounded-full bg-emerald-500/20 p-1.5 text-emerald-300">
+            <CheckCircle2 class="size-4" />
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-emerald-200">Cadastro concluído</p>
+            <p class="mt-1 text-sm text-emerald-100/90">{{ sucessoCadastro }}</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            class="size-8 shrink-0 text-emerald-100/80 hover:bg-emerald-500/10 hover:text-emerald-50"
+            @click="fecharSucessoCadastro"
+          >
+            <X class="size-4" />
+          </Button>
+        </div>
+      </div>
+    </Transition>
 
     <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
     <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
@@ -245,7 +322,10 @@ onMounted(async () => {
             </div>
             
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
-              <ClienteCadastro @fechar="isCadastroOpen = false" />
+              <ClienteCadastro
+                @fechar="isCadastroOpen = false"
+                @sucesso="onCadastroSucesso"
+              />
             </div>
           </div>
         </div>
@@ -269,5 +349,16 @@ onMounted(async () => {
 .modal-enter-from .modal-content,
 .modal-leave-to .modal-content {
   transform: translateX(100vw);
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.25s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-12px) scale(0.98);
 }
 </style>

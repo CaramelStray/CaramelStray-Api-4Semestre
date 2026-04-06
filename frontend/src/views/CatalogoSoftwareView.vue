@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/tooltip'
 import { 
   Download, Plus, Monitor, Layers, AlertCircle, TerminalSquare,
-  Pencil, Eye, Search, ExternalLink, X
+  Pencil, Eye, Search, ExternalLink, X, CheckCircle2
 } from 'lucide-vue-next'
 
 import { catalogoSoftwareService, type CatalogoSoftwareResponseDTO } from '@/services/catalogoSoftwareService'
@@ -23,6 +23,21 @@ const searchQuery = ref('')
 const softwares = ref<CatalogoSoftwareResponseDTO[]>([])
 const loading = ref(false)
 const erro = ref('')
+const sucessoCadastro = ref('')
+let sucessoTimeout: ReturnType<typeof setTimeout> | null = null
+
+const mostrarSucessoCadastro = (mensagem: string) => {
+  sucessoCadastro.value = mensagem
+
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+  }
+
+  sucessoTimeout = setTimeout(() => {
+    sucessoCadastro.value = ''
+    sucessoTimeout = null
+  }, 4000)
+}
 
 const getAvatarColor = (name: string) => {
   if (!name) return 'bg-indigo-500 text-white'
@@ -85,7 +100,17 @@ const carregarSoftwares = async () => {
   }
 }
 
-const onCadastroSucesso = () => {
+const fecharSucessoCadastro = () => {
+  sucessoCadastro.value = ''
+
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+    sucessoTimeout = null
+  }
+}
+
+const onCadastroSucesso = (software: CatalogoSoftwareResponseDTO) => {
+  mostrarSucessoCadastro(`Software "${software.nomeSoftware}" v${software.versao} cadastrado com sucesso.`)
   carregarSoftwares()
 }
 
@@ -96,10 +121,40 @@ const abrirDocumentacao = (url: string) => {
 onMounted(() => {
   carregarSoftwares()
 })
+
+onBeforeUnmount(() => {
+  if (sucessoTimeout) {
+    clearTimeout(sucessoTimeout)
+  }
+})
 </script>
 
 <template>
   <div class="p-6 space-y-6">
+    <Transition name="toast">
+      <div
+        v-if="sucessoCadastro"
+        class="fixed top-6 right-6 z-[120] max-w-md rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 shadow-2xl backdrop-blur-md"
+      >
+        <div class="flex items-start gap-3">
+          <div class="mt-0.5 rounded-full bg-emerald-500/20 p-1.5 text-emerald-300">
+            <CheckCircle2 class="size-4" />
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-emerald-200">Cadastro concluído</p>
+            <p class="mt-1 text-sm text-emerald-100/90">{{ sucessoCadastro }}</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            class="size-8 shrink-0 text-emerald-100/80 hover:bg-emerald-500/10 hover:text-emerald-50"
+            @click="fecharSucessoCadastro"
+          >
+            <X class="size-4" />
+          </Button>
+        </div>
+      </div>
+    </Transition>
 
     <div v-if="loading" class="text-center py-12 text-muted-foreground flex flex-col items-center gap-2">
       <div class="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -294,5 +349,16 @@ onMounted(() => {
 .modal-leave-to .modal-content {
   transform: scale(0.95) translateY(20px);
   opacity: 0;
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.25s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-12px) scale(0.98);
 }
 </style>

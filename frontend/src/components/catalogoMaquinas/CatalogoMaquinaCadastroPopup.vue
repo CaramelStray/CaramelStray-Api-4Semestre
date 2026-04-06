@@ -11,10 +11,16 @@ import {
   FormItem,
   FormLabel,
 } from '@/components/ui/form'
-import { catalogoMaquinaService } from '@/services/catalogoMaquinaService'
+import {
+  catalogoMaquinaService,
+  type CatalogoMaquinaResponseDTO,
+} from '@/services/catalogoMaquinaService'
 import { Settings } from 'lucide-vue-next'
 
-const emit = defineEmits(['fechar'])
+const emit = defineEmits<{
+  fechar: []
+  sucesso: [maquina: CatalogoMaquinaResponseDTO]
+}>()
 
 const formSchema = toTypedSchema(z.object({
   descricao: z.string({ required_error: '*' }).min(1, '*'),
@@ -31,13 +37,15 @@ const form = useForm({
   }
 })
 
-const onSubmit = form.handleSubmit(async (values) =>  {
+const onSubmit = form.handleSubmit(async (values, { resetForm }) =>  {
   try {
-    await catalogoMaquinaService.criar({
+    const maquinaCriada = await catalogoMaquinaService.criar({
       descricao: values.descricao,
       especificacao: values.especificacao,
       limiteManutencao: values.limiteManutencao,
     })
+    resetForm()
+    emit('sucesso', maquinaCriada)
     emit('fechar')
   } catch (e: any) {
     console.error('Erro ao cadastrar máquina:', e.message)

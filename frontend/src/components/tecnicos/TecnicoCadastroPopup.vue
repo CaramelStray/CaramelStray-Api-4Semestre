@@ -21,11 +21,14 @@ import {
 } from '@/components/ui/select'
 import { Plus, Trash2, ChevronRight, User, Wrench, ArrowRight } from 'lucide-vue-next'
 
-import { tecnicoService } from '@/services/tecnicoService'
+import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
 import { habilidadeService, type HabilidadeResponseDTO } from '@/services/habilidadeService'
 import { apiFetch } from '@/services/api'
 
-const emit = defineEmits(['fechar', 'cadastrado'])
+const emit = defineEmits<{
+  fechar: []
+  cadastrado: [tecnico: TecnicoResponseDTO]
+}>()
 
 const step = ref(1)
 const habilidadesDisponiveis = ref<HabilidadeResponseDTO[]>([])
@@ -139,10 +142,9 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       await Promise.all(promessasHabilidades)
     }
 
-    alert('Técnico e Habilidades cadastrados com sucesso!')
     resetForm()
     step.value = 1
-    emit('cadastrado')
+    emit('cadastrado', tecnicoCriado)
     emit('fechar')
 
   } catch (error: any) {

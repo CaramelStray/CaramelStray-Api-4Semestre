@@ -262,14 +262,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ChevronRight, FileText, Server, Layers, Plus, Trash2, ArrowRight } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
-import { contratoService } from '@/services/contratoService'
+import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
 import { catalogoMaquinaService } from '@/services/catalogoMaquinaService'
 import { maquinaContratoService } from '@/services/maquinaContratoService'
 import { catalogoSoftwareService } from '@/services/catalogoSoftwareService.ts' 
 import { maquinaSoftwareInstaladoService } from '@/services/maquinaSoftwareInstaladoService'
 
 const props = defineProps<{ open: boolean }>()
-const emit = defineEmits(['update:open', 'success'])
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+  success: [contrato: ContratoResponseDTO]
+}>()
 
 const step = ref(1)
 const loading = ref(false)
@@ -411,9 +414,8 @@ const onSubmit = form.handleSubmit(async (values) => {
       await Promise.all(promisesSoftwares)
     }
 
-    alert('Contrato completo cadastrado com sucesso!')
     closeDialog(false)
-    emit('success')
+    emit('success', contratoSalvo)
 
   } catch (error) {
     console.error("Erro ao salvar cadastro completo:", error)

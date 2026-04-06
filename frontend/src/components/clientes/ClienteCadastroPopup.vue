@@ -23,9 +23,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Plus, Trash2, ChevronRight, Building2, Users, ArrowRight, CheckCircle2 } from 'lucide-vue-next'
-import { clienteService } from '@/services/clienteService'
+import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 
-const emit = defineEmits(['fechar'])
+const emit = defineEmits<{
+  fechar: []
+  sucesso: [cliente: ClienteResponseDTO]
+}>()
 
 const step = ref(1)
 
@@ -149,7 +152,7 @@ const nextStep = async () => {
 // ─── Submit ───────────────────────────────────────────────────────────────────
 const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
   try {
-    await clienteService.criar({
+    const clienteCriado = await clienteService.criar({
       nomeEmpresa:     values.nomeEmpresa,
       documento:       values.documento,
       emailContato:    values.email,
@@ -165,9 +168,10 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       observacao:      values.observacoes,
       ativo:           true,
     })
-    alert('Cliente cadastrado com sucesso!')
+
     resetForm()
     step.value = 1
+    emit('sucesso', clienteCriado)
     emit('fechar')
   } catch (error: any) {
     const data = error.response?.data

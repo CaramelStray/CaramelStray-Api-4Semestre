@@ -91,7 +91,7 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 [📄 Estrutura de branchs](./documentacao/estrutura_de_branch.md)
 
 # 📚 Manual de usuário <a id="manual"></a>
-[Manual do usuário]
+[Manual do usuário](./documentacao/manual_usuario.md)
 
 ## 📦 Desing do Projeto <a id="figma"></a>
 

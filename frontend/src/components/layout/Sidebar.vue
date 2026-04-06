@@ -2,6 +2,7 @@
 export const description = "A sidebar that collapses to icons."
 export const iframeHeight = "800px"
 export const containerClass = "w-full h-full"
+import { Toaster } from '@/components/ui/sonner'
 </script>
 
 <script setup lang="ts">
@@ -55,4 +56,5 @@ const pageTitle = computed(() => {
 
       </SidebarInset>
   </SidebarProvider>
+  <Toaster richColors position="top-right" />
 </template>

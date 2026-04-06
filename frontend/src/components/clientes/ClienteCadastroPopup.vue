@@ -32,7 +32,6 @@ const emit = defineEmits<{
 
 const step = ref(1)
 
-// ─── Lista de países ──────────────────────────────────────────────────────────
 const paises = [
   'Brasil',
   'Estados Unidos',
@@ -57,8 +56,6 @@ const paises = [
   'Azerbaijão',
 ]
 
-// ─── Bloqueio de teclas não-numéricas ─────────────────────────────────────────
-// Permite: dígitos 0-9, Backspace, Delete, Tab, setas, Ctrl/Cmd+A/C/V/X
 function blockNonNumeric(e: KeyboardEvent) {
   const allowed = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']
   if (allowed.includes(e.key)) return
@@ -66,7 +63,6 @@ function blockNonNumeric(e: KeyboardEvent) {
   if (!/^\d$/.test(e.key)) e.preventDefault()
 }
 
-// No paste: remove tudo que não for dígito antes de deixar colar
 function blockNonNumericPaste(e: ClipboardEvent) {
   e.preventDefault()
   const text = e.clipboardData?.getData('text') ?? ''
@@ -74,7 +70,6 @@ function blockNonNumericPaste(e: ClipboardEvent) {
   document.execCommand('insertText', false, digits)
 }
 
-// ─── Máscaras ─────────────────────────────────────────────────────────────────
 const applyPhoneMask = (val: any) => {
   const digits = String(val ?? '').replace(/\D/g, '').slice(0, 11)
   if (digits.length <= 2)  return `(${digits}`
@@ -94,19 +89,23 @@ const applyCnpjMask = (val: any) => {
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 const formSchema = toTypedSchema(z.object({
-  internacional: z.boolean().default(false),
-  nomeEmpresa:   z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  documento:     z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  email:         z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').email('E-mail inválido'),
-  telefone:      z.string({ required_error: 'Campo obrigatório' }).min(14, 'Telefone inválido'),
-  responsavel:   z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  rua:           z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  numero:        z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  pais:          z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  estado:        z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  cidade:        z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  fusoHorario:   z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  observacoes:   z.string().optional().default(''),
+  internacional:           z.boolean().default(false),
+  nomeEmpresa:             z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  documento:               z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  email:                   z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').email('E-mail inválido'),
+  telefone:                z.string({ required_error: 'Campo obrigatório' }).min(14, 'Telefone inválido'),
+  responsavel:             z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  rua:                     z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  numero:                  z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  pais:                    z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  estado:                  z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  cidade:                  z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  fusoHorario:             z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  classificacaoDistancia:  z.enum(['Regional', 'Nacional', 'Internacional'], {
+    required_error: 'Campo obrigatório',
+    invalid_type_error: 'Selecione uma classificação',
+  }),
+  observacoes:             z.string().optional().default(''),
   contatos: z.array(z.object({
     nome:     z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
     email:    z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').email('E-mail inválido'),
@@ -142,31 +141,32 @@ watch(() => form.values.internacional, () => {
 const nextStep = async () => {
   const step1Fields = [
     'nomeEmpresa', 'documento', 'responsavel', 'email', 'telefone',
-    'rua', 'numero', 'pais', 'estado', 'cidade', 'fusoHorario',
+    'rua', 'numero', 'pais', 'estado', 'cidade', 'fusoHorario', 'classificacaoDistancia',
   ]
   await form.validate()
   const hasErrors = step1Fields.some(f => form.errors.value[f as keyof typeof form.errors.value])
   if (!hasErrors) step.value = 2
 }
 
-// ─── Submit ───────────────────────────────────────────────────────────────────
+
 const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
   try {
     const clienteCriado = await clienteService.criar({
-      nomeEmpresa:     values.nomeEmpresa,
-      documento:       values.documento,
-      emailContato:    values.email,
-      telefoneContato: values.telefone,
-      nomeResponsavel: values.responsavel,
-      pais:            values.pais,
-      estadoRegiao:    values.estado,
-      cidade:          values.cidade,
-      fusoHorario:     values.fusoHorario,
-      rua:             values.rua,
-      numero:          values.numero,
-      internacional:   values.internacional,
-      observacao:      values.observacoes,
-      ativo:           true,
+      nomeEmpresa:            values.nomeEmpresa,
+      documento:              values.documento,
+      emailContato:           values.email,
+      telefoneContato:        values.telefone,
+      nomeResponsavel:        values.responsavel,
+      pais:                   values.pais,
+      estadoRegiao:           values.estado,
+      cidade:                 values.cidade,
+      fusoHorario:            values.fusoHorario,
+      rua:                    values.rua,
+      numero:                 values.numero,
+      internacional:          values.internacional,
+      observacao:             values.observacoes,
+      ativo:                  true,
+      classificacaoDistancia: values.classificacaoDistancia,
     })
 
     resetForm()
@@ -259,7 +259,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
           </FormItem>
         </FormField>
 
-        <!-- CNPJ — bloqueia não-numéricos via keydown + paste -->
+        <!-- CNPJ -->
         <FormField v-slot="{ componentField }" name="documento">
           <FormItem>
             <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
@@ -329,7 +329,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
           </FormItem>
         </FormField>
 
-        <!-- Telefone — bloqueia não-numéricos via keydown + paste -->
+        <!-- Telefone -->
         <FormField v-slot="{ componentField }" name="telefone">
           <FormItem>
             <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
@@ -430,7 +430,6 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
           </FormItem>
         </FormField>
 
-        <!-- Número — bloqueia não-numéricos via keydown + paste -->
         <FormField v-slot="{ componentField }" name="numero">
           <FormItem>
             <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
@@ -455,7 +454,6 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
           </FormItem>
         </FormField>
 
-        <!-- Fuso Horário -->
         <FormField v-slot="{ value, handleChange }" name="fusoHorario">
           <FormItem>
             <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
@@ -480,6 +478,29 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
                   <SelectItem value="utc+3">UTC +3 (Riad/Kuwait)</SelectItem>
                   <SelectItem value="utc+4">UTC +4 (Dubai/Abu Dhabi)</SelectItem>
                   <SelectItem value="utc+9">UTC +9 (Tóquio)</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ value, handleChange }" name="classificacaoDistancia">
+          <FormItem>
+            <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
+              Classificação de Distância <span class="text-red-500 font-bold">*</span>
+            </FormLabel>
+            <Select :model-value="value" @update:model-value="handleChange">
+              <FormControl>
+                <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
+                  <SelectValue placeholder="Selecione..." />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent class="z-[200]">
+                <SelectGroup>
+                  <SelectItem value="Regional">Regional</SelectItem>
+                  <SelectItem value="Nacional">Nacional</SelectItem>
+                  <SelectItem value="Internacional">Internacional</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -561,7 +582,6 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
               </FormItem>
             </FormField>
 
-            <!-- Telefone contato — bloqueia não-numéricos -->
             <FormField :name="`contatos[${index}].telefone`" v-slot="{ componentField: dynamicField }">
               <FormItem>
                 <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
@@ -598,7 +618,6 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
         </Button>
       </div>
 
-      <!-- Footer -->
       <div class="flex items-center justify-end border-t border-border mt-10 pt-6">
         <div class="flex gap-3">
           <Button type="button" variant="ghost" class="hover:bg-muted/30" @click="emit('fechar')">

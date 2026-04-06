@@ -7,10 +7,12 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil,
+  ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil, X,
 } from 'lucide-vue-next'
 import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
+import OrdemServicoCadastroPopup from '@/components/ordemServico/OrdemServicoCadastroPopup.vue'
 
+const isCadastroOpen = ref(false)
 const searchQuery = ref('')
 const ordens = ref<OrdemServicoResponseDTO[]>([])
 const loading = ref(false)
@@ -56,24 +58,26 @@ const filteredOrdens = computed(() =>
 )
 
 const statusClass = (status: string) => ({
-  'AGUARDANDO': 'bg-amber-500',
+  'AGUARDANDO':  'bg-amber-500',
+  'AGENDADO':    'bg-blue-400',
   'EM_EXECUCAO': 'bg-blue-500',
-  'CONCLUIDA': 'bg-emerald-500',
-  'CANCELADA': 'bg-red-500',
+  'CONCLUIDA':   'bg-emerald-500',
+  'CANCELADA':   'bg-red-500',
 } as Record<string, string>)[status] ?? 'bg-gray-500'
 
 const criticidadeClass = (c: string) => ({
   'CRITICA': 'text-red-400 font-semibold',
-  'ALTA': 'text-orange-400 font-semibold',
-  'MEDIA': 'text-amber-400',
-  'BAIXA': 'text-blue-400',
+  'ALTA':    'text-orange-400 font-semibold',
+  'MEDIA':   'text-amber-400',
+  'BAIXA':   'text-blue-400',
 } as Record<string, string>)[c] ?? 'text-muted-foreground'
 
 const formatDate = (d: string) =>
   d ? new Date(d).toLocaleDateString('pt-BR') : '—'
 
-onMounted(async () => {
+async function carregarOrdens() {
   loading.value = true
+  erro.value = ''
   try {
     ordens.value = await ordemServicoService.listar()
   } catch (e: any) {
@@ -81,7 +85,9 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(carregarOrdens)
 </script>
 
 <template>
@@ -116,7 +122,11 @@ onMounted(async () => {
           class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary"
         />
       </div>
-      <Button size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-blue-600 hover:bg-blue-700 text-white border-none">
+      <Button
+        size="lg"
+        @click="isCadastroOpen = true"
+        class="h-12 font-bold uppercase text-[11px] px-6 bg-blue-600 hover:opacity-90 text-white border-none shadow-md"
+      >
         <Plus class="w-4 h-4 mr-2" /> Nova Ordem
       </Button>
     </div>
@@ -136,6 +146,7 @@ onMounted(async () => {
             <TableHead class="h-12">Criticidade</TableHead>
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Abertura</TableHead>
+            <TableHead class="h-12">Agendamento</TableHead>
             <TableHead class="text-right pr-14 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -187,5 +198,58 @@ onMounted(async () => {
       </Table>
     </div>
 
+    <!-- Popup de Cadastro -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            @click="isCadastroOpen = false"
+          />
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Nova Ordem de Serviço</h2>
+                <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para abrir uma nova ordem de serviço.</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                @click="isCadastroOpen = false"
+                class="hover:bg-red-500/10 hover:text-red-500"
+              >
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <OrdemServicoCadastroPopup
+                @fechar="isCadastroOpen = false"
+                @success="carregarOrdens"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
   </div>
 </template>
+
+<style scoped>
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .modal-content,
+.modal-leave-active .modal-content {
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: translateX(100vw);
+}
+</style>

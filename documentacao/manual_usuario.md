@@ -18,6 +18,9 @@
   - [Cadastro de Novo Contrato](#cadastro-de-novo-contrato)
   - [Máquinas Base](#máquinas-base)
   - [Softwares](#softwares-opcional)
+- [Cadastro de Ordem de Serviço](#cadastro-de-ordem-de-serviço)
+- [Seleção de Máquina (Ordem de Serviço)](#seleção-de-máquina-ordem-de-serviço)
+- [Seleção de Técnico (Ordem de Serviço)](#seleção-de-técnico-ordem-de-serviço)
 
 ---
 
@@ -245,5 +248,58 @@ Centraliza contratos e vínculos.
 
 ---
 
+## Cadastro de Ordem de Serviço
 
+Permite abrir chamados técnicos vinculando cliente, contrato e técnico.
+
+### Identificação
+- Cliente  
+- Contrato  
+- Criticidade  
+- Data de abertura (automática)  
+- Data de agendamento  
+- Observação  
+
+### Etapas
+1. Identificação  
+2. Máquina  
+3. Técnico  
+
+### Ações
+- **Próximo**: avançar  
+- **Fechar**: cancelar
+
+![Cadastro Ordem Serviço](../assets/ordem_cad.png)
+
+---
+
+## Seleção de Máquina (Ordem de Serviço)
+
+Nesta etapa, é definido o equipamento que será atendido na ordem de serviço.
+
+### Informações
+
+- **Modelo**: Seleção do equipamento cadastrado  
+- **Identificação**: Nome ou apelido do ativo  
+- **Localização**: Onde o equipamento está instalado  
+- **Data de Instalação**: Registro da instalação  
+
+---
+
+### Ações
+
+- **Adicionar Máquina**: incluir mais ativos  
+- **Voltar**: retornar à etapa anterior  
+- **Próximo**: avançar para seleção do técnico  
+- **Cancelar**: encerrar sem salvar
+
+![Maquinas Serviço](../assets/ordem_maq.png)
+
+--- 
+
+## Seleção de Técnico (ordem de serviço)
+
+- Vincular técnico ao contrato
+
+![Maquinas Serviço](../assets/ordem_tec.png)
 

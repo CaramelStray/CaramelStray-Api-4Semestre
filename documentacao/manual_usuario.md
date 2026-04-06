@@ -40,7 +40,7 @@ O sistema permite priorizar atendimentos, evitar atrasos contratuais e melhorar 
 
 Este módulo permite a gestão centralizada das empresas parceiras e o acompanhamento de seus contratos.
 
-![Visualização de Clientes](./assets/cli_visu.png)
+![Visualização de Clientes](../assets/cli_visu.png)
 
 ### Indicadores e Funcionalidades
 
@@ -66,7 +66,7 @@ Este módulo permite a gestão centralizada das empresas parceiras e o acompanha
 
 Permite registrar uma nova empresa no sistema.
 
-![Cadastro de Cliente](./assets/cad_clientes_passo1.png)
+![Cadastro de Cliente](../assets/cad_clientes_passo1.png)
 
 ### Etapas do Cadastro
 
@@ -99,7 +99,7 @@ Permite adicionar contatos vinculados ao cliente.
 - Adição de múltiplos contatos
 - Remoção de contatos
 
-![Contatos](./assets/contatos_cliente.png)
+![Contatos](../assets/contatos_cliente.png)
 
 ---
 
@@ -112,7 +112,7 @@ Gerencia habilidades e competências.
 - Busca e edição
 - Exclusão controlada
 
-![Certificações](./assets/visu_certifica.png)
+![Certificações](../assets/visu_certifica.png)
 
 ---
 
@@ -122,7 +122,7 @@ Gerencia habilidades e competências.
 - Observações
 - Salvamento no catálogo
 
-![Cadastro de Certificação](./assets/cad_certifica.png)
+![Cadastro de Certificação](../assets/cad_certifica.png)
 
 ---
 
@@ -135,7 +135,7 @@ Gerencia equipe operacional.
 - Certificações
 - Exportação de dados
 
-![Técnicos](./assets/tecnico_visu.png)
+![Técnicos](../assets/tecnico_visu.png)
 
 ---
 
@@ -147,7 +147,7 @@ Gerencia equipe operacional.
 - Cargo e telefone
 - Estado e disponibilidade
 
-![Cadastro Técnico](./assets/cad_tecnico.png)
+![Cadastro Técnico](../assets/cad_tecnico.png)
 
 ---
 
@@ -157,7 +157,7 @@ Gerencia equipe operacional.
 - Definir nível (1 a 5)
 - Inserir validade
 
-![Certificações Técnico](./assets/visu_certifica.png)
+![Certificações Técnico](../assets/visu_certifica.png)
 
 ---
 
@@ -170,7 +170,7 @@ Gerencia ativos físicos.
 - Especificações técnicas
 - Limite de manutenção
 
-![Máquinas](./assets/visu_maquina.png)
+![Máquinas](../assets/visu_maquina.png)
 
 ---
 
@@ -183,7 +183,7 @@ Gerencia softwares e licenças.
 - Controle de versões
 - Fornecedores
 
-![Sistemas](./assets/visu_sistema.png)
+![Sistemas](../assets/visu_sistema.png)
 
 ---
 
@@ -194,7 +194,7 @@ Gerencia softwares e licenças.
 - Documentação
 - Checklist técnico
 
-![Cadastro Software](./assets/cad_sistema.png)
+![Cadastro Software](../assets/cad_sistema.png)
 
 ---
 
@@ -207,7 +207,7 @@ Centraliza contratos e vínculos.
 - Alertas
 - Controle de vigência
 
-![Contratos](./assets/contrato.png)
+![Contratos](../assets/contrato.png)
 
 ---
 
@@ -222,7 +222,7 @@ Centraliza contratos e vínculos.
 - SLA
 - Manutenção
 
-![Cadastro Contrato](./assets/cad_contrato.png)
+![Cadastro Contrato](../assets/cad_contrato.png)
 
 ---
 
@@ -232,7 +232,7 @@ Centraliza contratos e vínculos.
 - Identificação e localização
 - Inclusão múltipla
 
-![Máquinas Contrato](./assets/contrato_maquinas.png)
+![Máquinas Contrato](../assets/contrato_maquinas.png)
 
 ---
 
@@ -241,7 +241,9 @@ Centraliza contratos e vínculos.
 - Vincular softwares ao contrato
 - Etapa opcional
 
-![Software Contrato](./assets/contrato_softw.png)
+![Software Contrato](../assets/contrato_softw.png)
 
 ---
+
+
 

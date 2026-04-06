@@ -11,10 +11,13 @@ import {
   FormItem,
   FormLabel,
 } from '@/components/ui/form'
-import { habilidadeService } from '@/services/habilidadeService'
+import { habilidadeService, type HabilidadeResponseDTO } from '@/services/habilidadeService'
 import { Code2 } from 'lucide-vue-next'
 
-const emit = defineEmits(['fechar'])
+const emit = defineEmits<{
+  fechar: []
+  sucesso: [habilidade: HabilidadeResponseDTO]
+}>()
 
 const formSchema = toTypedSchema(z.object({
   descricao: z.string({ required_error: '*' }).min(1, '*'),
@@ -29,12 +32,14 @@ const form = useForm({
   }
 })
 
-const onSubmit = form.handleSubmit(async (values) =>  {
+const onSubmit = form.handleSubmit(async (values, { resetForm }) =>  {
   try {
-    await habilidadeService.criar({
+    const habilidadeCriada = await habilidadeService.criar({
       descricao: values.descricao,
       observacao: values.observacao,
     })
+    resetForm()
+    emit('sucesso', habilidadeCriada)
     emit('fechar')
   } catch (e: any) {
     console.error('Erro ao cadastrar habilidade:', e.message)

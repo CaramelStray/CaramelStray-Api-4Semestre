@@ -21,9 +21,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Plus, Trash2, CheckSquare } from 'lucide-vue-next'
-import { catalogoSoftwareService } from '@/services/catalogoSoftwareService'
+import {
+  catalogoSoftwareService,
+  type CatalogoSoftwareResponseDTO,
+} from '@/services/catalogoSoftwareService'
 
-const emit = defineEmits(['fechar', 'sucesso'])
+const emit = defineEmits<{
+  fechar: []
+  sucesso: [software: CatalogoSoftwareResponseDTO]
+}>()
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -65,7 +71,7 @@ const tiposDisponiveis = [
 
 const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
   try {
-    await catalogoSoftwareService.criar({
+    const softwareCriado = await catalogoSoftwareService.criar({
       nomeSoftware: values.nomeSoftware,
       versao: values.versao,
       tipo: values.tipo,
@@ -77,7 +83,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
     })
 
     resetForm()
-    emit('sucesso')
+    emit('sucesso', softwareCriado)
     emit('fechar')
   } catch (error: any) {
     const data = error.response?.data

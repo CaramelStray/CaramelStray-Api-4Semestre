@@ -385,10 +385,8 @@ import { maquinaSoftwareInstaladoService } from '@/services/maquinaSoftwareInsta
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
 import { ordemServicoService } from '@/services/ordemServicoService'
 
-// ─── Emits ────────────────────────────────────────────────────────────────────
 const emit = defineEmits(['fechar', 'success'])
 
-// ─── State ────────────────────────────────────────────────────────────────────
 const step = ref(1)
 const loading = ref(false)
 const loadingSoftware = ref(false)
@@ -403,7 +401,6 @@ const selectedClienteId = ref<string | null>(null)
 const selectedContratoId = ref<string | null>(null)
 const selectedMaquinaId = ref<string | null>(null)
 
-// ─── Computed ─────────────────────────────────────────────────────────────────
 const clienteSelecionado = computed(() =>
   clientes.value.find(c => c.id.toString() === selectedClienteId.value) ?? null
 )
@@ -417,7 +414,6 @@ const maquinasFiltradas = computed(() =>
   contratoSelecionado.value?.maquinas ?? []
 )
 
-// ─── Helpers de Data ─────────────────────────────────────────────────────────
 const todayDisplayString = computed(() => {
   const now = new Date()
   const day   = String(now.getDate()).padStart(2, '0')
@@ -456,7 +452,6 @@ function formatDateDisplay(isoDate: string): string {
   return `${day}/${month}/${year}`
 }
 
-// ─── Zod Schema ───────────────────────────────────────────────────────────────
 const formSchema = toTypedSchema(z.object({
   codigoCliente:         z.string({ required_error: '*' }).min(1, 'Selecione um cliente'),
   codigoContrato:        z.string({ required_error: '*' }).min(1, 'Selecione um contrato'),
@@ -480,7 +475,6 @@ const form = useForm({
   }
 })
 
-// ─── Carregamento inicial ─────────────────────────────────────────────────────
 onMounted(async () => {
   try {
     clientes.value = await clienteService.listar()
@@ -489,7 +483,6 @@ onMounted(async () => {
   }
 })
 
-// ─── Handlers encadeados ─────────────────────────────────────────────────────
 function onClienteChange(val: string) {
   selectedClienteId.value = val
   selectedContratoId.value = null
@@ -524,7 +517,6 @@ async function onMaquinaChange(val: string) {
   }
 }
 
-// ─── Técnicos (lazy load no step 3) ──────────────────────────────────────────
 watch(step, async (newStep) => {
   if (newStep === 3 && tecnicosDisponiveis.value.length === 0) {
     loadingTecnicos.value = true
@@ -541,7 +533,6 @@ watch(step, async (newStep) => {
   }
 })
 
-// ─── Validação por step ───────────────────────────────────────────────────────
 const STEP_FIELDS: Record<number, string[]> = {
   1: ['codigoCliente', 'codigoContrato', 'criticidade', 'dataAgendamento', 'observacaoGeral'],
   2: ['codigoMaquinaContrato'],
@@ -556,12 +547,10 @@ const nextStep = async () => {
   if (!hasErrors) step.value++
 }
 
-// ─── Helper ───────────────────────────────────────────────────────────────────
 function getInitials(nome: string): string {
   return nome.split(' ').filter(Boolean).slice(0, 2).map(n => n[0].toUpperCase()).join('')
 }
 
-// ─── Submit ───────────────────────────────────────────────────────────────────
 const onSubmit = form.handleSubmit(async (values) => {
   loading.value = true
   try {

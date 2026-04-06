@@ -10,11 +10,15 @@ import {
   ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil, X,
 } from 'lucide-vue-next'
 import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
+import { clienteService } from '@/services/clienteService'
+import { tecnicoService } from '@/services/tecnicoService'
 import OrdemServicoCadastroPopup from '@/components/ordemServico/OrdemServicoCadastroPopup.vue'
 
 const isCadastroOpen = ref(false)
 const searchQuery = ref('')
 const ordens = ref<OrdemServicoResponseDTO[]>([])
+const clienteMap = ref<Record<number, string>>({})
+const tecnicoMap = ref<Record<number, string>>({})
 const loading = ref(false)
 const erro = ref('')
 
@@ -50,11 +54,20 @@ const stats = computed(() => [
 ])
 
 const filteredOrdens = computed(() =>
-  ordens.value.filter(o =>
-    o.codigo.toString().includes(searchQuery.value.toLowerCase()) ||
-    o.status?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    o.criticidade?.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
+  ordens.value.filter(o => {
+    const nomeCliente = clienteMap.value[o.codigoCliente]?.toLowerCase() ?? ''
+    const nomeTecnico = o.codigoFuncionario
+      ? tecnicoMap.value[o.codigoFuncionario]?.toLowerCase() ?? ''
+      : ''
+    const q = searchQuery.value.toLowerCase()
+    return (
+      o.codigo.toString().includes(q) ||
+      o.status?.toLowerCase().includes(q) ||
+      o.criticidade?.toLowerCase().includes(q) ||
+      nomeCliente.includes(q) ||
+      nomeTecnico.includes(q)
+    )
+  })
 )
 
 const statusClass = (status: string) => ({
@@ -79,7 +92,20 @@ async function carregarOrdens() {
   loading.value = true
   erro.value = ''
   try {
-    ordens.value = await ordemServicoService.listar()
+    const lista = await ordemServicoService.listar()
+    ordens.value = lista
+
+    const clienteIds = [...new Set(lista.map(o => o.codigoCliente))]
+    const tecnicoIds = [...new Set(lista.map(o => o.codigoFuncionario).filter(Boolean) as number[])]
+
+    const [clientes, tecnicos] = await Promise.all([
+      Promise.all(clienteIds.map(id => clienteService.buscarPorId(id))),
+      Promise.all(tecnicoIds.map(id => tecnicoService.buscarPorId(id))),
+    ])
+
+    clienteMap.value = Object.fromEntries(clientes.map(c => [c.id, c.nomeEmpresa]))
+    tecnicoMap.value = Object.fromEntries(tecnicos.map(t => [t.id, t.nome]))
+
   } catch (e: any) {
     erro.value = e.message
   } finally {
@@ -118,7 +144,7 @@ onMounted(carregarOrdens)
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
         <Input
           v-model="searchQuery"
-          placeholder="Buscar por código, status ou criticidade..."
+          placeholder="Buscar por código, cliente, técnico, status ou criticidade..."
           class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary"
         />
       </div>
@@ -161,10 +187,10 @@ onMounted(carregarOrdens)
               #{{ o.codigo }}
             </TableCell>
             <TableCell class="text-sm text-muted-foreground">
-              {{ o.codigoCliente ?? '—' }}
+              {{ clienteMap[o.codigoCliente] ?? '—' }}
             </TableCell>
             <TableCell class="text-sm text-muted-foreground">
-              {{ o.codigoFuncionario ?? '—' }}
+              {{ o.codigoFuncionario ? (tecnicoMap[o.codigoFuncionario] ?? '—') : '—' }}
             </TableCell>
             <TableCell>
               <span class="text-sm" :class="criticidadeClass(o.criticidade)">
@@ -206,7 +232,6 @@ onMounted(carregarOrdens)
             class="absolute inset-0 bg-black/60 backdrop-blur-sm"
             @click="isCadastroOpen = false"
           />
-
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
@@ -222,7 +247,6 @@ onMounted(carregarOrdens)
                 <X class="w-6 h-6" />
               </Button>
             </div>
-
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <OrdemServicoCadastroPopup
                 @fechar="isCadastroOpen = false"
@@ -239,17 +263,9 @@ onMounted(carregarOrdens)
 
 <style scoped>
 .modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
+.modal-leave-to { opacity: 0; }
 .modal-enter-active .modal-content,
-.modal-leave-active .modal-content {
-  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
+.modal-leave-active .modal-content { transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
 .modal-enter-from .modal-content,
-.modal-leave-to .modal-content {
-  transform: translateX(100vw);
-}
+.modal-leave-to .modal-content { transform: translateX(100vw); }
 </style>

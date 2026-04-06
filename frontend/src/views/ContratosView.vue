@@ -6,82 +6,98 @@ import { Input } from '@/components/ui/input'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
-import { 
+import {
   Download, Plus, Users, FileText, AlertTriangle, TrendingUp,
   Pencil, Eye, Search,
-  Info, XCircle, CheckCircle2 
+  Info, XCircle, CheckCircle2,
 } from 'lucide-vue-next'
 
 import ContratoCadastroPopup from '@/components/contrato/ContratoCadastroPopup.vue'
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
+import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 
 const searchQuery = ref('')
 const showNovoContratoPopup = ref(false)
 const contratos = ref<ContratoResponseDTO[]>([])
+
+// Mapa: codigoContrato → ClienteResponseDTO
+const contratoClienteMap = ref<Record<number, ClienteResponseDTO>>({})
+
 const loading = ref(false)
 const erro = ref('')
 
 const criticidadeMap = {
-  EXPIRANDO: { icon: XCircle, class: 'bg-red-500/20 text-red-400 border-red-500/30' },
-  PENDENTE: { icon: Info, class: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
-  INATIVO: { icon: Info, class: 'bg-slate-500/20 text-slate-300 border-slate-500/30' },
-  ATIVO: { icon: CheckCircle2, class: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
-  EM_VIGOR: { icon: CheckCircle2, class: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
+  EXPIRANDO: { icon: XCircle,      class: 'bg-red-500/20 text-red-400 border-red-500/30' },
+  PENDENTE:  { icon: Info,         class: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
+  INATIVO:   { icon: Info,         class: 'bg-slate-500/20 text-slate-300 border-slate-500/30' },
+  ATIVO:     { icon: CheckCircle2, class: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
+  EM_VIGOR:  { icon: CheckCircle2, class: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
 } as Record<string, any>
 
 const getAvatarColor = (name: string) => {
   const colors = ['bg-blue-500 text-white', 'bg-emerald-500 text-white', 'bg-rose-500 text-white', 'bg-indigo-500 text-white']
-  const index = name.length % colors.length
-  return colors[index]
+  return colors[name.length % colors.length]
 }
 
 const formatDate = (value?: string | null) => {
   if (!value) return '—'
-
   const date = new Date(`${value}T00:00:00`)
-  if (Number.isNaN(date.getTime())) return value
-
-  return new Intl.DateTimeFormat('pt-BR').format(date)
+  return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('pt-BR').format(date)
 }
 
-const buildContratoId = (contrato: ContratoResponseDTO) => {
-  if (contrato.descricao && contrato.descricao.trim()) {
-    return contrato.descricao
-  }
-
-  return `CTR-${String(contrato.codigo).padStart(4, '0')}`
-}
+const buildContratoId = (contrato: ContratoResponseDTO) =>
+  contrato.descricao?.trim() || `CTR-${String(contrato.codigo).padStart(4, '0')}`
 
 const getDiasParaVencimento = (dataFim?: string | null) => {
   if (!dataFim) return null
-
   const hoje = new Date()
   hoje.setHours(0, 0, 0, 0)
-
   const vencimento = new Date(`${dataFim}T00:00:00`)
   if (Number.isNaN(vencimento.getTime())) return null
-
-  const diff = vencimento.getTime() - hoje.getTime()
-  return Math.ceil(diff / (1000 * 60 * 60 * 24))
+  return Math.ceil((vencimento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24))
 }
 
 const getStatusApresentacao = (contrato: ContratoResponseDTO) => {
   const status = contrato.status || 'ATIVO'
-  const diasParaVencimento = getDiasParaVencimento(contrato.dataFim)
-
+  const dias = getDiasParaVencimento(contrato.dataFim)
   if (status === 'INATIVO') return 'INATIVO'
-  if (diasParaVencimento !== null && diasParaVencimento < 0) return 'PENDENTE'
-  if (diasParaVencimento !== null && diasParaVencimento <= 30) return 'EXPIRANDO'
-
+  if (dias !== null && dias < 0) return 'PENDENTE'
+  if (dias !== null && dias <= 30) return 'EXPIRANDO'
   return status
 }
+
+// Helpers para acessar o cliente de um contrato
+const getNomeCliente = (contrato: ContratoResponseDTO) =>
+  contratoClienteMap.value[contrato.codigo]?.nomeEmpresa ?? null
+
+const getEmailCliente = (contrato: ContratoResponseDTO) =>
+  contratoClienteMap.value[contrato.codigo]?.emailContato ?? null
 
 const carregarContratos = async () => {
   loading.value = true
   erro.value = ''
 
   try {
-    contratos.value = await contratoService.listar()
+    // Busca contratos e clientes em paralelo
+    const [lista, clientes] = await Promise.all([
+      contratoService.listar(),
+      clienteService.listar(),
+    ])
+
+    contratos.value = lista
+
+    // Monta o mapa: para cada cliente, itera seus contratos embutidos
+    const mapa: Record<number, ClienteResponseDTO> = {}
+    for (const cliente of clientes) {
+      const contratosDoCliente = (cliente as any).contratos as Array<{ codigo: number }> | undefined
+      if (contratosDoCliente) {
+        for (const c of contratosDoCliente) {
+          mapa[c.codigo] = cliente
+        }
+      }
+    }
+    contratoClienteMap.value = mapa
+
   } catch (e: any) {
     erro.value = e.message || 'Erro ao carregar contratos.'
   } finally {
@@ -89,30 +105,22 @@ const carregarContratos = async () => {
   }
 }
 
-onMounted(() => {
-  carregarContratos()
-})
+onMounted(carregarContratos)
 
 const filteredContratos = computed(() => {
   const query = searchQuery.value.toLowerCase()
-
   return contratos.value.filter((contrato) => {
-    const idContrato = buildContratoId(contrato).toLowerCase()
-    const nomeCliente = (contrato.nomeCliente || '').toLowerCase()
-    const emailContato = (contrato.emailContatoCliente || '').toLowerCase()
-
-    return (
-      idContrato.includes(query) ||
-      nomeCliente.includes(query) ||
-      emailContato.includes(query)
-    )
+    const idContrato    = buildContratoId(contrato).toLowerCase()
+    const nomeCliente   = (getNomeCliente(contrato) ?? '').toLowerCase()
+    const emailContato  = (getEmailCliente(contrato) ?? '').toLowerCase()
+    return idContrato.includes(query) || nomeCliente.includes(query) || emailContato.includes(query)
   })
 })
 
-const expiringSoonCount = computed(() => contratos.value.filter((contrato) => getStatusApresentacao(contrato) === 'EXPIRANDO').length)
-const activeCount = computed(() => contratos.value.filter((contrato) => ['ATIVO', 'EM_VIGOR'].includes(getStatusApresentacao(contrato))).length)
-const pendingCount = computed(() => contratos.value.filter((contrato) => getStatusApresentacao(contrato) === 'PENDENTE').length)
-const uniqueClientsCount = computed(() => new Set(contratos.value.map((contrato) => contrato.nomeCliente || `cliente-${contrato.codigoCliente || contrato.codigo}`)).size)
+const expiringSoonCount  = computed(() => contratos.value.filter(c => getStatusApresentacao(c) === 'EXPIRANDO').length)
+const activeCount        = computed(() => contratos.value.filter(c => ['ATIVO', 'EM_VIGOR'].includes(getStatusApresentacao(c))).length)
+const pendingCount       = computed(() => contratos.value.filter(c => getStatusApresentacao(c) === 'PENDENTE').length)
+const uniqueClientsCount = computed(() => new Set(Object.values(contratoClienteMap.value).map(c => c.id)).size)
 
 const stats = computed(() => [
   {
@@ -132,7 +140,7 @@ const stats = computed(() => [
   {
     label: 'Vencendo em Breve',
     value: expiringSoonCount.value.toString(),
-    sub: 'Prazo de atencao nos proximos 30 dias',
+    sub: 'Prazo de atenção nos próximos 30 dias',
     icon: AlertTriangle,
     color: 'text-red-400',
   },
@@ -149,8 +157,9 @@ const stats = computed(() => [
 <template>
   <div class="p-6 space-y-6">
     <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
-    <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
+    <div v-if="erro"    class="text-center py-12 text-red-400">{{ erro }}</div>
 
+    <!-- Stats -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
         <CardHeader class="flex flex-row items-center justify-between pb-2">
@@ -164,6 +173,7 @@ const stats = computed(() => [
       </Card>
     </div>
 
+    <!-- Busca + botões -->
     <div class="flex items-center justify-between gap-4 w-full">
       <div class="relative flex-1">
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
@@ -177,13 +187,13 @@ const stats = computed(() => [
         <Button variant="outline" size="lg" class="h-12 font-bold uppercase text-[11px] px-6 border-border hover:bg-muted/20">
           <Download class="w-4 h-4 mr-2" /> Exportar Relatório
         </Button>
-
-        <Button @click="showNovoContratoPopup = true" size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
+        <Button @click="showNovoContratoPopup = true" size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
           <Plus class="w-4 h-4 mr-2" /> Novo Contrato
         </Button>
       </div>
     </div>
 
+    <!-- Tabela -->
     <div class="rounded-md border border-border bg-sidebar overflow-hidden">
       <div class="p-4 border-b border-border bg-muted/5">
         <h2 class="text-sm font-normal tracking-tight text-muted-foreground">Contratos cadastrados por cliente</h2>
@@ -214,17 +224,23 @@ const stats = computed(() => [
 
             <TableCell class="py-3">
               <div class="flex items-center gap-3">
-                <div :class="['flex items-center justify-center size-7 rounded-full text-xs font-bold', getAvatarColor(contrato.nomeCliente || 'CT')]">
-                  {{ (contrato.nomeCliente || 'CT').substring(0, 2).toUpperCase() }}
+                <div
+                  :class="['flex items-center justify-center size-7 rounded-full text-xs font-bold',
+                    getAvatarColor(getNomeCliente(contrato) ?? 'CT')]"
+                >
+                  {{ (getNomeCliente(contrato) ?? 'CT').substring(0, 2).toUpperCase() }}
                 </div>
-                <span class="text-sm font-normal text-foreground">{{ contrato.nomeCliente || 'Cliente não informado' }}</span>
+                <span class="text-sm font-normal text-foreground">
+                  {{ getNomeCliente(contrato) ?? 'Cliente não informado' }}
+                </span>
               </div>
             </TableCell>
 
-            <TableCell class="text-sm font-normal text-foreground">{{ contrato.emailContatoCliente || '—' }}</TableCell>
+            <TableCell class="text-sm font-normal text-foreground">
+              {{ getEmailCliente(contrato) ?? '—' }}
+            </TableCell>
 
             <TableCell class="text-sm font-normal text-foreground">{{ formatDate(contrato.dataInicio) }}</TableCell>
-
             <TableCell class="text-sm font-normal text-foreground">{{ formatDate(contrato.dataFim) }}</TableCell>
 
             <TableCell>

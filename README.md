@@ -68,7 +68,10 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 ## 📅 Cronograma de Sprints <a id="sprint"></a>
 | Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Site Tracker                                  |
 | --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------- |----------------------------------------------- |
-| 🔖 **SPRINT 1** | 08/09 - 28/09 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Jira](https://patriciamoraesviegas.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZDkzMDgzMDkzMzZiNGU2NTk0NDgwZjZhODZjNGRlOGQiLCJwIjoiaiJ9)  |[Sprint 1 entrega](http://tracker.pedrohenribeiro.com/) |
+| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Jira](https://patriciamoraesviegas.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZDkzMDgzMDkzMzZiNGU2NTk0NDgwZjZhODZjNGRlOGQiLCJwIjoiaiJ9)  |[Sprint 1 entrega](http://tracker.pedrohenribeiro.com/) |
+| 🔖 **SPRINT 2** | 13/04 - 05/05 | [Sprint 2 Docs](./Documentação/SprintBacklog.md) |[Sprint 2 Tasks](./Documentação/Backlog-Sprint2.md)|  |
+| 🔖 **SPRINT 3** | 11/05 - 31/05 |  |  ||
+| ⚡️ **feira de soluções** | |  |  ||
 
 
 ## 💻 Tecnologias <a id="tecnologias"></a>
@@ -92,10 +95,6 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 
 # 📚 Manual de usuário <a id="manual"></a>
 [Manual do usuário](./documentacao/manual_usuario.md)
-
-## 📦 Desing do Projeto <a id="figma"></a>
-
-[Figma](https://stitch.withgoogle.com/projects/8232220029481373226)
 
 ## 🎓 Equipe <a id="equipe"></a>
 

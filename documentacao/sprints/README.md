@@ -25,6 +25,36 @@ A empresa opera cerca de 100 sistemas distribuídos mundialmente, cada um exigin
 horas de uso. Essas intervenções variam em duração conforme a localização - por exemplo, manutenções próximas, como em sistemas 
 no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distantes, como na Ásia, demandam mais tempo.
 
+---
+
+✅ Definition of Done (DoD) – Tracker
+Código backend desenvolvido em Spring Boot versionado no repositório principal.
+Banco de dados (PostgreSQL) atualizado com scripts versionados (Flyway).
+Frontend implementado em Vue.js + Vuetify, responsivo e integrado ao backend.
+Autenticação e autorização implementadas via JWT, validadas em Postman.
+Testes unitários e de integração com cobertura mínima de 80% nas regras críticas.
+Endpoints REST documentados com Swagger.
+Interfaces confirmadas no Figma antes da implementação.
+Funcionalidade validada em ambiente de homologação com dados reais de teste.
+Deploy automatizado testado (build + banco + API + frontend funcionando em conjunto).
+Documentação de uso e técnica atualizada (README ou Wiki).
+
+---
+
+✅ Definition of Ready (DoR) – Tracker
+User Story validada e compreendida pelo time técnico.
+Critérios de aceitação claros, objetivos e documentados.
+Protótipos/Wireframes definidos no Figma e revisados com o cliente.
+Modelagem de entidades e relacionamentos definida em PostgreSQL.
+Contratos de API descritos no Swagger.
+Dependências externas identificadas (bibliotecas, integrações).
+Estratégia de autenticação/autorização via JWT definida.
+Dados de exemplo para testes.
+Estimativa de esforço registrada pelo time.
+Reunião de refinamento realizada com aprovação do cliente.
+
+---
+
 ## 📋 Backlog do Produto <a id="backlog"></a>
 
 # Backlog do Produto — Sistema de Gestão de Manutenções
@@ -37,24 +67,24 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 | Rank | Prioridade | User Story | Estimativa | Sprint |
 |------|------------|-----------|-----------|--------|
 | 1 | Alta | Como gestor, quero criar uma ordem de manutenção vinculada a um sistema e a um contrato para iniciar o planejamento do atendimento | 50 | 1 |
-| 2 | Média | Como gestor, quero cadastrar sistemas instalados nos clientes para registrar os equipamentos sob contrato de manutenção | 40 | 1 |
-| 3 | Média | Como gestor, quero cadastrar contratos de manutenção vinculados a clientes e sistemas para definir intervalos e SLAs de atendimento | 40 | 1 |
-| 4 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
-| 5 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 40 | 1 |
-| 6 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 40 | 1 |
-| 7 | Alta | Como técnico, quero registrar os dados da execução da manutenção para documentar o que foi realizado na visita | 30 | 2 |
-| 8 | Alta | Como gestor, quero definir a criticidade de uma ordem de manutenção para organizar os atendimentos por impacto | 40 | 2 |
-| 9 | Alta | Como gestor, quero registrar viagens de manutenção associadas a ordens para planejar o deslocamento dos técnicos | 50 | 2 |
+| 2 | Alta | Como técnico, quero registrar os dados da execução da manutenção para documentar o que foi realizado na visita | 30 | 2 |
+| 3 | Alta | Como gestor, quero definir a criticidade de uma ordem de manutenção para organizar os atendimentos por impacto | 40 | 2 |
+| 4 | Alta | Como gestor, quero registrar viagens de manutenção associadas a ordens para planejar o deslocamento dos técnicos | 50 | 2 |
+| 5 | Alta | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | 50 | 3 |
+| 6 | Alta | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | 40 | 3 |
+| 7 | Média | Como gestor, quero cadastrar sistemas instalados nos clientes para registrar os equipamentos sob contrato de manutenção | 40 | 1 |
+| 8 | Média | Como gestor, quero cadastrar contratos de manutenção vinculados a clientes e sistemas para definir intervalos e SLAs de atendimento | 40 | 1 |
+| 9 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
 | 10 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 60 | 2 |
 | 11 | Média | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | 40 | 2 |
 | 12 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 40 | 2 |
 | 13 | Baixa | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 60 | 2 |
-| 14 | Alta | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | 50 | 3 |
-| 15 | Alta | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | 40 | 3 |
-| 16 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 40 | 3 |
-| 17 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
-| 18 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 60 | 3 |
-| 19 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 60 | 3 |
+| 15 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 40 | 3 |
+| 16 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
+| 17 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 40 | 1 |
+| 18 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 40 | 1 |
+| 19 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 60 | 3 |
+| 20 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 60 | 3 |
 
 ## 🎓 Equipe <a id="equipe"></a>
 

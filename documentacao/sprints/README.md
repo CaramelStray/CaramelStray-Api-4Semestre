@@ -3,7 +3,7 @@
 ## Caramel Stray
 
 <p align="center">
-      <img src="../../assets/logo_v2 2.png" width="50" align="center">
+      <img src="../../assets/logo_v2 2.svg" width="50" align="center">
       <h2 align="center"> Tracker</h2>
 </p>
 
@@ -12,6 +12,7 @@
 
 <p align="center">
   | <a href ="#desafio"> Desafio</a>  |
+      <a href ="#dod"> DOD e DOR</a> |
   <a href ="#backlog"> Backlog</a>  |
   <a href ="#equipe"> Equipe</a>  |
 </p>
@@ -27,7 +28,7 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 
 ---
 
-✅ Definition of Done (DoD) – Tracker
+## ✅ Definition of Done (DoD) – Tracker <a id="dod"></a>
 Código backend desenvolvido em Spring Boot versionado no repositório principal.
 Banco de dados (PostgreSQL) atualizado com scripts versionados (Flyway).
 Frontend implementado em Vue.js + Vuetify, responsivo e integrado ao backend.
@@ -41,7 +42,7 @@ Documentação de uso e técnica atualizada (README ou Wiki).
 
 ---
 
-✅ Definition of Ready (DoR) – Tracker
+## ✅ Definition of Ready (DoR) – Tracker
 User Story validada e compreendida pelo time técnico.
 Critérios de aceitação claros, objetivos e documentados.
 Protótipos/Wireframes definidos no Figma e revisados com o cliente.
@@ -127,13 +128,13 @@ Reunião de refinamento realizada com aprovação do cliente.
       <td><a href="https://www.linkedin.com/in/william-honda-965138191/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
-      <td>Pedro</td>
+      <td>Pedro Ribeiro</td>
       <td>Desenvolvedor</td>
-      <td><a href="#"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href="#"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
+      <td><a href="https://github.com/pedrohenribeiro"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/pedrohenribeiro1?utm_source=share_via&utm_content=profile&utm_medium=member_ios"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
     </tr>
      <tr>
-      <td>Thor</td>
+      <td>Thor Lyndgaard</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/thorlyndgaard"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/thor-lyndgaard-b2155826b/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      

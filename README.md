@@ -11,7 +11,7 @@
   | <a href ="#desafio"> Desafio</a>  |
   <a href ="#solucao"> Solução</a>  |
   <a href ="#backlog"> Backlog do Produto</a>  |
-  <a href ="#sprint"> Cronograma de Sprints</a>  | <a href ="#sprint">Product backlog -> DOR e DOD</a> |
+  <a href ="#sprint"> Cronograma de Sprints</a>  | <a href ="#sprintdor">Product backlog -> DOR e DOD</a> |
   <a href ="#tecnologias">Tecnologias</a> |  <a href ="#figma">Figma</a> |
   <a href ="#branchs">Estrutura de Branchs</a>  |
   <a href ="#equipe"> Equipe</a> | <a href ="#manual"> Manual do usuário</a>
@@ -68,7 +68,13 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 ## 📅 Cronograma de Sprints <a id="sprint"></a>
 | Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Site Tracker                                  |
 | --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------- |----------------------------------------------- |
-| 🔖 **SPRINT 1** | 08/09 - 28/09 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Jira](https://patriciamoraesviegas.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZDkzMDgzMDkzMzZiNGU2NTk0NDgwZjZhODZjNGRlOGQiLCJwIjoiaiJ9)  |[Sprint 1 entrega](http://tracker.pedrohenribeiro.com/) |
+| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Jira](https://patriciamoraesviegas.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZDkzMDgzMDkzMzZiNGU2NTk0NDgwZjZhODZjNGRlOGQiLCJwIjoiaiJ9)  |[Sprint 1 entrega](http://tracker.pedrohenribeiro.com/) |
+| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](#) |[Sprint 2 Tasks](#)|  |
+| 🔖 **SPRINT 3** | 11/05 - 31/05 | [Em processo...](#)| [Em processo...](#) ||
+| ⚡️ **feira de soluções** |  |  |  ||
+
+## 💻 Product backlog -> DOR e DOD <a id="sprintdor"></a>
+[Sprints DOR e DOD](./documentacao/sprints)
 
 
 ## 💻 Tecnologias <a id="tecnologias"></a>
@@ -92,10 +98,6 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 
 # 📚 Manual de usuário <a id="manual"></a>
 [Manual do usuário](./documentacao/manual_usuario.md)
-
-## 📦 Desing do Projeto <a id="figma"></a>
-
-[Figma](https://stitch.withgoogle.com/projects/8232220029481373226)
 
 ## 🎓 Equipe <a id="equipe"></a>
 
@@ -138,13 +140,13 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
       <td><a href="https://www.linkedin.com/in/william-honda-965138191/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
-      <td>Pedro</td>
+      <td>Pedro Ribeiro</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/pedrohenribeiro"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/pedrohenribeiro1?utm_source=share_via&utm_content=profile&utm_medium=member_ios"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
     </tr>
      <tr>
-      <td>Thor</td>
+      <td>Thor Lyndgaard</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/thorlyndgaard"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/thor-lyndgaard-b2155826b/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      

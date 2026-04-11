@@ -3,7 +3,7 @@
 ## Caramel Stray
 
 <p align="center">
-      <img src="../../assets/logo_v2 2.png" width="50" align="center">
+      <img src="../../assets/logo_v2 2.svg" width="50" align="center">
       <h2 align="center"> Tracker</h2>
 </p>
 
@@ -12,6 +12,7 @@
 
 <p align="center">
   | <a href ="#desafio"> Desafio</a>  |
+      <a href ="#dod"> DOD e DOR</a> |
   <a href ="#backlog"> Backlog</a>  |
   <a href ="#equipe"> Equipe</a>  |
 </p>
@@ -27,7 +28,7 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 
 ---
 
-✅ Definition of Done (DoD) – Tracker
+## ✅ Definition of Done (DoD) – Tracker <a id="dod"></a>
 Código backend desenvolvido em Spring Boot versionado no repositório principal.
 Banco de dados (PostgreSQL) atualizado com scripts versionados (Flyway).
 Frontend implementado em Vue.js + Vuetify, responsivo e integrado ao backend.
@@ -41,7 +42,7 @@ Documentação de uso e técnica atualizada (README ou Wiki).
 
 ---
 
-✅ Definition of Ready (DoR) – Tracker
+## ✅ Definition of Ready (DoR) – Tracker
 User Story validada e compreendida pelo time técnico.
 Critérios de aceitação claros, objetivos e documentados.
 Protótipos/Wireframes definidos no Figma e revisados com o cliente.
@@ -78,13 +79,13 @@ Reunião de refinamento realizada com aprovação do cliente.
 | 10 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 60 | 2 |
 | 11 | Média | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | 40 | 2 |
 | 12 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 40 | 2 |
-| 13 | Baixa | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 60 | 2 |
-| 15 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 40 | 3 |
-| 16 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
-| 17 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 40 | 1 |
-| 18 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 40 | 1 |
-| 19 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 60 | 3 |
-| 20 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 60 | 3 |
+| 13 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 40 | 3 |
+| 14 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
+| 15| Baixa | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 60 | 2 |
+| 16 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 40 | 1 |
+| 17 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 40 | 1 |
+| 18 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 60 | 3 |
+| 19 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 60 | 3 |
 
 ## 🎓 Equipe <a id="equipe"></a>
 
@@ -127,13 +128,13 @@ Reunião de refinamento realizada com aprovação do cliente.
       <td><a href="https://www.linkedin.com/in/william-honda-965138191/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
-      <td>Pedro</td>
+      <td>Pedro Ribeiro</td>
       <td>Desenvolvedor</td>
-      <td><a href="#"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href="#"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
+      <td><a href="https://github.com/pedrohenribeiro"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/pedrohenribeiro1?utm_source=share_via&utm_content=profile&utm_medium=member_ios"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
     </tr>
      <tr>
-      <td>Thor</td>
+      <td>Thor Lyndgaard</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/thorlyndgaard"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/thor-lyndgaard-b2155826b/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      

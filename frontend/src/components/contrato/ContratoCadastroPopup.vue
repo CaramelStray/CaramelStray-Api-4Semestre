@@ -2,32 +2,45 @@
   <Dialog :open="open" @update:open="closeDialog">
     <DialogContent class="sm:max-w-[850px] max-h-[90vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle class="text-xl font-bold text-foreground">Novo Contrato</DialogTitle>
+        <DialogTitle class="text-xl font-bold text-foreground">{{ isEditMode ? 'Editar Contrato' : 'Novo Contrato' }}</DialogTitle>
       </DialogHeader>
 
-      <div class="flex items-center gap-2 mb-6 border-b pb-6 mt-2">
-        <div :class="['flex items-center gap-2 transition-colors', step === 1 ? 'text-blue-600 font-bold' : 'text-muted-foreground']">
-          <div class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm" :class="step === 1 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-muted-foreground bg-muted/20'">
+      <div class="flex items-center gap-2 mb-6 border-b border-border pb-6 mt-2">
+        <div :class="['flex items-center gap-2 transition-colors', step === 1 ? 'text-blue-400 font-bold' : step > 1 ? 'text-blue-400/60' : 'text-muted-foreground']">
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
+            :class="step === 1 ? 'border-blue-500 bg-blue-500/20 text-blue-400' : step > 1 ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60' : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
+          >
             <FileText class="w-4 h-4" />
           </div>
           <span class="text-sm hidden sm:inline-block">Dados do Contrato</span>
         </div>
-        <ChevronRight class="w-4 h-4 mx-2 text-muted-foreground/50" />
-        
-        <div :class="['flex items-center gap-2 transition-colors', step === 2 ? 'text-blue-600 font-bold' : 'text-muted-foreground']">
-          <div class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm" :class="step === 2 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-muted-foreground bg-muted/20'">
-            <Server class="w-4 h-4" />
-          </div>
-          <span class="text-sm hidden sm:inline-block">Máquinas Base</span>
-        </div>
-        <ChevronRight class="w-4 h-4 mx-2 text-muted-foreground/50" />
 
-        <div :class="['flex items-center gap-2 transition-colors', step === 3 ? 'text-blue-600 font-bold' : 'text-muted-foreground']">
-          <div class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm" :class="step === 3 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-muted-foreground bg-muted/20'">
-            <Layers class="w-4 h-4" />
+        <template v-if="!isEditMode">
+          <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
+
+          <div :class="['flex items-center gap-2 transition-colors', step === 2 ? 'text-blue-400 font-bold' : step > 2 ? 'text-blue-400/60' : 'text-muted-foreground']">
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
+              :class="step === 2 ? 'border-blue-500 bg-blue-500/20 text-blue-400' : step > 2 ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60' : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
+            >
+              <Server class="w-4 h-4" />
+            </div>
+            <span class="text-sm hidden sm:inline-block">Máquinas Base</span>
           </div>
-          <span class="text-sm hidden sm:inline-block">Softwares (Opcional)</span>
-        </div>
+
+          <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
+
+          <div :class="['flex items-center gap-2 transition-colors', step === 3 ? 'text-blue-400 font-bold' : 'text-muted-foreground']">
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
+              :class="step === 3 ? 'border-blue-500 bg-blue-500/20 text-blue-400' : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
+            >
+              <Layers class="w-4 h-4" />
+            </div>
+            <span class="text-sm hidden sm:inline-block">Softwares (Opcional)</span>
+          </div>
+        </template>
       </div>
 
       <form @submit="onSubmit">
@@ -44,6 +57,7 @@
                   </SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
             </FormItem>
           </FormField>
 
@@ -57,6 +71,7 @@
                   <SelectItem value="INATIVO">Inativo</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
             </FormItem>
           </FormField>
 
@@ -64,6 +79,7 @@
             <FormItem>
               <FormLabel class="flex items-center gap-1">Data de Início <span class="text-red-500 font-bold">*</span></FormLabel>
               <FormControl><Input type="date" v-bind="componentField" /></FormControl>
+              <FormMessage />
             </FormItem>
           </FormField>
 
@@ -71,6 +87,7 @@
             <FormItem>
               <FormLabel class="flex items-center gap-1">Data de Fim <span class="text-red-500 font-bold">*</span></FormLabel>
               <FormControl><Input type="date" v-bind="componentField" /></FormControl>
+              <FormMessage />
             </FormItem>
           </FormField>
 
@@ -78,6 +95,7 @@
             <FormItem>
               <FormLabel class="flex items-center gap-1">Período de Manutenção (meses) <span class="text-red-500 font-bold">*</span></FormLabel>
               <FormControl><Input type="number" placeholder="Ex: 6" v-bind="componentField" /></FormControl>
+              <FormMessage />
             </FormItem>
           </FormField>
 
@@ -85,6 +103,7 @@
             <FormItem>
               <FormLabel class="flex items-center gap-1">Próxima Manutenção <span class="text-red-500 font-bold">*</span></FormLabel>
               <FormControl><Input type="date" v-bind="componentField" /></FormControl>
+              <FormMessage />
             </FormItem>
           </FormField>
 
@@ -92,6 +111,7 @@
             <FormItem class="md:col-span-2">
               <FormLabel class="flex items-center gap-1">Descrição do Contrato <span class="text-red-500 font-bold">*</span></FormLabel>
               <FormControl><Textarea placeholder="Detalhes do contrato, SLA, etc..." class="resize-y min-h-[80px]" v-bind="componentField" /></FormControl>
+              <FormMessage />
             </FormItem>
           </FormField>
 
@@ -133,6 +153,7 @@
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               </FormField>
 
@@ -140,6 +161,7 @@
                 <FormItem>
                   <FormLabel class="flex items-center gap-1">Apelido <span class="text-red-500 font-bold">*</span></FormLabel>
                   <FormControl><Input placeholder="Ex: Servidor Principal" v-bind="componentField" /></FormControl>
+                  <FormMessage />
                 </FormItem>
               </FormField>
 
@@ -147,6 +169,7 @@
                 <FormItem>
                   <FormLabel class="flex items-center gap-1">Patrimônio <span class="text-red-500 font-bold">*</span></FormLabel>
                   <FormControl><Input placeholder="Ex: INV-2023-441" v-bind="componentField" /></FormControl>
+                  <FormMessage />
                 </FormItem>
               </FormField>
 
@@ -154,6 +177,7 @@
                 <FormItem>
                   <FormLabel class="flex items-center gap-1">Localização <span class="text-red-500 font-bold">*</span></FormLabel>
                   <FormControl><Input placeholder="Ex: Sala 2 - Rack A" v-bind="componentField" /></FormControl>
+                  <FormMessage />
                 </FormItem>
               </FormField>
 
@@ -161,6 +185,7 @@
                 <FormItem>
                   <FormLabel class="flex items-center gap-1">Instalação <span class="text-red-500 font-bold">*</span></FormLabel>
                   <FormControl><Input type="date" v-bind="componentField" /></FormControl>
+                  <FormMessage />
                 </FormItem>
               </FormField>
             </div>
@@ -193,6 +218,7 @@
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               </FormField>
 
@@ -208,6 +234,7 @@
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
                   </FormItem>
                 </FormField>
 
@@ -215,6 +242,7 @@
                   <FormItem>
                     <FormLabel class="flex items-center gap-1">Versão / Chave <span class="text-red-500 font-bold">*</span></FormLabel>
                     <FormControl><Input placeholder="Ex: 2.1.0 ou Key-123" v-bind="componentField" /></FormControl>
+                    <FormMessage />
                   </FormItem>
                 </FormField>
               </div>
@@ -226,18 +254,18 @@
           </Button>
         </div>
 
-        <div class="flex items-center justify-between border-t mt-12 pt-6">
-          <Button type="button" variant="ghost" @click="closeDialog(false)">Cancelar</Button>
-          
+        <div class="flex items-center justify-between border-t border-border mt-12 pt-6">
+          <Button type="button" variant="ghost" class="hover:bg-muted/30" @click="closeDialog(false)">Cancelar</Button>
+
           <div class="flex gap-3">
-            <Button v-if="step > 1" type="button" variant="outline" @click="step--">Voltar</Button>
-            
-            <Button v-if="step < 3" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-8" @click="nextStep">
+            <Button v-if="step > 1" type="button" variant="outline" class="border-border hover:bg-muted/30" @click="step--">Voltar</Button>
+
+            <Button v-if="step < totalSteps" type="button" class="bg-blue-600 hover:bg-blue-500 text-white px-8 shadow-md shadow-blue-900/20" @click="nextStep">
               Próximo <ArrowRight class="w-4 h-4 ml-2" />
             </Button>
-            
-            <Button v-if="step === 3" type="submit" class="bg-green-600 hover:bg-green-700 text-white px-8" :disabled="loading">
-              {{ loading ? 'Salvando...' : 'Finalizar Contrato' }}
+
+            <Button v-if="step === totalSteps" type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 shadow-md shadow-emerald-900/20" :disabled="loading">
+              {{ loading ? 'Salvando...' : isEditMode ? 'Salvar Alterações' : 'Finalizar Contrato' }}
             </Button>
           </div>
         </div>
@@ -247,7 +275,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import { useForm, useFieldArray } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -257,7 +285,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ChevronRight, FileText, Server, Layers, Plus, Trash2, ArrowRight } from 'lucide-vue-next'
 
@@ -265,14 +293,19 @@ import { clienteService } from '@/services/clienteService'
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
 import { catalogoMaquinaService } from '@/services/catalogoMaquinaService'
 import { maquinaContratoService } from '@/services/maquinaContratoService'
-import { catalogoSoftwareService } from '@/services/catalogoSoftwareService.ts' 
+import { catalogoSoftwareService } from '@/services/catalogoSoftwareService.ts'
 import { maquinaSoftwareInstaladoService } from '@/services/maquinaSoftwareInstaladoService'
 
-const props = defineProps<{ open: boolean }>()
+const props = defineProps<{
+  open: boolean
+  initialData?: ContratoResponseDTO | null
+}>()
 const emit = defineEmits<{
   'update:open': [value: boolean]
   success: [contrato: ContratoResponseDTO]
 }>()
+
+const isEditMode = computed(() => !!props.initialData)
 
 const step = ref(1)
 const loading = ref(false)
@@ -293,29 +326,27 @@ onMounted(async () => {
 
 // Schema com suporte a arrays para máquinas e softwares
 const formSchema = toTypedSchema(z.object({
-  codigoCliente: z.string({ required_error: '*' }).min(1, '*'),
-  status: z.string({ required_error: '*' }).min(1, '*'),
-  dataInicio: z.string({ required_error: '*' }).min(1, '*'),
-  dataFim: z.string({ required_error: '*' }).min(1, '*'),
-  periodoManutencaoPreventiva: z.coerce.number({ required_error: '*' }).min(1, '*'),
-  vencimentoManutencaoPreventiva: z.string({ required_error: '*' }).min(1, '*'),
-  
-  // Descrição agora também é obrigatória no Zod
-  descricao: z.string({ required_error: '*' }).min(1, '*'), 
+  codigoCliente: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  status: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  dataInicio: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  dataFim: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  periodoManutencaoPreventiva: z.coerce.number({ required_error: 'Campo obrigatório' }).min(1, 'Informe um período válido'),
+  vencimentoManutencaoPreventiva: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  descricao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   conexaoInternet: z.boolean().default(false),
 
   maquinas: z.array(z.object({
-    codigoMaquina: z.string({ required_error: '*' }).min(1, '*'),
-    apelido: z.string({ required_error: '*' }).min(1, '*'),
-    numeroPatrimonio: z.string({ required_error: '*' }).min(1, '*'),
-    localizacaoFisica: z.string({ required_error: '*' }).min(1, '*'),
-    dataInstalacao: z.string({ required_error: '*' }).min(1, '*'),
+    codigoMaquina: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+    apelido: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+    numeroPatrimonio: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+    localizacaoFisica: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+    dataInstalacao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   })).min(1, 'Adicione pelo menos uma máquina'),
 
   softwares: z.array(z.object({
-    maquinaIndex: z.number({ required_error: '*' }),
-    codigoSoftware: z.string({ required_error: '*' }).min(1, '*'),
-    versaoInstalada: z.string({ required_error: '*' }).min(1, '*')
+    maquinaIndex: z.number({ required_error: 'Campo obrigatório' }),
+    codigoSoftware: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+    versaoInstalada: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório')
   })).optional().default([])
 }))
 
@@ -340,22 +371,57 @@ const formValues = form.values
 const { fields: maquinasFields, push: pushMaquina, remove: removeMaquina } = useFieldArray('maquinas')
 const { fields: softwaresFields, push: pushSoftware, remove: removeSoftware } = useFieldArray('softwares')
 
+// No modo de edição, só há 1 step (dados do contrato)
+const totalSteps = computed(() => isEditMode.value ? 1 : 3)
+
+const popularFormEdicao = async (data: ContratoResponseDTO) => {
+  await nextTick()
+  form.resetForm({
+    values: {
+      codigoCliente: data.codigoCliente?.toString() ?? '',
+      status: data.status ?? 'ATIVO',
+      dataInicio: data.dataInicio ?? '',
+      dataFim: data.dataFim ?? '',
+      periodoManutencaoPreventiva: data.periodoManutencaoPreventiva ?? 6,
+      vencimentoManutencaoPreventiva: data.vencimentoManutencaoPreventiva ?? '',
+      descricao: data.descricao ?? '',
+      conexaoInternet: (data as any).conexaoInternet ?? false,
+      maquinas: [{ codigoMaquina: '', apelido: '', numeroPatrimonio: '', localizacaoFisica: '', dataInstalacao: '' }],
+      softwares: []
+    }
+  })
+}
+
+watch(() => props.initialData, (data) => {
+  if (data) popularFormEdicao(data)
+}, { immediate: true })
+
+watch(() => props.open, (val) => {
+  if (val && props.initialData) popularFormEdicao(props.initialData)
+})
+
 // Validação por Steps
 const nextStep = async () => {
-  await form.validate()
-  const errorKeys = Object.keys(form.errors.value)
-  let hasCurrentStepErrors = false
+  let fieldsToValidate: string[] = []
 
   if (step.value === 1) {
-    // Agora a 'descricao' também é verificada para impedir que pule de passo vazia
-    hasCurrentStepErrors = errorKeys.some(e => ['codigoCliente', 'status', 'dataInicio', 'dataFim', 'periodoManutencaoPreventiva', 'vencimentoManutencaoPreventiva', 'descricao'].includes(e))
+    fieldsToValidate = ['codigoCliente', 'status', 'dataInicio', 'dataFim', 'periodoManutencaoPreventiva', 'vencimentoManutencaoPreventiva', 'descricao']
   } else if (step.value === 2) {
-    hasCurrentStepErrors = errorKeys.some(e => e.startsWith('maquinas'))
+    fieldsToValidate = maquinasFields.value.flatMap((_, i) => [
+      `maquinas[${i}].codigoMaquina`,
+      `maquinas[${i}].apelido`,
+      `maquinas[${i}].numeroPatrimonio`,
+      `maquinas[${i}].localizacaoFisica`,
+      `maquinas[${i}].dataInstalacao`,
+    ])
   }
 
-  if (!hasCurrentStepErrors) {
-    step.value++
-  }
+  const results = await Promise.all(
+    fieldsToValidate.map(field => form.validateField(field as any))
+  )
+  const hasErrors = results.some(r => !r.valid)
+
+  if (!hasErrors) step.value++
 }
 
 function closeDialog(val: boolean) {
@@ -366,59 +432,60 @@ function closeDialog(val: boolean) {
   }
 }
 
-// Submissão Sequencial e Encadeada
 const onSubmit = form.handleSubmit(async (values) => {
   loading.value = true
   try {
-    const contratoSalvo = await contratoService.criar({
-      codigoCliente: Number(values.codigoCliente), 
-      descricao: values.descricao,                 
+    const payload = {
+      codigoCliente: Number(values.codigoCliente),
+      descricao: values.descricao,
       dataInicio: values.dataInicio,
       dataFim: values.dataFim,
       status: values.status,
       periodoManutencaoPreventiva: values.periodoManutencaoPreventiva,
       conexaoInternet: values.conexaoInternet,
       vencimentoManutencaoPreventiva: values.vencimentoManutencaoPreventiva
-    })
-    
-    const contratoId = contratoSalvo.codigo
-
-    const maquinasGeradasIds: number[] = []
-    for (const maq of values.maquinas) {
-      const maquinaSalva = await maquinaContratoService.criar({
-        codigoContrato: contratoId,
-        codigoCatalogoMaquina: Number(maq.codigoMaquina),
-        apelido: maq.apelido,
-        numeroPatrimonio: maq.numeroPatrimonio,
-        localizacaoFisica: maq.localizacaoFisica,
-        dataInstalacao: maq.dataInstalacao,
-        status: 'ATIVO'
-      })
-      maquinasGeradasIds.push(maquinaSalva.codigo)
     }
 
-    if (values.softwares && values.softwares.length > 0) {
-      const promisesSoftwares = values.softwares.map(soft => {
-        const idRealMaquina = maquinasGeradasIds[soft.maquinaIndex]
-        if (idRealMaquina === undefined) {
-          throw new Error('Nao foi possivel identificar a maquina vinculada ao software.')
-        }
+    let contratoSalvo: ContratoResponseDTO
 
-        return maquinaSoftwareInstaladoService.criar({
-          codigoMaquinaContrato: idRealMaquina,
-          codigoSoftware: Number(soft.codigoSoftware),
-          versaoInstalada: soft.versaoInstalada,
+    if (isEditMode.value && props.initialData) {
+      contratoSalvo = await contratoService.atualizar(props.initialData.codigo, payload)
+    } else {
+      contratoSalvo = await contratoService.criar(payload)
+      const contratoId = contratoSalvo.codigo
+
+      const maquinasGeradasIds: number[] = []
+      for (const maq of values.maquinas) {
+        const maquinaSalva = await maquinaContratoService.criar({
+          codigoContrato: contratoId,
+          codigoCatalogoMaquina: Number(maq.codigoMaquina),
+          apelido: maq.apelido,
+          numeroPatrimonio: maq.numeroPatrimonio,
+          localizacaoFisica: maq.localizacaoFisica,
+          dataInstalacao: maq.dataInstalacao,
           status: 'ATIVO'
         })
-      })
-      await Promise.all(promisesSoftwares)
+        maquinasGeradasIds.push(maquinaSalva.codigo)
+      }
+
+      if (values.softwares && values.softwares.length > 0) {
+        await Promise.all(values.softwares.map(soft => {
+          const idRealMaquina = maquinasGeradasIds[soft.maquinaIndex]
+          if (idRealMaquina === undefined) throw new Error('Máquina vinculada ao software não encontrada.')
+          return maquinaSoftwareInstaladoService.criar({
+            codigoMaquinaContrato: idRealMaquina,
+            codigoSoftware: Number(soft.codigoSoftware),
+            versaoInstalada: soft.versaoInstalada,
+            status: 'ATIVO'
+          })
+        }))
+      }
     }
 
     closeDialog(false)
     emit('success', contratoSalvo)
-
   } catch (error) {
-    console.error("Erro ao salvar cadastro completo:", error)
+    console.error("Erro ao salvar contrato:", error)
     alert('Ocorreu um erro na comunicação com o servidor. Verifique o console.')
   } finally {
     loading.value = false

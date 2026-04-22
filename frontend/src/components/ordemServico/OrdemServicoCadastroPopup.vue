@@ -354,7 +354,7 @@
           :disabled="loading"
         >
           <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
-          {{ loading ? 'Salvando...' : 'Abrir Ordem de Serviço' }}
+          {{ loading ? 'Salvando...' : isEditMode ? 'Salvar Alterações' : 'Abrir Ordem de Serviço' }}
         </Button>
       </div>
     </div>
@@ -363,7 +363,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -383,7 +383,13 @@ import {
 import { clienteService } from '@/services/clienteService'
 import { maquinaSoftwareInstaladoService } from '@/services/maquinaSoftwareInstaladoService'
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
-import { ordemServicoService } from '@/services/ordemServicoService'
+import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
+
+const props = defineProps<{
+  initialData?: OrdemServicoResponseDTO | null
+}>()
+
+const isEditMode = computed(() => !!props.initialData)
 
 const emit = defineEmits(['fechar', 'success'])
 
@@ -481,7 +487,41 @@ onMounted(async () => {
   } catch (error) {
     console.error('Erro ao carregar clientes:', error)
   }
+
+  if (props.initialData) {
+    await nextTick()
+    await popularFormEdicao(props.initialData)
+  }
 })
+
+const popularFormEdicao = async (data: OrdemServicoResponseDTO) => {
+  // Pré-seleciona cliente
+  selectedClienteId.value = String(data.codigoCliente)
+  selectedContratoId.value = String(data.codigoContrato)
+  selectedMaquinaId.value = String(data.codigoMaquinaContrato)
+
+  form.resetForm({
+    values: {
+      codigoCliente: String(data.codigoCliente),
+      codigoContrato: String(data.codigoContrato),
+      criticidade: data.criticidade ?? '',
+      dataAgendamento: data.dataAgendamento?.split('T')[0] ?? '',
+      observacaoGeral: data.observacaoGeral ?? '',
+      codigoMaquinaContrato: String(data.codigoMaquinaContrato),
+      codigoFuncionario: data.codigoFuncionario ? String(data.codigoFuncionario) : '',
+    }
+  })
+
+  // Busca software da máquina se existir
+  if (data.codigoMaquinaContrato) {
+    loadingSoftware.value = true
+    try {
+      const resultados = await maquinaSoftwareInstaladoService.buscarPorMaquinaContrato(data.codigoMaquinaContrato)
+      softwareInstalado.value = resultados.length > 0 ? resultados[0] : null
+    } catch { softwareInstalado.value = null }
+    finally { loadingSoftware.value = false }
+  }
+}
 
 function onClienteChange(val: string) {
   selectedClienteId.value = val
@@ -554,23 +594,31 @@ function getInitials(nome: string): string {
 const onSubmit = form.handleSubmit(async (values) => {
   loading.value = true
   try {
-    await ordemServicoService.criar({
+    const payload = {
       codigoCliente:           Number(values.codigoCliente),
       codigoContrato:          Number(values.codigoContrato),
       codigoMaquinaContrato:   Number(values.codigoMaquinaContrato),
       codigoFuncionario:       Number(values.codigoFuncionario),
       codigoSoftwareInstalado: softwareInstalado.value?.codigo ?? undefined,
-      status:                  'AGENDADO',
       criticidade:             values.criticidade,
-      dataAbertura:            todayLocalDateTime(),
       dataAgendamento:         toLocalDateTimeString(values.dataAgendamento ?? ''),
       observacaoGeral:         values.observacaoGeral,
-    })
+    }
+
+    if (isEditMode.value && props.initialData) {
+      await ordemServicoService.atualizar(props.initialData.codigo, payload)
+    } else {
+      await ordemServicoService.criar({
+        ...payload,
+        status: 'AGENDADO',
+        dataAbertura: todayLocalDateTime(),
+      })
+    }
 
     emit('fechar')
     emit('success')
   } catch (error: any) {
-    console.error('Erro ao abrir ordem de serviço:', error)
+    console.error('Erro ao salvar ordem de serviço:', error)
     alert('Ocorreu um erro ao salvar a ordem de serviço. Verifique o console.')
   } finally {
     loading.value = false

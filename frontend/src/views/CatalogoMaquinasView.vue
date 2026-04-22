@@ -74,13 +74,6 @@ const stats = computed(() => [
     sub: 'Cadastradas no sistema',
     icon: Settings, 
     color: 'text-blue-400' 
-  },
-  { 
-    label: 'Modelos Ativos',
-    value: '—', 
-    sub: 'Mapeamento futuro', 
-    icon: Wrench, 
-    color: 'text-purple-400' 
   }
 ])
 

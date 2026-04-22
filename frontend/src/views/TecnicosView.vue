@@ -21,18 +21,22 @@ import {
 
 import {
   Download, UserPlus, Users, MapPin, AlertTriangle, ShieldCheck,
-  Eye, Pencil, Search, MoreVertical, X, CheckCircle2
+  Eye, Pencil, Search, Trash2, X, CheckCircle2
 } from 'lucide-vue-next'
 
 import { onMounted } from 'vue'
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
 import TecnicoCadastro from '@/components/tecnicos/TecnicoCadastroPopup.vue'
+import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
-/**
- * ESTADO GLOBAL E FILTRAGEM
- */
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingTecnico = ref<TecnicoResponseDTO | null>(null)
 const searchQuery = ref('')
+const confirmOpen = ref(false)
+const confirmNome = ref('')
+const confirmId = ref<number | null>(null)
+const deletando = ref(false)
 
 // Mapeamento de UI para os status dos técnicos
 const statusMap = {
@@ -133,6 +137,37 @@ const fecharSucessoCadastro = () => {
     clearTimeout(sucessoTimeout)
     sucessoTimeout = null
   }
+}
+
+const abrirEdicao = (tecnico: TecnicoResponseDTO) => {
+  editingTecnico.value = tecnico
+  isEditOpen.value = true
+}
+
+const removerTecnico = (id: number, nome: string) => {
+  confirmId.value = id
+  confirmNome.value = nome
+  confirmOpen.value = true
+}
+
+const confirmarExclusao = async () => {
+  if (confirmId.value === null) return
+  deletando.value = true
+  try {
+    await tecnicoService.deletar(confirmId.value)
+    confirmOpen.value = false
+    mostrarSucessoCadastro(`Técnico "${confirmNome.value}" removido com sucesso.`)
+    await carregarTecnicos()
+  } catch (e: any) {
+    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
+  } finally {
+    deletando.value = false
+  }
+}
+
+const onEdicaoSucesso = async (tecnico: TecnicoResponseDTO) => {
+  mostrarSucessoCadastro(`Técnico "${tecnico.nome}" atualizado com sucesso.`)
+  await carregarTecnicos()
 }
 
 const onCadastroSucesso = async (tecnico: TecnicoResponseDTO) => {
@@ -279,8 +314,11 @@ const filteredTecnicos = computed(() => {
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
                   <Eye class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(t)">
                   <Pencil class="size-5" />
+                </Button>
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors" @click="removerTecnico(t.id, t.nome)">
+                  <Trash2 class="size-5" />
                 </Button>
               </div>
             </TableCell>
@@ -293,7 +331,7 @@ const filteredTecnicos = computed(() => {
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
-          
+
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
@@ -304,7 +342,7 @@ const filteredTecnicos = computed(() => {
                 <X class="w-6 h-6" />
               </Button>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <TecnicoCadastro
                 @fechar="isCadastroOpen = false"
@@ -314,7 +352,41 @@ const filteredTecnicos = computed(() => {
           </div>
         </div>
       </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false"></div>
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Técnico</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados do técnico selecionado.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isEditOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <TecnicoCadastro
+                :initialData="editingTecnico"
+                @fechar="isEditOpen = false"
+                @cadastrado="onEdicaoSucesso"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
+
+    <ConfirmDeleteDialog
+      v-model:open="confirmOpen"
+      titulo="Excluir Técnico"
+      :descricao="`Tem certeza que deseja excluir o técnico &quot;${confirmNome}&quot;? Esta ação não pode ser desfeita.`"
+      :carregando="deletando"
+      @confirmar="confirmarExclusao"
+    />
 
   </div>
 </template>

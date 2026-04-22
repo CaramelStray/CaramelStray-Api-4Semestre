@@ -8,17 +8,24 @@ import {
 } from '@/components/ui/table'
 import {
   Download, Plus, Users, FileText, AlertTriangle, TrendingUp,
-  Pencil, Eye, Search,
+  Pencil, Eye, Search, Trash2,
   Info, XCircle, CheckCircle2,
 } from 'lucide-vue-next'
 
 import ContratoCadastroPopup from '@/components/contrato/ContratoCadastroPopup.vue'
+import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 
 const searchQuery = ref('')
 const showNovoContratoPopup = ref(false)
+const showEditContratoPopup = ref(false)
+const editingContrato = ref<ContratoResponseDTO | null>(null)
 const contratos = ref<ContratoResponseDTO[]>([])
+const confirmOpen = ref(false)
+const confirmNome = ref('')
+const confirmId = ref<number | null>(null)
+const deletando = ref(false)
 
 // Mapa: codigoContrato → ClienteResponseDTO
 const contratoClienteMap = ref<Record<number, ClienteResponseDTO>>({})
@@ -102,6 +109,31 @@ const carregarContratos = async () => {
     erro.value = e.message || 'Erro ao carregar contratos.'
   } finally {
     loading.value = false
+  }
+}
+
+const abrirEdicaoContrato = (contrato: ContratoResponseDTO) => {
+  editingContrato.value = contrato
+  showEditContratoPopup.value = true
+}
+
+const removerContrato = (codigo: number) => {
+  confirmId.value = codigo
+  confirmNome.value = buildContratoId(contratos.value.find(c => c.codigo === codigo)!)
+  confirmOpen.value = true
+}
+
+const confirmarExclusao = async () => {
+  if (confirmId.value === null) return
+  deletando.value = true
+  try {
+    await contratoService.remover(confirmId.value)
+    confirmOpen.value = false
+    await carregarContratos()
+  } catch (e: any) {
+    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
+  } finally {
+    deletando.value = false
   }
 }
 
@@ -260,8 +292,11 @@ const stats = computed(() => [
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
                   <Eye class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicaoContrato(contrato)">
                   <Pencil class="size-5" />
+                </Button>
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors" @click="removerContrato(contrato.codigo)">
+                  <Trash2 class="size-5" />
                 </Button>
               </div>
             </TableCell>
@@ -277,5 +312,14 @@ const stats = computed(() => [
     </div>
 
     <ContratoCadastroPopup v-model:open="showNovoContratoPopup" @success="carregarContratos" />
+    <ContratoCadastroPopup v-model:open="showEditContratoPopup" :initialData="editingContrato" @success="carregarContratos" />
+
+    <ConfirmDeleteDialog
+      v-model:open="confirmOpen"
+      titulo="Excluir Contrato"
+      :descricao="`Tem certeza que deseja excluir o contrato &quot;${confirmNome}&quot;? Esta ação não pode ser desfeita.`"
+      :carregando="deletando"
+      @confirmar="confirmarExclusao"
+    />
   </div>
 </template>

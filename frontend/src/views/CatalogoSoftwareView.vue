@@ -9,16 +9,23 @@ import {
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { 
+import {
   Download, Plus, Monitor, Layers, AlertCircle, TerminalSquare,
-  Pencil, Eye, Search, ExternalLink, X, CheckCircle2
+  Pencil, Eye, Search, ExternalLink, Trash2, X, CheckCircle2
 } from 'lucide-vue-next'
 
 import { catalogoSoftwareService, type CatalogoSoftwareResponseDTO } from '@/services/catalogoSoftwareService'
 import SoftwareCadastroForm from '@/components/softwares/SoftwareCadastroPopup.vue'
+import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingSoftware = ref<CatalogoSoftwareResponseDTO | null>(null)
 const searchQuery = ref('')
+const confirmOpen = ref(false)
+const confirmNome = ref('')
+const confirmId = ref<number | null>(null)
+const deletando = ref(false)
 
 const softwares = ref<CatalogoSoftwareResponseDTO[]>([])
 const loading = ref(false)
@@ -109,9 +116,40 @@ const fecharSucessoCadastro = () => {
   }
 }
 
+const abrirEdicao = (software: CatalogoSoftwareResponseDTO) => {
+  editingSoftware.value = software
+  isEditOpen.value = true
+}
+
 const onCadastroSucesso = (software: CatalogoSoftwareResponseDTO) => {
   mostrarSucessoCadastro(`Software "${software.nomeSoftware}" v${software.versao} cadastrado com sucesso.`)
   carregarSoftwares()
+}
+
+const onEdicaoSucesso = (software: CatalogoSoftwareResponseDTO) => {
+  mostrarSucessoCadastro(`Software "${software.nomeSoftware}" v${software.versao} atualizado com sucesso.`)
+  carregarSoftwares()
+}
+
+const removerSoftware = (id: number, nome: string) => {
+  confirmId.value = id
+  confirmNome.value = nome
+  confirmOpen.value = true
+}
+
+const confirmarExclusao = async () => {
+  if (confirmId.value === null) return
+  deletando.value = true
+  try {
+    await catalogoSoftwareService.remover(confirmId.value)
+    confirmOpen.value = false
+    mostrarSucessoCadastro(`Software "${confirmNome.value}" removido com sucesso.`)
+    await carregarSoftwares()
+  } catch (e: any) {
+    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
+  } finally {
+    deletando.value = false
+  }
 }
 
 const abrirDocumentacao = (url: string) => {
@@ -284,11 +322,14 @@ onBeforeUnmount(() => {
 
               <TableCell class="text-right pr-6">
                 <div class="flex items-center justify-end gap-1">
-                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-foreground transition-colors">
+                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
                     <Eye class="size-4.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-foreground transition-colors">
+                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(s)">
                     <Pencil class="size-4.5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors" @click="removerSoftware(s.id, s.nomeSoftware)">
+                    <Trash2 class="size-4.5" />
                   </Button>
                 </div>
               </TableCell>
@@ -308,7 +349,7 @@ onBeforeUnmount(() => {
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
-          
+
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[60vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
@@ -319,7 +360,7 @@ onBeforeUnmount(() => {
                 <X class="w-6 h-6" />
               </Button>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <SoftwareCadastroForm
                 @fechar="isCadastroOpen = false"
@@ -329,7 +370,41 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false"></div>
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[60vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Software</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados do sistema selecionado.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isEditOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <SoftwareCadastroForm
+                :initialData="editingSoftware"
+                @fechar="isEditOpen = false"
+                @sucesso="onEdicaoSucesso"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
+
+    <ConfirmDeleteDialog
+      v-model:open="confirmOpen"
+      titulo="Excluir Software"
+      :descricao="`Tem certeza que deseja excluir o software &quot;${confirmNome}&quot;? Esta ação não pode ser desfeita.`"
+      :carregando="deletando"
+      @confirmar="confirmarExclusao"
+    />
 
   </div>
 </template>

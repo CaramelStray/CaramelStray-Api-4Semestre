@@ -10,10 +10,17 @@ import {
   Plus, Search, Pencil, Trash2, Code2, Layers, X, CheckCircle2
 } from 'lucide-vue-next'
 import HabilidadeCadastro from '@/components/habilidades/HabilidadeCadastroPopup.vue'
+import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 import { habilidadeService, type HabilidadeResponseDTO } from '@/services/habilidadeService'
 
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingHabilidade = ref<HabilidadeResponseDTO | null>(null)
 const searchQuery = ref('')
+const confirmOpen = ref(false)
+const confirmNome = ref('')
+const confirmId = ref<number | null>(null)
+const deletando = ref(false)
 
 const habilidades = ref<HabilidadeResponseDTO[]>([])
 const loading = ref(false)
@@ -46,14 +53,24 @@ const carregarHabilidades = async () => {
   }
 }
 
-const removerHabilidade = async (id: number) => {
-  if (confirm('Tem certeza que deseja remover esta habilidade?')) {
-    try {
-      await habilidadeService.remover(id)
-      await carregarHabilidades()
-    } catch (e: any) {
-      alert('Erro ao remover: ' + e.message)
-    }
+const removerHabilidade = (id: number, nome: string) => {
+  confirmId.value = id
+  confirmNome.value = nome
+  confirmOpen.value = true
+}
+
+const confirmarExclusao = async () => {
+  if (confirmId.value === null) return
+  deletando.value = true
+  try {
+    await habilidadeService.remover(confirmId.value)
+    confirmOpen.value = false
+    mostrarSucessoCadastro(`Certificação "${confirmNome.value}" removida com sucesso.`)
+    await carregarHabilidades()
+  } catch (e: any) {
+    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
+  } finally {
+    deletando.value = false
   }
 }
 
@@ -75,13 +92,6 @@ const stats = computed(() =>[
     icon: Code2, 
     color: 'text-blue-400' 
   },
-  { 
-    label: 'Categorias (Exemplo)',
-    value: '—', 
-    sub: 'Mapeamento futuro', 
-    icon: Layers, 
-    color: 'text-purple-400' 
-  }
 ])
 
 const filteredHabilidades = computed(() => {
@@ -100,8 +110,18 @@ const fecharSucessoCadastro = () => {
   }
 }
 
+const abrirEdicao = (habilidade: HabilidadeResponseDTO) => {
+  editingHabilidade.value = habilidade
+  isEditOpen.value = true
+}
+
 const onCadastroSucesso = (habilidade: HabilidadeResponseDTO) => {
   mostrarSucessoCadastro(`Certificação "${habilidade.descricao}" cadastrada com sucesso.`)
+  carregarHabilidades()
+}
+
+const onEdicaoSucesso = (habilidade: HabilidadeResponseDTO) => {
+  mostrarSucessoCadastro(`Certificação "${habilidade.descricao}" atualizada com sucesso.`)
   carregarHabilidades()
 }
 
@@ -213,10 +233,10 @@ const getAvatarColor = (name: string) => {
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(h)">
                   <Pencil class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" @click="removerHabilidade(h.codigo)" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors">
+                <Button variant="ghost" size="icon" @click="removerHabilidade(h.codigo, h.descricao)" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors">
                   <Trash2 class="size-5" />
                 </Button>
               </div>
@@ -235,15 +255,15 @@ const getAvatarColor = (name: string) => {
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
-          
+
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[50vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
-                <h2 class="text-2xl font-bold tracking-tight">Nova Habilidade</h2>
-                <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para adicionar uma nova competência.</p>
+                <h2 class="text-2xl font-bold tracking-tight">Nova Certificação</h2>
+                <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para adicionar uma nova certificação.</p>
               </div>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <HabilidadeCadastro
                 @fechar="isCadastroOpen = false"
@@ -253,7 +273,38 @@ const getAvatarColor = (name: string) => {
           </div>
         </div>
       </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false"></div>
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[50vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Certificação</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados da certificação selecionada.</p>
+              </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <HabilidadeCadastro
+                :initialData="editingHabilidade"
+                @fechar="isEditOpen = false"
+                @sucesso="onEdicaoSucesso"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
+
+    <ConfirmDeleteDialog
+      v-model:open="confirmOpen"
+      titulo="Excluir Certificação"
+      :descricao="`Tem certeza que deseja excluir a certificação &quot;${confirmNome}&quot;? Esta ação não pode ser desfeita.`"
+      :carregando="deletando"
+      @confirmar="confirmarExclusao"
+    />
 
   </div>
 </template>

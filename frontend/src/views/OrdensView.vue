@@ -7,16 +7,23 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil, X,
+  ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil, Trash2, X,
 } from 'lucide-vue-next'
 import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
 import { clienteService } from '@/services/clienteService'
 import { tecnicoService } from '@/services/tecnicoService'
 import OrdemServicoCadastroPopup from '@/components/ordemServico/OrdemServicoCadastroPopup.vue'
+import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingOrdem = ref<OrdemServicoResponseDTO | null>(null)
 const searchQuery = ref('')
 const ordens = ref<OrdemServicoResponseDTO[]>([])
+const confirmOpen = ref(false)
+const confirmNome = ref('')
+const confirmId = ref<number | null>(null)
+const deletando = ref(false)
 const clienteMap = ref<Record<number, string>>({})
 const tecnicoMap = ref<Record<number, string>>({})
 const loading = ref(false)
@@ -110,6 +117,31 @@ async function carregarOrdens() {
     erro.value = e.message
   } finally {
     loading.value = false
+  }
+}
+
+const abrirEdicaoOrdem = (ordem: OrdemServicoResponseDTO) => {
+  editingOrdem.value = ordem
+  isEditOpen.value = true
+}
+
+const removerOrdem = (codigo: number) => {
+  confirmId.value = codigo
+  confirmNome.value = `#${codigo}`
+  confirmOpen.value = true
+}
+
+const confirmarExclusao = async () => {
+  if (confirmId.value === null) return
+  deletando.value = true
+  try {
+    await ordemServicoService.deletar(confirmId.value)
+    confirmOpen.value = false
+    await carregarOrdens()
+  } catch (e: any) {
+    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
+  } finally {
+    deletando.value = false
   }
 }
 
@@ -211,11 +243,14 @@ onMounted(carregarOrdens)
             </TableCell>
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
                   <Eye class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicaoOrdem(o)">
                   <Pencil class="size-5" />
+                </Button>
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors" @click="removerOrdem(o.codigo)">
+                  <Trash2 class="size-5" />
                 </Button>
               </div>
             </TableCell>
@@ -224,39 +259,56 @@ onMounted(carregarOrdens)
       </Table>
     </div>
 
-    <!-- Popup de Cadastro -->
+    <!-- Modais -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
-          <div
-            class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            @click="isCadastroOpen = false"
-          />
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false" />
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
                 <h2 class="text-2xl font-bold tracking-tight">Nova Ordem de Serviço</h2>
                 <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para abrir uma nova ordem de serviço.</p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                @click="isCadastroOpen = false"
-                class="hover:bg-red-500/10 hover:text-red-500"
-              >
+              <Button variant="ghost" size="icon" @click="isCadastroOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
                 <X class="w-6 h-6" />
               </Button>
             </div>
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
-              <OrdemServicoCadastroPopup
-                @fechar="isCadastroOpen = false"
-                @success="carregarOrdens"
-              />
+              <OrdemServicoCadastroPopup @fechar="isCadastroOpen = false" @success="carregarOrdens" />
+            </div>
+          </div>
+        </div>
+      </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false" />
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Ordem de Serviço</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados da ordem selecionada.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isEditOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <OrdemServicoCadastroPopup :initialData="editingOrdem" @fechar="isEditOpen = false" @success="carregarOrdens" />
             </div>
           </div>
         </div>
       </Transition>
     </Teleport>
+
+    <ConfirmDeleteDialog
+      v-model:open="confirmOpen"
+      titulo="Excluir Ordem de Serviço"
+      :descricao="`Tem certeza que deseja excluir a ordem ${confirmNome}? Esta ação não pode ser desfeita.`"
+      :carregando="deletando"
+      @confirmar="confirmarExclusao"
+    />
 
   </div>
 </template>

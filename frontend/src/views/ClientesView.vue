@@ -12,18 +12,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { 
+import {
   Download, Plus, Users, Cpu, AlertTriangle, TrendingUp,
-  Pencil, Eye, Search,
+  Pencil, Eye, Search, Trash2,
   Info, XCircle, CheckCircle2, X
 } from 'lucide-vue-next'
 import ClienteCadastro from '@/components/clientes/ClienteCadastroPopup.vue'
+import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 import { onMounted } from 'vue'
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
 
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingCliente = ref<ClienteResponseDTO | null>(null)
 const searchQuery = ref('')
+const confirmOpen = ref(false)
+const confirmNome = ref('')
+const confirmId = ref<number | null>(null)
+const deletando = ref(false)
 
 const criticidadeMap = {
   'CRÍTICO': { icon: XCircle, class: 'bg-red-500/20 text-red-400 border-red-500/30' },
@@ -132,6 +139,42 @@ const fecharSucessoCadastro = () => {
     clearTimeout(sucessoTimeout)
     sucessoTimeout = null
   }
+}
+
+const abrirEdicao = (cliente: ClienteResponseDTO) => {
+  editingCliente.value = cliente
+  isEditOpen.value = true
+}
+
+const removerCliente = (id: number, nome: string) => {
+  confirmId.value = id
+  confirmNome.value = nome
+  confirmOpen.value = true
+}
+
+const confirmarExclusao = async () => {
+  if (confirmId.value === null) return
+  deletando.value = true
+  try {
+    await clienteService.remover(confirmId.value)
+    confirmOpen.value = false
+    mostrarSucessoCadastro(`Cliente "${confirmNome.value}" removido com sucesso.`)
+    clientes.value = await clienteService.listar()
+  } catch (e: any) {
+    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
+  } finally {
+    deletando.value = false
+  }
+}
+
+const onEdicaoSucesso = async (cliente: ClienteResponseDTO) => {
+  mostrarSucessoCadastro(`Cliente "${cliente.nomeEmpresa}" atualizado com sucesso.`)
+  loading.value = true
+  try {
+    clientes.value = await clienteService.listar()
+    const resultados = await Promise.all(clientes.value.map(c => contratoService.buscarPorCliente(c.id).catch(() => [])))
+    clientes.value.forEach((c, i) => { contratosPorCliente.value[c.id] = resultados[i] || [] })
+  } catch (e: any) { erro.value = e.message } finally { loading.value = false }
 }
 
 const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
@@ -295,8 +338,11 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
                   <Eye class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(c)">
                   <Pencil class="size-5" />
+                </Button>
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors" @click="removerCliente(c.id, c.nomeEmpresa)">
+                  <Trash2 class="size-5" />
                 </Button>
               </div>
             </TableCell>
@@ -309,7 +355,7 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
-          
+
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
@@ -320,7 +366,7 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
                 <X class="w-6 h-6" />
               </Button>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <ClienteCadastro
                 @fechar="isCadastroOpen = false"
@@ -330,7 +376,41 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
           </div>
         </div>
       </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false"></div>
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Cliente</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados do cliente selecionado.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isEditOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <ClienteCadastro
+                :initialData="editingCliente"
+                @fechar="isEditOpen = false"
+                @sucesso="onEdicaoSucesso"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
+
+    <ConfirmDeleteDialog
+      v-model:open="confirmOpen"
+      titulo="Excluir Cliente"
+      :descricao="`Tem certeza que deseja excluir o cliente &quot;${confirmNome}&quot;? Esta ação não pode ser desfeita.`"
+      :carregando="deletando"
+      @confirmar="confirmarExclusao"
+    />
 
   </div>
 </template>

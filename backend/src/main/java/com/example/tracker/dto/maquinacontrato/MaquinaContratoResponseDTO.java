@@ -41,7 +41,6 @@ public class MaquinaContratoResponseDTO {
         dto.setLatitude(maquinaContrato.getLatitude());
         dto.setLongitude(maquinaContrato.getLongitude());
 
-        // 🔥 aqui entra o mapeamento dos softwares
         if (maquinaContrato.getSoftwaresInstalados() != null) {
             dto.setSoftwaresInstalados(
                 maquinaContrato.getSoftwaresInstalados()
@@ -54,7 +53,6 @@ public class MaquinaContratoResponseDTO {
         return dto;
     }
 
-    // getters e setters
 
     public Integer getCodigo() {
         return codigo;

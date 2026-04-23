@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,6 +24,7 @@ import { onMounted } from 'vue'
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
 
+const router = useRouter()
 const isCadastroOpen = ref(false)
 const isEditOpen = ref(false)
 const editingCliente = ref<ClienteResponseDTO | null>(null)
@@ -141,8 +143,13 @@ const fecharSucessoCadastro = () => {
   }
 }
 
-const abrirEdicao = (cliente: ClienteResponseDTO) => {
-  editingCliente.value = cliente
+const abrirEdicao = async (cliente: ClienteResponseDTO) => {
+  try {
+    const dadosCompletos = await clienteService.buscarPorId(cliente.id)
+    editingCliente.value = dadosCompletos
+  } catch {
+    editingCliente.value = cliente
+  }
   isEditOpen.value = true
 }
 
@@ -335,7 +342,7 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="router.push(`/clientes/${c.id}`)">
                   <Eye class="size-5" />
                 </Button>
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(c)">

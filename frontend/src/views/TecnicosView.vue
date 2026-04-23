@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,6 +30,7 @@ import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoServi
 import TecnicoCadastro from '@/components/tecnicos/TecnicoCadastroPopup.vue'
 import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
+const router = useRouter()
 const isCadastroOpen = ref(false)
 const isEditOpen = ref(false)
 const editingTecnico = ref<TecnicoResponseDTO | null>(null)
@@ -139,8 +141,13 @@ const fecharSucessoCadastro = () => {
   }
 }
 
-const abrirEdicao = (tecnico: TecnicoResponseDTO) => {
-  editingTecnico.value = tecnico
+const abrirEdicao = async (tecnico: TecnicoResponseDTO) => {
+  try {
+    const dadosCompletos = await tecnicoService.buscarPorId(tecnico.id)
+    editingTecnico.value = dadosCompletos
+  } catch {
+    editingTecnico.value = tecnico
+  }
   isEditOpen.value = true
 }
 
@@ -311,7 +318,7 @@ const filteredTecnicos = computed(() => {
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="router.push(`/tecnicos/${t.id}`)">
                   <Eye class="size-5" />
                 </Button>
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(t)">

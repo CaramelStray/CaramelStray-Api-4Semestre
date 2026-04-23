@@ -37,6 +37,7 @@ const emit = defineEmits<{
 const isEditMode = computed(() => !!props.initialData)
 
 const step = ref(1)
+const erroValidacao = ref('')
 
 const paises = [
   'Brasil',
@@ -187,11 +188,17 @@ const nextStep = async () => {
     step1Fields.map(field => form.validateField(field as any))
   )
   const hasErrors = results.some(r => !r.valid)
-  if (!hasErrors) step.value = 2
+  if (hasErrors) {
+    erroValidacao.value = 'Corrija os campos destacados antes de continuar.'
+  } else {
+    erroValidacao.value = ''
+    step.value = 2
+  }
 }
 
 
 const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
+  erroValidacao.value = ''
   try {
     const payload = {
       nomeEmpresa:            values.nomeEmpresa,
@@ -232,9 +239,11 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       form.setFieldError('email', 'Este e-mail já está em uso por outro cliente.')
       step.value = 1
     } else {
-      alert('Erro na validação: ' + (data?.message || 'Verifique os dados informados.'))
+      erroValidacao.value = 'Erro ao salvar: ' + (data?.message || 'Verifique os dados informados.')
     }
   }
+}, () => {
+  erroValidacao.value = 'Preencha todos os campos obrigatórios antes de salvar.'
 })
 </script>
 
@@ -667,7 +676,11 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
         </Button>
       </div>
 
-      <div class="flex items-center justify-end border-t border-border mt-10 pt-6">
+      <div class="border-t border-border mt-10 pt-6 space-y-3">
+        <p v-if="erroValidacao" class="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-md px-4 py-2">
+          {{ erroValidacao }}
+        </p>
+        <div class="flex items-center justify-end">
         <div class="flex gap-3">
           <Button type="button" variant="ghost" class="hover:bg-muted/30" @click="emit('fechar')">
             Cancelar
@@ -694,6 +707,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
               {{ isEditMode ? 'Salvar Alterações' : 'Salvar Cliente' }}
             </Button>
           </template>
+        </div>
         </div>
       </div>
 

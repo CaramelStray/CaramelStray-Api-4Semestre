@@ -16,31 +16,29 @@
           <span class="text-sm hidden sm:inline-block">Dados do Contrato</span>
         </div>
 
-        <template v-if="!isEditMode">
-          <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
+        <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
 
-          <div :class="['flex items-center gap-2 transition-colors', step === 2 ? 'text-blue-400 font-bold' : step > 2 ? 'text-blue-400/60' : 'text-muted-foreground']">
-            <div
-              class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-              :class="step === 2 ? 'border-blue-500 bg-blue-500/20 text-blue-400' : step > 2 ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60' : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
-            >
-              <Server class="w-4 h-4" />
-            </div>
-            <span class="text-sm hidden sm:inline-block">Máquinas Base</span>
+        <div :class="['flex items-center gap-2 transition-colors', step === 2 ? 'text-blue-400 font-bold' : step > 2 ? 'text-blue-400/60' : 'text-muted-foreground']">
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
+            :class="step === 2 ? 'border-blue-500 bg-blue-500/20 text-blue-400' : step > 2 ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60' : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
+          >
+            <Server class="w-4 h-4" />
           </div>
+          <span class="text-sm hidden sm:inline-block">Máquinas Base</span>
+        </div>
 
-          <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
+        <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
 
-          <div :class="['flex items-center gap-2 transition-colors', step === 3 ? 'text-blue-400 font-bold' : 'text-muted-foreground']">
-            <div
-              class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-              :class="step === 3 ? 'border-blue-500 bg-blue-500/20 text-blue-400' : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
-            >
-              <Layers class="w-4 h-4" />
-            </div>
-            <span class="text-sm hidden sm:inline-block">Softwares (Opcional)</span>
+        <div :class="['flex items-center gap-2 transition-colors', step === 3 ? 'text-blue-400 font-bold' : 'text-muted-foreground']">
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
+            :class="step === 3 ? 'border-blue-500 bg-blue-500/20 text-blue-400' : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
+          >
+            <Layers class="w-4 h-4" />
           </div>
-        </template>
+          <span class="text-sm hidden sm:inline-block">Softwares (Opcional)</span>
+        </div>
       </div>
 
       <form @submit="onSubmit">
@@ -115,17 +113,22 @@
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ value, handleChange }" name="conexaoInternet">
-            <FormItem class="md:col-span-2 flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 bg-muted/20">
-              <FormControl>
-                <Checkbox :checked="value" @update:checked="handleChange" />
-              </FormControl>
-              <div class="space-y-1 leading-none">
-                <FormLabel>Acesso à Internet</FormLabel>
-                <p class="text-xs text-muted-foreground">Marque se a infraestrutura deste contrato possui uma boa conexão com a internet.</p>
-              </div>
-            </FormItem>
-          </FormField>
+          <label class="md:col-span-2 flex flex-row items-center gap-3 cursor-pointer rounded-md border border-border p-4 bg-muted/20 hover:bg-muted/30 transition-colors">
+            <div class="relative flex items-center justify-center w-4 h-4 shrink-0">
+              <input
+                v-model="conexaoInternet"
+                type="checkbox"
+                class="appearance-none w-4 h-4 rounded-[4px] border border-input bg-background checked:bg-blue-600 checked:border-blue-600 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+              <svg v-if="conexaoInternet" class="absolute w-2.5 h-2.5 text-white pointer-events-none" viewBox="0 0 10 10" fill="none">
+                <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="space-y-1 leading-none">
+              <span class="text-sm font-medium text-foreground">Acesso à Internet</span>
+              <p class="text-xs text-muted-foreground">Marque se a infraestrutura deste contrato possui uma boa conexão com a internet.</p>
+            </div>
+          </label>
         </div>
 
         <div v-show="step === 2" class="space-y-6">
@@ -157,33 +160,17 @@
                 </FormItem>
               </FormField>
 
-              <FormField :name="`maquinas[${index}].apelido`" v-slot="{ componentField }">
+              <FormField :name="`maquinas[${index}].numeroSerie`" v-slot="{ componentField }">
                 <FormItem>
-                  <FormLabel class="flex items-center gap-1">Apelido <span class="text-red-500 font-bold">*</span></FormLabel>
-                  <FormControl><Input placeholder="Ex: Servidor Principal" v-bind="componentField" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-
-              <FormField :name="`maquinas[${index}].numeroPatrimonio`" v-slot="{ componentField }">
-                <FormItem>
-                  <FormLabel class="flex items-center gap-1">Patrimônio <span class="text-red-500 font-bold">*</span></FormLabel>
+                  <FormLabel class="text-sm font-medium">Número de Série / Patrimônio</FormLabel>
                   <FormControl><Input placeholder="Ex: INV-2023-441" v-bind="componentField" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-
-              <FormField :name="`maquinas[${index}].localizacaoFisica`" v-slot="{ componentField }">
-                <FormItem>
-                  <FormLabel class="flex items-center gap-1">Localização <span class="text-red-500 font-bold">*</span></FormLabel>
-                  <FormControl><Input placeholder="Ex: Sala 2 - Rack A" v-bind="componentField" /></FormControl>
                   <FormMessage />
                 </FormItem>
               </FormField>
 
               <FormField :name="`maquinas[${index}].dataInstalacao`" v-slot="{ componentField }">
                 <FormItem>
-                  <FormLabel class="flex items-center gap-1">Instalação <span class="text-red-500 font-bold">*</span></FormLabel>
+                  <FormLabel class="flex items-center gap-1">Data de Instalação <span class="text-red-500 font-bold">*</span></FormLabel>
                   <FormControl><Input type="date" v-bind="componentField" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -191,7 +178,7 @@
             </div>
           </div>
 
-          <Button type="button" variant="outline" class="w-full border-dashed border-2 bg-muted/5 hover:bg-muted/20" @click="pushMaquina({ codigoMaquina: '', apelido: '', numeroPatrimonio: '', localizacaoFisica: '', dataInstalacao: '' })">
+          <Button type="button" variant="outline" class="w-full border-dashed border-2 bg-muted/5 hover:bg-muted/20" @click="pushMaquina({ codigoMaquina: '', numeroSerie: '', dataInstalacao: '' })">
             <Plus class="w-4 h-4 mr-2" /> Adicionar Outra Máquina
           </Button>
         </div>
@@ -254,19 +241,24 @@
           </Button>
         </div>
 
-        <div class="flex items-center justify-between border-t border-border mt-12 pt-6">
-          <Button type="button" variant="ghost" class="hover:bg-muted/30" @click="closeDialog(false)">Cancelar</Button>
+        <div class="border-t border-border mt-12 pt-6 space-y-3">
+          <p v-if="erroValidacao" class="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-md px-4 py-2">
+            {{ erroValidacao }}
+          </p>
+          <div class="flex items-center justify-between">
+            <Button type="button" variant="ghost" class="hover:bg-muted/30" @click="closeDialog(false)">Cancelar</Button>
 
-          <div class="flex gap-3">
-            <Button v-if="step > 1" type="button" variant="outline" class="border-border hover:bg-muted/30" @click="step--">Voltar</Button>
+            <div class="flex gap-3">
+              <Button v-if="step > 1" type="button" variant="outline" class="border-border hover:bg-muted/30" @click="step--">Voltar</Button>
 
-            <Button v-if="step < totalSteps" type="button" class="bg-blue-600 hover:bg-blue-500 text-white px-8 shadow-md shadow-blue-900/20" @click="nextStep">
-              Próximo <ArrowRight class="w-4 h-4 ml-2" />
-            </Button>
+              <Button v-if="step < totalSteps" type="button" class="bg-blue-600 hover:bg-blue-500 text-white px-8 shadow-md shadow-blue-900/20" @click="nextStep">
+                Próximo <ArrowRight class="w-4 h-4 ml-2" />
+              </Button>
 
-            <Button v-if="step === totalSteps" type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 shadow-md shadow-emerald-900/20" :disabled="loading">
-              {{ loading ? 'Salvando...' : isEditMode ? 'Salvar Alterações' : 'Finalizar Contrato' }}
-            </Button>
+              <Button v-if="step === totalSteps" type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 shadow-md shadow-emerald-900/20" :disabled="loading">
+                {{ loading ? 'Salvando...' : isEditMode ? 'Salvar Alterações' : 'Finalizar Contrato' }}
+              </Button>
+            </div>
           </div>
         </div>
       </form>
@@ -309,6 +301,12 @@ const isEditMode = computed(() => !!props.initialData)
 
 const step = ref(1)
 const loading = ref(false)
+const erroValidacao = ref('')
+const conexaoInternet = ref(false)
+
+// IDs das máquinas/softwares existentes em modo edição (índice paralelo ao fieldArray)
+const maquinasCodigos = ref<Array<number | null>>([])
+const softwaresCodigos = ref<Array<number | null>>([])
 
 const clientes = ref<any[]>([])
 const catalogoMaquinas = ref<any[]>([])
@@ -324,7 +322,6 @@ onMounted(async () => {
   }
 })
 
-// Schema com suporte a arrays para máquinas e softwares
 const formSchema = toTypedSchema(z.object({
   codigoCliente: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   status: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
@@ -333,13 +330,10 @@ const formSchema = toTypedSchema(z.object({
   periodoManutencaoPreventiva: z.coerce.number({ required_error: 'Campo obrigatório' }).min(1, 'Informe um período válido'),
   vencimentoManutencaoPreventiva: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   descricao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  conexaoInternet: z.boolean().default(false),
 
   maquinas: z.array(z.object({
     codigoMaquina: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-    apelido: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-    numeroPatrimonio: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-    localizacaoFisica: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+    numeroSerie: z.string().optional().default(''),
     dataInstalacao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   })).min(1, 'Adicione pelo menos uma máquina'),
 
@@ -354,28 +348,89 @@ const form = useForm({
   validationSchema: formSchema,
   initialValues: {
     status: 'ATIVO',
-    conexaoInternet: false,
     periodoManutencaoPreventiva: 6,
-    descricao: '', // Inicializando vazio para disparar erro se não preenchido
-    maquinas: [{
-      codigoMaquina: '', apelido: '', numeroPatrimonio: '', localizacaoFisica: '', dataInstalacao: ''
-    }],
+    descricao: '',
+    maquinas: [{ codigoMaquina: '', numeroSerie: '', dataInstalacao: '' }],
     softwares: []
   }
 })
 
-// form.values é necessário para popular o select condicional de máquinas
 const formValues = form.values
 
-// Separando as instâncias de FieldArray
-const { fields: maquinasFields, push: pushMaquina, remove: removeMaquina } = useFieldArray('maquinas')
-const { fields: softwaresFields, push: pushSoftware, remove: removeSoftware } = useFieldArray('softwares')
+const {
+  fields: maquinasFields,
+  push: pushMaquinaBase,
+  remove: removeMaquinaBase,
+  replace: replaceMaquinas
+} = useFieldArray('maquinas')
 
-// No modo de edição, só há 1 step (dados do contrato)
-const totalSteps = computed(() => isEditMode.value ? 1 : 3)
+const {
+  fields: softwaresFields,
+  push: pushSoftwareBase,
+  remove: removeSoftwareBase,
+  replace: replaceSoftwares
+} = useFieldArray('softwares')
+
+function pushMaquina(data: any) {
+  pushMaquinaBase(data)
+  maquinasCodigos.value.push(null)
+}
+
+function removeMaquina(index: number) {
+  removeMaquinaBase(index)
+  maquinasCodigos.value.splice(index, 1)
+}
+
+function pushSoftware(data: any) {
+  pushSoftwareBase(data)
+  softwaresCodigos.value.push(null)
+}
+
+function removeSoftware(index: number) {
+  removeSoftwareBase(index)
+  softwaresCodigos.value.splice(index, 1)
+}
+
+const totalSteps = 3
 
 const popularFormEdicao = async (data: ContratoResponseDTO) => {
   await nextTick()
+  maquinasCodigos.value = []
+  softwaresCodigos.value = []
+
+  let maquinasFormData: any[] = [{ codigoMaquina: '', numeroSerie: '', dataInstalacao: '' }]
+  let softwaresFormData: any[] = []
+
+  try {
+    const maquinas = await maquinaContratoService.buscarPorContrato(data.codigo)
+    if (maquinas.length > 0) {
+      maquinasCodigos.value = maquinas.map(m => m.codigo)
+      maquinasFormData = maquinas.map(m => ({
+        codigoMaquina: String(m.codigoCatalogoMaquina ?? ''),
+        numeroSerie: m.numeroSerie ?? '',
+        dataInstalacao: m.dataInstalacao ?? ''
+      }))
+
+      const softwaresPorMaquina = await Promise.all(
+        maquinas.map(m => maquinaSoftwareInstaladoService.buscarPorMaquinaContrato(m.codigo).catch(() => []))
+      )
+      softwaresPorMaquina.forEach((softwares, maqIndex) => {
+        softwares.forEach(sw => {
+          softwaresCodigos.value.push(sw.codigo)
+          softwaresFormData.push({
+            maquinaIndex: maqIndex,
+            codigoSoftware: String(sw.codigoSoftware),
+            versaoInstalada: sw.versaoInstalada
+          })
+        })
+      })
+    }
+  } catch (error) {
+    console.error('Erro ao carregar máquinas do contrato:', error)
+  }
+
+  conexaoInternet.value = data.conexaoInternet === true
+
   form.resetForm({
     values: {
       codigoCliente: data.codigoCliente?.toString() ?? '',
@@ -385,11 +440,13 @@ const popularFormEdicao = async (data: ContratoResponseDTO) => {
       periodoManutencaoPreventiva: data.periodoManutencaoPreventiva ?? 6,
       vencimentoManutencaoPreventiva: data.vencimentoManutencaoPreventiva ?? '',
       descricao: data.descricao ?? '',
-      conexaoInternet: (data as any).conexaoInternet ?? false,
-      maquinas: [{ codigoMaquina: '', apelido: '', numeroPatrimonio: '', localizacaoFisica: '', dataInstalacao: '' }],
-      softwares: []
+      maquinas: maquinasFormData,
+      softwares: softwaresFormData
     }
   })
+  await nextTick()
+  replaceMaquinas(maquinasFormData)
+  if (softwaresFormData.length > 0) replaceSoftwares(softwaresFormData)
 }
 
 watch(() => props.initialData, (data) => {
@@ -398,10 +455,11 @@ watch(() => props.initialData, (data) => {
 
 watch(() => props.open, (val) => {
   if (val && props.initialData) popularFormEdicao(props.initialData)
+  if (!val) erroValidacao.value = ''
 })
 
-// Validação por Steps
 const nextStep = async () => {
+  erroValidacao.value = ''
   let fieldsToValidate: string[] = []
 
   if (step.value === 1) {
@@ -409,9 +467,6 @@ const nextStep = async () => {
   } else if (step.value === 2) {
     fieldsToValidate = maquinasFields.value.flatMap((_, i) => [
       `maquinas[${i}].codigoMaquina`,
-      `maquinas[${i}].apelido`,
-      `maquinas[${i}].numeroPatrimonio`,
-      `maquinas[${i}].localizacaoFisica`,
       `maquinas[${i}].dataInstalacao`,
     ])
   }
@@ -421,35 +476,95 @@ const nextStep = async () => {
   )
   const hasErrors = results.some(r => !r.valid)
 
-  if (!hasErrors) step.value++
+  if (hasErrors) {
+    erroValidacao.value = 'Corrija os campos destacados antes de continuar.'
+  } else {
+    step.value++
+  }
 }
 
 function closeDialog(val: boolean) {
   emit('update:open', val)
   if (!val) {
     step.value = 1
+    erroValidacao.value = ''
+    conexaoInternet.value = false
     form.resetForm()
+    maquinasCodigos.value = []
+    softwaresCodigos.value = []
   }
 }
 
 const onSubmit = form.handleSubmit(async (values) => {
+  erroValidacao.value = ''
   loading.value = true
   try {
+    console.log('[DEBUG] conexaoInternet.value no submit:', conexaoInternet.value)
     const payload = {
       codigoCliente: Number(values.codigoCliente),
-      descricao: values.descricao,
       dataInicio: values.dataInicio,
       dataFim: values.dataFim,
       status: values.status,
       periodoManutencaoPreventiva: values.periodoManutencaoPreventiva,
-      conexaoInternet: values.conexaoInternet,
+      conexaoInternet: conexaoInternet.value,
       vencimentoManutencaoPreventiva: values.vencimentoManutencaoPreventiva
     }
+    console.log('[DEBUG] payload.conexaoInternet:', payload.conexaoInternet)
 
     let contratoSalvo: ContratoResponseDTO
 
     if (isEditMode.value && props.initialData) {
       contratoSalvo = await contratoService.atualizar(props.initialData.codigo, payload)
+
+      const maquinasGeradasIds: number[] = []
+      for (let i = 0; i < values.maquinas.length; i++) {
+        const maq = values.maquinas[i]
+        const existingId = maquinasCodigos.value[i] ?? null
+
+        if (existingId) {
+          await maquinaContratoService.atualizar(existingId, {
+            codigoContrato: contratoSalvo.codigo,
+            codigoCatalogoMaquina: Number(maq.codigoMaquina),
+            numeroSerie: maq.numeroSerie || undefined,
+            dataInstalacao: maq.dataInstalacao,
+          })
+          maquinasGeradasIds.push(existingId)
+        } else {
+          const maquinaSalva = await maquinaContratoService.criar({
+            codigoContrato: contratoSalvo.codigo,
+            codigoCatalogoMaquina: Number(maq.codigoMaquina),
+            numeroSerie: maq.numeroSerie || undefined,
+            dataInstalacao: maq.dataInstalacao,
+          })
+          maquinasGeradasIds.push(maquinaSalva.codigo)
+        }
+      }
+
+      // Deletar máquinas removidas pelo usuário
+      for (const id of maquinasCodigos.value) {
+        if (id && !maquinasGeradasIds.includes(id)) {
+          await maquinaContratoService.deletar(id).catch(() => {})
+        }
+      }
+
+      // Deletar todos os softwares existentes e recriar
+      await Promise.all(
+        softwaresCodigos.value
+          .filter(Boolean)
+          .map(id => maquinaSoftwareInstaladoService.deletar(id!).catch(() => {}))
+      )
+
+      if (values.softwares && values.softwares.length > 0) {
+        await Promise.all(values.softwares.map(soft => {
+          const idRealMaquina = maquinasGeradasIds[soft.maquinaIndex]
+          if (idRealMaquina === undefined) return
+          return maquinaSoftwareInstaladoService.criar({
+            codigoMaquinaContrato: idRealMaquina,
+            codigoSoftware: Number(soft.codigoSoftware),
+            versaoInstalada: soft.versaoInstalada,
+          } as any)
+        }))
+      }
     } else {
       contratoSalvo = await contratoService.criar(payload)
       const contratoId = contratoSalvo.codigo
@@ -459,11 +574,8 @@ const onSubmit = form.handleSubmit(async (values) => {
         const maquinaSalva = await maquinaContratoService.criar({
           codigoContrato: contratoId,
           codigoCatalogoMaquina: Number(maq.codigoMaquina),
-          apelido: maq.apelido,
-          numeroPatrimonio: maq.numeroPatrimonio,
-          localizacaoFisica: maq.localizacaoFisica,
+          numeroSerie: maq.numeroSerie || undefined,
           dataInstalacao: maq.dataInstalacao,
-          status: 'ATIVO'
         })
         maquinasGeradasIds.push(maquinaSalva.codigo)
       }
@@ -476,8 +588,7 @@ const onSubmit = form.handleSubmit(async (values) => {
             codigoMaquinaContrato: idRealMaquina,
             codigoSoftware: Number(soft.codigoSoftware),
             versaoInstalada: soft.versaoInstalada,
-            status: 'ATIVO'
-          })
+          } as any)
         }))
       }
     }
@@ -486,9 +597,11 @@ const onSubmit = form.handleSubmit(async (values) => {
     emit('success', contratoSalvo)
   } catch (error) {
     console.error("Erro ao salvar contrato:", error)
-    alert('Ocorreu um erro na comunicação com o servidor. Verifique o console.')
+    erroValidacao.value = 'Ocorreu um erro na comunicação com o servidor. Verifique o console.'
   } finally {
     loading.value = false
   }
+}, () => {
+  erroValidacao.value = 'Preencha todos os campos obrigatórios antes de salvar.'
 })
 </script>

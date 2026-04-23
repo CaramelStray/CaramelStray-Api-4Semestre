@@ -38,6 +38,7 @@ const emit = defineEmits<{
 const isEditMode = computed(() => !!props.initialData)
 
 const step = ref(1)
+const erroValidacao = ref('')
 const habilidadesDisponiveis = ref<HabilidadeResponseDTO[]>([])
 
 onMounted(async () => {
@@ -132,10 +133,16 @@ const nextStep = async () => {
     step1Fields.map(field => form.validateField(field as any))
   )
   const hasErrors = results.some(r => !r.valid)
-  if (!hasErrors) step.value = 2
+  if (hasErrors) {
+    erroValidacao.value = 'Corrija os campos destacados antes de continuar.'
+  } else {
+    erroValidacao.value = ''
+    step.value = 2
+  }
 }
 
 const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
+  erroValidacao.value = ''
   try {
     const payload: any = {
       email: values.email,
@@ -197,9 +204,11 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       form.setFieldError('email', 'Este e-mail já está em uso.')
       step.value = 1
     } else {
-      alert('Ocorreu um erro ao salvar o técnico. Verifique os dados.')
+      erroValidacao.value = 'Ocorreu um erro ao salvar o técnico. Verifique os dados.'
     }
   }
+}, () => {
+  erroValidacao.value = 'Preencha todos os campos obrigatórios antes de salvar.'
 })
 </script>
 
@@ -448,19 +457,24 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
         </Button>
       </div>
 
-      <div class="flex items-center justify-end border-t border-border mt-12 pt-6 gap-3">
-        <template v-if="step === 1">
-          <Button type="button" variant="ghost" class="hover:bg-muted/30" @click="emit('fechar')">Cancelar</Button>
-          <Button type="button" class="bg-blue-600 hover:bg-blue-500 text-white px-8 shadow-md shadow-blue-900/20" @click="nextStep">
-            Próxima <ArrowRight class="w-4 h-4 ml-2" />
-          </Button>
-        </template>
-        <template v-if="step === 2">
-          <Button type="button" variant="outline" class="border-border hover:bg-muted/30" @click="step = 1">Voltar</Button>
-          <Button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 shadow-md shadow-emerald-900/20">
-            {{ isEditMode ? 'Salvar Alterações' : 'Concluir Cadastro' }}
-          </Button>
-        </template>
+      <div class="border-t border-border mt-12 pt-6 space-y-3">
+        <p v-if="erroValidacao" class="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-md px-4 py-2">
+          {{ erroValidacao }}
+        </p>
+        <div class="flex items-center justify-end gap-3">
+          <template v-if="step === 1">
+            <Button type="button" variant="ghost" class="hover:bg-muted/30" @click="emit('fechar')">Cancelar</Button>
+            <Button type="button" class="bg-blue-600 hover:bg-blue-500 text-white px-8 shadow-md shadow-blue-900/20" @click="nextStep">
+              Próxima <ArrowRight class="w-4 h-4 ml-2" />
+            </Button>
+          </template>
+          <template v-if="step === 2">
+            <Button type="button" variant="outline" class="border-border hover:bg-muted/30" @click="step = 1">Voltar</Button>
+            <Button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 shadow-md shadow-emerald-900/20">
+              {{ isEditMode ? 'Salvar Alterações' : 'Concluir Cadastro' }}
+            </Button>
+          </template>
+        </div>
       </div>
     </form>
   </div>

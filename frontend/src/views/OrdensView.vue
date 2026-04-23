@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,6 +16,7 @@ import { tecnicoService } from '@/services/tecnicoService'
 import OrdemServicoCadastroPopup from '@/components/ordemServico/OrdemServicoCadastroPopup.vue'
 import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
+const router = useRouter()
 const isCadastroOpen = ref(false)
 const isEditOpen = ref(false)
 const editingOrdem = ref<OrdemServicoResponseDTO | null>(null)
@@ -243,7 +245,7 @@ onMounted(carregarOrdens)
             </TableCell>
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="router.push(`/ordens/${o.codigo}`)">
                   <Eye class="size-5" />
                 </Button>
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicaoOrdem(o)">

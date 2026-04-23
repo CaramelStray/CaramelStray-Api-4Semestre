@@ -17,12 +17,24 @@ const router = createRouter({
       component: () => import('@/views/ClientesView.vue'),
     },
     {
+      path: '/clientes/:id',
+      component: () => import('@/views/ClienteDetalhesView.vue'),
+    },
+    {
       path: '/contratos',
       component: () => import('@/views/ContratosView.vue'),
-     },
+    },
+    {
+      path: '/contratos/:id',
+      component: () => import('@/views/ContratoDetalhesView.vue'),
+    },
     {
       path: '/tecnicos',
       component: () => import('@/views/TecnicosView.vue'),
+    },
+    {
+      path: '/tecnicos/:id',
+      component: () => import('@/views/TecnicoDetalhesView.vue'),
     },
     {
       path: '/softwares',
@@ -40,6 +52,10 @@ const router = createRouter({
     {
       path: '/ordens',
       component: () => import('@/views/OrdensView.vue'),
+    },
+    {
+      path: '/ordens/:id',
+      component: () => import('@/views/OrdemDetalhesView.vue'),
     },
   ],
 })

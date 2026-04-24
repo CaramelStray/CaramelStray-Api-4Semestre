@@ -2,14 +2,18 @@ package com.example.tracker.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_srv_maquina_contrato")
@@ -45,6 +49,9 @@ public class MaquinaContrato {
 
     @Column(name = "longitude", precision = 10, scale = 6)
     private BigDecimal longitude;
+
+    @OneToMany(mappedBy = "maquinaContrato", fetch = FetchType.LAZY)
+    private List<MaquinaSoftwareInstalado> softwaresInstalados = new ArrayList<>();
 
     public Integer getCodigo() {
         return codigo;
@@ -116,5 +123,13 @@ public class MaquinaContrato {
 
     public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
+    }
+
+    public List<MaquinaSoftwareInstalado> getSoftwaresInstalados() {
+        return softwaresInstalados;
+    }
+
+    public void setSoftwaresInstalados(List<MaquinaSoftwareInstalado> softwaresInstalados) {
+        this.softwaresInstalados = softwaresInstalados;
     }
 }

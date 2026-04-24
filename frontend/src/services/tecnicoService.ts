@@ -13,6 +13,12 @@ export interface TecnicoResponseDTO {
   certificacao: string | null
   estado: string | null
   disponibilidade: string | null
+  habilidades?: {
+    habilidadeId: number;
+    descricaoHabilidade: string;
+    nivel: number;
+    dataValidade: string;
+  }[]
 }
 
 export interface TecnicoCreateDTO {

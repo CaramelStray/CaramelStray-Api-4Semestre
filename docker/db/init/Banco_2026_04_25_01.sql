@@ -896,6 +896,114 @@ ALTER TABLE public.tb_srv_ordem_servico ALTER COLUMN codigo ADD GENERATED ALWAYS
     CACHE 1
 );
 
+
+--
+-- Name: tb_cad_tipo_viagem; Type: TABLE; Schema: public; Owner: user_dev
+--
+
+CREATE TABLE public.tb_cad_tipo_viagem (
+    codigo integer NOT NULL,
+    descricao character varying(100) NOT NULL,
+    observacao text,
+    ativo boolean DEFAULT true NOT NULL,
+    data_cadastro timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.tb_cad_tipo_viagem OWNER TO user_dev;
+
+--
+-- Name: tb_cad_tipo_viagem_codigo_seq; Type: SEQUENCE; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_cad_tipo_viagem ALTER COLUMN codigo ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.tb_cad_tipo_viagem_codigo_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: tb_srv_viagem; Type: TABLE; Schema: public; Owner: user_dev
+--
+
+CREATE TABLE public.tb_srv_viagem (
+    codigo integer NOT NULL,
+    codigo_tipo_viagem integer NOT NULL,
+    codigo_cliente integer NOT NULL,
+    codigo_funcionario_responsavel integer,
+    codigo_ordem_servico integer,
+    status character varying(50) DEFAULT 'ABERTA'::character varying NOT NULL,
+    data_cadastro timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    data_saida_prevista timestamp(6) without time zone,
+    data_saida_real timestamp(6) without time zone,
+    data_retorno_previsto timestamp(6) without time zone,
+    data_retorno_real timestamp(6) without time zone,
+    origem character varying(255),
+    destino character varying(255),
+    km_previsto numeric(10,2),
+    km_real numeric(10,2),
+    observacao text
+);
+
+
+ALTER TABLE public.tb_srv_viagem OWNER TO user_dev;
+
+--
+-- Name: tb_srv_viagem_codigo_seq; Type: SEQUENCE; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_srv_viagem ALTER COLUMN codigo ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.tb_srv_viagem_codigo_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: tb_srv_viagem_parada; Type: TABLE; Schema: public; Owner: user_dev
+--
+
+CREATE TABLE public.tb_srv_viagem_parada (
+    codigo integer NOT NULL,
+    codigo_viagem integer NOT NULL,
+    ordem integer NOT NULL,
+    descricao_local character varying(255) NOT NULL,
+    endereco character varying(255),
+    cidade character varying(100),
+    estado_regiao character varying(100),
+    latitude numeric(10,6),
+    longitude numeric(10,6),
+    data_chegada_prevista timestamp(6) without time zone,
+    data_chegada_real timestamp(6) without time zone,
+    data_saida_prevista timestamp(6) without time zone,
+    data_saida_real timestamp(6) without time zone,
+    observacao text
+);
+
+
+ALTER TABLE public.tb_srv_viagem_parada OWNER TO user_dev;
+
+--
+-- Name: tb_srv_viagem_parada_codigo_seq; Type: SEQUENCE; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_srv_viagem_parada ALTER COLUMN codigo ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.tb_srv_viagem_parada_codigo_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
 --
 -- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: user_dev
 --
@@ -909,6 +1017,13 @@ COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM
 --
 
 COPY public.tb_cad_ativo (codigo, codigo_catalogo_ativo, numero_serie, lote, descricao, codigo_funcionario_responsavel, status) FROM stdin;
+1	1	MT-DIG-0001	L2026-04	Multimetro da bancada tecnica 01	\N	DISPONIVEL
+2	1	MT-DIG-0002	L2026-04	Multimetro da bancada tecnica 02	\N	DISPONIVEL
+3	2	AL-AMP-0001	L2026-04	Alicate amperimetro da equipe tecnica	\N	DISPONIVEL
+4	3	CH-ISO-0001	L2026-04	Kit chave isolada - maleta 01	\N	DISPONIVEL
+5	4	ALN-SET-0001	L2026-04	Kit allen metrico - maleta 01	\N	DISPONIVEL
+6	5	NT-TEC-0001	L2026-04	Notebook tecnico para diagnosticos em campo	\N	DISPONIVEL
+7	5	NT-TEC-0002	L2026-04	Notebook tecnico reserva	\N	EM_MANUTENCAO
 \.
 
 
@@ -917,6 +1032,16 @@ COPY public.tb_cad_ativo (codigo, codigo_catalogo_ativo, numero_serie, lote, des
 --
 
 COPY public.tb_cad_ativo_estoque (codigo_catalogo_ativo, quantidade) FROM stdin;
+1	2
+2	1
+3	6
+4	3
+5	2
+6	8
+7	10
+8	4
+9	12
+10	12
 \.
 COPY public.tb_srv_ordem_servico (codigo, codigo_cliente, codigo_funcionario, codigo_software_instalado, codigo_contrato, codigo_maquina_contrato, status, criticidade, data_abertura, data_agendamento, data_inicio_execucao, data_fim_execucao, observacao_geral) FROM stdin;
 \.
@@ -926,6 +1051,16 @@ COPY public.tb_srv_ordem_servico (codigo, codigo_cliente, codigo_funcionario, co
 --
 
 COPY public.tb_cad_catalogo_ativo (codigo, descricao_produto, modelo, marca, descricao, especificacao, tipo) FROM stdin;
+1	Multimetro Digital	DT-9205A	Minipa	Equipamento para medicao eletrica	Tensao, corrente, resistencia e continuidade	FERRAMENTA
+2	Alicate Amperimetro	ET-3200	Minipa	Alicate para medicao de corrente	Corrente AC/DC e tensao	FERRAMENTA
+3	Chave de Fenda Isolada	SL-6	Tramontina	Ferramenta manual isolada para manutencao eletrica	Kit de chaves isoladas	FERRAMENTA
+4	Kit Chave Allen	ALLEN-MM	Gedore	Kit de chaves allen metricas	Jogo de 1,5 mm a 10 mm	FERRAMENTA
+5	Notebook Tecnico	Latitude 5420	Dell	Notebook para uso em manutencoes e diagnosticos	Intel i5, 16GB RAM, SSD 512GB	EQUIPAMENTO
+6	SSD 512GB SATA	SA400S37/480G	Kingston	Unidade para substituicao em manutencao	Armazenamento SSD SATA	COMPONENTE
+7	Memoria RAM DDR4 8GB	KVR26N19S8/8	Kingston	Modulo de memoria para reposicao	DDR4 8GB 2666MHz	COMPONENTE
+8	Fonte ATX 500W	VX-500	Vinik	Fonte de alimentacao para reposicao	500W, bivolt	COMPONENTE
+9	Mouse USB	M90	Logitech	Periferico para reposicao	Mouse optico USB	PERIFERICO
+10	Teclado USB	K120	Logitech	Periferico para reposicao	Teclado ABNT2 USB	PERIFERICO
 \.
 
 
@@ -934,6 +1069,9 @@ COPY public.tb_cad_catalogo_ativo (codigo, descricao_produto, modelo, marca, des
 --
 
 COPY public.tb_cad_catalogo_maquina (codigo, descricao, especificacao, limite_manutencao) FROM stdin;
+1	Router CNC X200	Router CNC para corte e usinagem leve	180 dias
+2	Injetora PL-450	Maquina injetora de medio porte	120 dias
+3	Compressor Industrial 80L	Compressor de ar industrial	90 dias
 \.
 
 
@@ -942,6 +1080,20 @@ COPY public.tb_cad_catalogo_maquina (codigo, descricao, especificacao, limite_ma
 --
 
 COPY public.tb_cad_catalogo_maquina_checklist_padrao (codigo_catalogo_maquina, codigo_tarefa) FROM stdin;
+1	1
+1	2
+1	4
+1	5
+1	10
+2	1
+2	2
+2	3
+2	4
+2	10
+3	2
+3	3
+3	5
+3	10
 \.
 
 
@@ -950,6 +1102,16 @@ COPY public.tb_cad_catalogo_maquina_checklist_padrao (codigo_catalogo_maquina, c
 --
 
 COPY public.tb_cad_catalogo_maquina_ferramenta_modelo (codigo_catalogo_maquina, codigo_catalogo_ativo, quantidade_necessaria) FROM stdin;
+1	1	1
+1	3	1
+1	4	1
+1	5	1
+2	1	1
+2	2	1
+2	3	1
+2	5	1
+3	1	1
+3	2	1
 \.
 
 
@@ -958,6 +1120,11 @@ COPY public.tb_cad_catalogo_maquina_ferramenta_modelo (codigo_catalogo_maquina, 
 --
 
 COPY public.tb_cad_catalogo_software (codigo, descricao) FROM stdin;
+1	Windows 11 Pro
+2	TeamViewer Host
+3	ERP Tracker Agent
+4	PostgreSQL
+5	Antivirus Endpoint
 \.
 
 
@@ -966,6 +1133,23 @@ COPY public.tb_cad_catalogo_software (codigo, descricao) FROM stdin;
 --
 
 COPY public.tb_cad_catalogo_software_checklist_padrao (codigo_catalogo_software, codigo_catalogo_tarefa, obrigatorio) FROM stdin;
+1	6	t
+1	7	t
+1	8	t
+1	9	t
+1	10	t
+2	7	t
+2	9	t
+2	10	t
+3	6	t
+3	9	t
+3	10	t
+4	6	t
+4	9	t
+4	10	t
+5	7	t
+5	8	t
+5	10	t
 \.
 
 
@@ -974,6 +1158,16 @@ COPY public.tb_cad_catalogo_software_checklist_padrao (codigo_catalogo_software,
 --
 
 COPY public.tb_cad_catalogo_tarefa (codigo, descricao, categoria) FROM stdin;
+1	Inspecionar cabos e conectores	MAQUINA
+2	Limpar filtros e ventilacao	MAQUINA
+3	Verificar lubrificacao	MAQUINA
+4	Testar sensores e botoes de emergencia	MAQUINA
+5	Conferir aterramento eletrico	MAQUINA
+6	Validar backup da configuracao	SOFTWARE
+7	Conferir licenciamento	SOFTWARE
+8	Atualizar antivirus e assinaturas	SOFTWARE
+9	Testar comunicacao em rede	SOFTWARE
+10	Registrar evidencias da manutencao	GERAL
 \.
 
 
@@ -1051,6 +1245,37 @@ COPY public.tb_cad_perfil_permissao (codigo_perfil, codigo_permissao) FROM stdin
 --
 
 COPY public.tb_cad_permissao (codigo, descricao) FROM stdin;
+\.
+
+
+
+--
+-- Data for Name: tb_cad_tipo_viagem; Type: TABLE DATA; Schema: public; Owner: user_dev
+--
+
+COPY public.tb_cad_tipo_viagem (codigo, descricao, observacao, ativo, data_cadastro) FROM stdin;
+1	ATENDIMENTO_TECNICO	Viagem para atendimento técnico em cliente.	t	2026-04-25 00:00:00
+2	INSTALACAO	Viagem para instalação de máquina, software ou equipamento.	t	2026-04-25 00:00:00
+3	MANUTENCAO	Viagem para manutenção preventiva ou corretiva.	t	2026-04-25 00:00:00
+4	ENTREGA	Viagem para entrega de equipamento, peça ou material.	t	2026-04-25 00:00:00
+5	RETIRADA	Viagem para retirada de equipamento, peça ou material.	t	2026-04-25 00:00:00
+6	VISITA_COMERCIAL	Viagem para visita comercial ou relacionamento com cliente.	t	2026-04-25 00:00:00
+\.
+
+
+--
+-- Data for Name: tb_srv_viagem; Type: TABLE DATA; Schema: public; Owner: user_dev
+--
+
+COPY public.tb_srv_viagem (codigo, codigo_tipo_viagem, codigo_cliente, codigo_funcionario_responsavel, codigo_ordem_servico, status, data_cadastro, data_saida_prevista, data_saida_real, data_retorno_previsto, data_retorno_real, origem, destino, km_previsto, km_real, observacao) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tb_srv_viagem_parada; Type: TABLE DATA; Schema: public; Owner: user_dev
+--
+
+COPY public.tb_srv_viagem_parada (codigo, codigo_viagem, ordem, descricao_local, endereco, cidade, estado_regiao, latitude, longitude, data_chegada_prevista, data_chegada_real, data_saida_prevista, data_saida_real, observacao) FROM stdin;
 \.
 
 
@@ -1204,7 +1429,7 @@ COPY topology.layer (topology_id, layer_id, schema_name, table_name, feature_col
 -- Name: tb_cad_ativo_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
 --
 
-SELECT pg_catalog.setval('public.tb_cad_ativo_codigo_seq', 1, false);
+SELECT pg_catalog.setval('public.tb_cad_ativo_codigo_seq', 7, true);
 
 
 -- Name: tb_srv_ordem_servico_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
@@ -1217,28 +1442,28 @@ SELECT pg_catalog.setval('public.tb_srv_ordem_servico_codigo_seq', 1, false);
 -- Name: tb_cad_catalogo_ativo_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
 --
 
-SELECT pg_catalog.setval('public.tb_cad_catalogo_ativo_codigo_seq', 1, false);
+SELECT pg_catalog.setval('public.tb_cad_catalogo_ativo_codigo_seq', 10, true);
 
 
 --
 -- Name: tb_cad_catalogo_maquina_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
 --
 
-SELECT pg_catalog.setval('public.tb_cad_catalogo_maquina_codigo_seq', 1, false);
+SELECT pg_catalog.setval('public.tb_cad_catalogo_maquina_codigo_seq', 3, true);
 
 
 --
 -- Name: tb_cad_catalogo_software_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
 --
 
-SELECT pg_catalog.setval('public.tb_cad_catalogo_software_codigo_seq', 1, false);
+SELECT pg_catalog.setval('public.tb_cad_catalogo_software_codigo_seq', 5, true);
 
 
 --
 -- Name: tb_cad_catalogo_tarefa_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
 --
 
-SELECT pg_catalog.setval('public.tb_cad_catalogo_tarefa_codigo_seq', 1, false);
+SELECT pg_catalog.setval('public.tb_cad_catalogo_tarefa_codigo_seq', 10, true);
 
 
 --
@@ -1288,6 +1513,28 @@ SELECT pg_catalog.setval('public.tb_cad_perfil_id_seq', 1, true);
 --
 
 SELECT pg_catalog.setval('public.tb_cad_permissao_id_seq', 1, false);
+
+
+
+--
+-- Name: tb_cad_tipo_viagem_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
+--
+
+SELECT pg_catalog.setval('public.tb_cad_tipo_viagem_codigo_seq', 6, true);
+
+
+--
+-- Name: tb_srv_viagem_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
+--
+
+SELECT pg_catalog.setval('public.tb_srv_viagem_codigo_seq', 1, false);
+
+
+--
+-- Name: tb_srv_viagem_parada_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
+--
+
+SELECT pg_catalog.setval('public.tb_srv_viagem_parada_codigo_seq', 1, false);
 
 
 --
@@ -1543,6 +1790,79 @@ ALTER TABLE ONLY public.tb_cad_permissao
     ADD CONSTRAINT tb_cad_permissao_pkey PRIMARY KEY (codigo);
 
 
+
+--
+-- Name: tb_cad_tipo_viagem tb_cad_tipo_viagem_descricao_key; Type: CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_cad_tipo_viagem
+    ADD CONSTRAINT tb_cad_tipo_viagem_descricao_key UNIQUE (descricao);
+
+
+--
+-- Name: tb_cad_tipo_viagem tb_cad_tipo_viagem_pkey; Type: CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_cad_tipo_viagem
+    ADD CONSTRAINT tb_cad_tipo_viagem_pkey PRIMARY KEY (codigo);
+
+
+--
+-- Name: tb_srv_viagem tb_srv_viagem_pkey; Type: CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_viagem
+    ADD CONSTRAINT tb_srv_viagem_pkey PRIMARY KEY (codigo);
+
+
+--
+-- Name: tb_srv_viagem tb_srv_viagem_status_check; Type: CHECK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_srv_viagem
+    ADD CONSTRAINT tb_srv_viagem_status_check CHECK (((status)::text = ANY ((ARRAY['ABERTA'::character varying, 'EM_ANDAMENTO'::character varying, 'FINALIZADA'::character varying, 'CANCELADA'::character varying])::text[])));
+
+
+--
+-- Name: tb_srv_viagem tb_srv_viagem_km_previsto_check; Type: CHECK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_srv_viagem
+    ADD CONSTRAINT tb_srv_viagem_km_previsto_check CHECK (((km_previsto IS NULL) OR (km_previsto >= (0)::numeric)));
+
+
+--
+-- Name: tb_srv_viagem tb_srv_viagem_km_real_check; Type: CHECK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_srv_viagem
+    ADD CONSTRAINT tb_srv_viagem_km_real_check CHECK (((km_real IS NULL) OR (km_real >= (0)::numeric)));
+
+
+--
+-- Name: tb_srv_viagem_parada tb_srv_viagem_parada_pkey; Type: CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_viagem_parada
+    ADD CONSTRAINT tb_srv_viagem_parada_pkey PRIMARY KEY (codigo);
+
+
+--
+-- Name: tb_srv_viagem_parada tb_srv_viagem_parada_ordem_key; Type: CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_viagem_parada
+    ADD CONSTRAINT tb_srv_viagem_parada_ordem_key UNIQUE (codigo_viagem, ordem);
+
+
+--
+-- Name: tb_srv_viagem_parada tb_srv_viagem_parada_ordem_check; Type: CHECK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_srv_viagem_parada
+    ADD CONSTRAINT tb_srv_viagem_parada_ordem_check CHECK ((ordem > 0));
+
+
 --
 -- Name: tb_cad_tipo_manutencao tb_cad_tipo_manutencao_descricao_key; Type: CONSTRAINT; Schema: public; Owner: user_dev
 --
@@ -1667,6 +1987,47 @@ ALTER TABLE ONLY public.tb_srv_ordem_servico
 
 ALTER TABLE ONLY public.tb_srv_ordem_servico
     ADD CONSTRAINT fk_ordem_servico_maquina_contrato FOREIGN KEY (codigo_maquina_contrato) REFERENCES public.tb_srv_maquina_contrato(codigo) ON DELETE CASCADE;
+
+
+--
+-- Name: tb_srv_viagem fk_viagem_tipo_viagem; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_viagem
+    ADD CONSTRAINT fk_viagem_tipo_viagem FOREIGN KEY (codigo_tipo_viagem) REFERENCES public.tb_cad_tipo_viagem(codigo);
+
+
+--
+-- Name: tb_srv_viagem fk_viagem_cliente; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_viagem
+    ADD CONSTRAINT fk_viagem_cliente FOREIGN KEY (codigo_cliente) REFERENCES public.tb_cad_cliente(codigo);
+
+
+--
+-- Name: tb_srv_viagem fk_viagem_funcionario_responsavel; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_viagem
+    ADD CONSTRAINT fk_viagem_funcionario_responsavel FOREIGN KEY (codigo_funcionario_responsavel) REFERENCES public.tb_cad_funcionario(codigo);
+
+
+--
+-- Name: tb_srv_viagem fk_viagem_ordem_servico; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_viagem
+    ADD CONSTRAINT fk_viagem_ordem_servico FOREIGN KEY (codigo_ordem_servico) REFERENCES public.tb_srv_ordem_servico(codigo);
+
+
+--
+-- Name: tb_srv_viagem_parada fk_viagem_parada_viagem; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_viagem_parada
+    ADD CONSTRAINT fk_viagem_parada_viagem FOREIGN KEY (codigo_viagem) REFERENCES public.tb_srv_viagem(codigo) ON DELETE CASCADE;
+
 
 
 --

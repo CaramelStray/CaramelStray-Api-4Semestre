@@ -74,7 +74,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) =>  {
               Descrição da Máquina <span class="text-red-500 font-bold">*</span>
             </FormLabel>
             <FormControl>
-              <Input type="text" placeholder="Ex: Torno CNC, Fresadora, etc" v-bind="componentField" />
+              <Input type="text" placeholder="Ex: workstation, roteador, raspberry" v-bind="componentField" />
             </FormControl>
           </FormItem>
         </FormField>
@@ -94,9 +94,9 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) =>  {
 
         <FormField v-slot="{ componentField }" name="limiteManutencao">
           <FormItem>
-            <FormLabel>Limite de Manutenção</FormLabel>
+            <FormLabel>Quantidade limite de Manutenção</FormLabel>
             <FormControl>
-              <Input type="text" placeholder="Ex: 500h, 6 meses, 10.000 peças" v-bind="componentField" />
+              <Input type="text" placeholder="Ex: 5" v-bind="componentField" />
             </FormControl>
           </FormItem>
         </FormField>

@@ -3,34 +3,56 @@
 ## Caramel Stray
 
 <p align="center">
-      <img src="./assets/logo_v2 2.svg" width="50" align="center">
+      <img src="../../assets/logo_v2 2.svg" width="50" align="center">
       <h2 align="center"> Tracker</h2>
 </p>
 
+## Documentação - Sprints
+
+
 <p align="center">
   | <a href ="#desafio"> Desafio</a>  |
-  <a href ="#solucao"> Solução</a>  |
-  <a href ="#backlog"> Backlog do Produto</a>  |
-  <a href ="#sprint"> Cronograma de Sprints</a>  | <a href ="#sprintdor">Product backlog -> DOR e DOD</a> |
-  <a href ="#tecnologias">Tecnologias</a> |  <a href ="#figma">Figma</a> |
-  <a href ="#branchs">Estrutura de Branchs</a>  |
-  <a href ="#equipe"> Equipe</a> | <a href ="#manual"> Manual do usuário</a>
+      <a href ="#dod"> DOD e DOR</a> |
+  <a href ="#backlog"> Backlog</a>  |
+  <a href ="#equipe"> Equipe</a>  |
 </p>
 
 > Status do Projeto: Em progresso  🚧
->
->
-> Pasta de Documentação:  📄
->
-> Video do Projeto:  Em progresso  📽️
+---
 
 ## 🏅 Desafio <a id="desafio"></a>
 
-A empresa opera cerca de 100 sistemas distribuídos mundialmente, cada um exigindo manutenções periódicas conforme suas horas de uso. Essas intervenções variam em duração conforme a localização - por exemplo, manutenções próximas, como em sistemas no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distantes, como na Ásia, demandam mais tempo.
+A empresa opera cerca de 100 sistemas distribuídos mundialmente, cada um exigindo manutenções periódicas conforme suas 
+horas de uso. Essas intervenções variam em duração conforme a localização - por exemplo, manutenções próximas, como em sistemas 
+no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distantes, como na Ásia, demandam mais tempo.
 
-## 🏅 Solução <a id="solucao"></a>
+---
 
-A solução consiste em um Sistema de Gestão de Manutenções que centraliza o cadastro de clientes, sistemas, contratos, ativos e técnicos, permitindo planejar e registrar ordens de manutenção com base nas horas de uso dos equipamentos. O sistema organiza viagens e checklists para otimizar o atendimento considerando a localização global dos sistemas. Também oferece dashboard, histórico e relatórios para acompanhar prazos e SLAs. Dessa forma, possibilita priorizar atendimentos, evitar atrasos contratuais e melhorar a eficiência operacional da equipe técnica.
+## ✅ Definition of Done (DoD) – Tracker <a id="dod"></a>
+Código backend desenvolvido em Spring Boot versionado no repositório principal.
+Banco de dados (PostgreSQL) atualizado com scripts versionados (Flyway).
+Frontend implementado em Vue.js + Vuetify, responsivo e integrado ao backend.
+Autenticação e autorização implementadas via JWT, validadas em Postman.
+Testes unitários e de integração com cobertura mínima de 80% nas regras críticas.
+Endpoints REST documentados com Swagger.
+Interfaces confirmadas no Figma antes da implementação.
+Funcionalidade validada em ambiente de homologação com dados reais de teste.
+Deploy automatizado testado (build + banco + API + frontend funcionando em conjunto).
+Documentação de uso e técnica atualizada (README ou Wiki).
+
+---
+
+## ✅ Definition of Ready (DoR) – Tracker
+User Story validada e compreendida pelo time técnico.
+Critérios de aceitação claros, objetivos e documentados.
+Protótipos/Wireframes definidos no Figma e revisados com o cliente.
+Modelagem de entidades e relacionamentos definida em PostgreSQL.
+Contratos de API descritos no Swagger.
+Dependências externas identificadas (bibliotecas, integrações).
+Estratégia de autenticação/autorização via JWT definida.
+Dados de exemplo para testes.
+Estimativa de esforço registrada pelo time.
+Reunião de refinamento realizada com aprovação do cliente.
 
 ---
 
@@ -64,43 +86,6 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 | 17 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 40 | 1 |
 | 18 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 60 | 3 |
 | 19 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 60 | 3 |
-
-
----
-
-## 📅 Cronograma de Sprints <a id="sprint"></a>
-| Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Site Tracker                                  |
-| --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------- |----------------------------------------------- |
-| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Jira](https://patriciamoraesviegas.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZDkzMDgzMDkzMzZiNGU2NTk0NDgwZjZhODZjNGRlOGQiLCJwIjoiaiJ9)  |[Sprint 1 entrega](http://tracker.pedrohenribeiro.com/) |
-| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](#) |[Sprint 2 Tasks](#)|  |
-| 🔖 **SPRINT 3** | 11/05 - 31/05 | [Em processo...](#)| [Em processo...](#) ||
-| ⚡️ **feira de soluções** |  |  |  ||
-
-## 💻 Product backlog -> DOR e DOD <a id="sprintdor"></a>
-[Sprints DOR e DOD](./documentacao/sprints)
-
-
-## 💻 Tecnologias <a id="tecnologias"></a>
-
-<h4 align="center">
- <a href="https://www.java.com/"><img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"></a>
- <a href="https://spring.io/projects/spring-boot"><img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white"></a>
- <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D"/></a>
- <a href="https://www.javascript.com/"><img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"></a>
- <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white"></a>
- <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white"></a>
- <a href="https://github.com/"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/></a>
- <a href="https://git-scm.com/"><img src="https://img.shields.io/badge/Git-E34F26?style=for-the-badge&logo=git&logoColor=white"/></a>
- <a href="https://jwt.io/"><img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white"></a>
- <a href="https://www.figma.com/"><img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"/></a>
-</h4>
-
-# 🪵 Estrutura de branchs <a id="branchs"></a>
-
-[📄 Estrutura de branchs](./documentacao/estrutura_de_branch.md)
-
-# 📚 Manual de usuário <a id="manual"></a>
-[Manual do usuário](./documentacao/manual_usuario.md)
 
 ## 🎓 Equipe <a id="equipe"></a>
 

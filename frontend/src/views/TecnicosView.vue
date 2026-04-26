@@ -253,9 +253,11 @@ const filteredTecnicos = computed(() => {
             </TableCell>
 
             <TableCell class="text-sm font-normal text-muted-foreground">
-              <span v-if="t.certificacao" class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px]">
-                {{ t.certificacao }}
-              </span>
+              <div v-if="t.habilidades && t.habilidades.length > 0" class="flex flex-wrap gap-1">
+                <span v-for="hab in t.habilidades" :key="hab.habilidadeId" class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px]">
+                  {{ hab.descricaoHabilidade }}
+                </span>
+              </div>
               <span v-else class="text-muted-foreground/50">—</span>
             </TableCell>
 

@@ -101,7 +101,7 @@ const onSubmit = form.handleSubmit(async (values) => {
               <FormControl>
                 <Input
                   type="password"
-                  placeholder="Sua senha secreta"
+                  placeholder="Sua senha"
                   class="bg-muted/20 border-border hover:border-blue-500/50 focus:border-blue-500 transition-colors"
                   v-bind="componentField"
                 />

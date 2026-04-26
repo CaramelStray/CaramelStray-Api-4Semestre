@@ -102,7 +102,7 @@
               </FormControl>
               <div class="space-y-1 leading-none">
                 <FormLabel>Acesso à Internet</FormLabel>
-                <p class="text-xs text-muted-foreground">Marque se a infraestrutura deste contrato possui conexão com a internet.</p>
+                <p class="text-xs text-muted-foreground">Marque se a infraestrutura deste contrato possui uma boa conexão com a internet.</p>
               </div>
             </FormItem>
           </FormField>

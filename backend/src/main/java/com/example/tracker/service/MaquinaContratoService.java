@@ -1,22 +1,22 @@
 package com.example.tracker.service;
 
 import com.example.tracker.dto.maquinacontrato.MaquinaContratoCreateDTO;
-import com.example.tracker.entity.MaquinaContrato;
+import com.example.tracker.dto.maquinacontrato.MaquinaContratoResponseDTO;
 import java.util.List;
 
 public interface MaquinaContratoService {
 
-    List<MaquinaContrato> listarTodos();
+    List<MaquinaContratoResponseDTO> listarTodos();
 
-    MaquinaContrato buscarPorId(Integer id);
+    MaquinaContratoResponseDTO buscarPorId(Integer id);
 
-    List<MaquinaContrato> buscarPorContrato(Integer codigoContrato);
+    List<MaquinaContratoResponseDTO> buscarPorContrato(Integer codigoContrato);
 
-    List<MaquinaContrato> buscarPorCatalogoMaquina(Integer codigoCatalogoMaquina);
+    List<MaquinaContratoResponseDTO> buscarPorCatalogoMaquina(Integer codigoCatalogoMaquina);
 
-    MaquinaContrato cadastrar(MaquinaContratoCreateDTO maquinaContratoDTO);
+    MaquinaContratoResponseDTO cadastrar(MaquinaContratoCreateDTO maquinaContratoDTO);
 
-    MaquinaContrato atualizar(Integer id, MaquinaContratoCreateDTO maquinaContratoDTO);
+    MaquinaContratoResponseDTO atualizar(Integer id, MaquinaContratoCreateDTO maquinaContratoDTO);
 
     void deletar(Integer id);
 }

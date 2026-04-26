@@ -1,7 +1,9 @@
 package com.example.tracker.dto.ordemservico;
 
 import com.example.tracker.entity.OrdemServico;
+import java.util.List;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 public class OrdemServicoResponseDTO {
 
@@ -18,6 +20,8 @@ public class OrdemServicoResponseDTO {
     private LocalDateTime dataInicioExecucao;
     private LocalDateTime dataFimExecucao;
     private String observacaoGeral;
+    private Integer quantidadeChecklistAtivos;
+    private List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos;
 
     public static OrdemServicoResponseDTO fromEntity(OrdemServico os) {
         OrdemServicoResponseDTO dto = new OrdemServicoResponseDTO();
@@ -51,6 +55,15 @@ public class OrdemServicoResponseDTO {
         dto.setDataInicioExecucao(os.getDataInicioExecucao());
         dto.setDataFimExecucao(os.getDataFimExecucao());
         dto.setObservacaoGeral(os.getObservacaoGeral());
+
+        List<OrdemServicoChecklistAtivoResponseDTO> checklist = os.getChecklistAtivos() == null
+                ? List.of()
+                : os.getChecklistAtivos().stream()
+                        .map(OrdemServicoChecklistAtivoResponseDTO::fromEntity)
+                        .collect(Collectors.toList());
+
+        dto.setChecklistAtivos(checklist);
+        dto.setQuantidadeChecklistAtivos(checklist.size());
 
         return dto;
     }
@@ -157,5 +170,21 @@ public class OrdemServicoResponseDTO {
 
     public void setObservacaoGeral(String observacaoGeral) {
         this.observacaoGeral = observacaoGeral;
+    }
+
+    public Integer getQuantidadeChecklistAtivos() {
+        return quantidadeChecklistAtivos;
+    }
+
+    public void setQuantidadeChecklistAtivos(Integer quantidadeChecklistAtivos) {
+        this.quantidadeChecklistAtivos = quantidadeChecklistAtivos;
+    }
+
+    public List<OrdemServicoChecklistAtivoResponseDTO> getChecklistAtivos() {
+        return checklistAtivos;
+    }
+
+    public void setChecklistAtivos(List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos) {
+        this.checklistAtivos = checklistAtivos;
     }
 }

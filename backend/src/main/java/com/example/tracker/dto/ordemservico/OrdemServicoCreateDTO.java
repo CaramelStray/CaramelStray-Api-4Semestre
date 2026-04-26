@@ -1,7 +1,9 @@
 package com.example.tracker.dto.ordemservico;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,4 +35,7 @@ public class OrdemServicoCreateDTO {
     private LocalDateTime dataFimExecucao;
 
     private String observacaoGeral;
+
+    @Valid
+    private List<OrdemServicoChecklistAtivoCreateDTO> checklistAtivos;
 }

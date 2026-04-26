@@ -1,8 +1,12 @@
 package com.example.tracker.controller;
 
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
+import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
+import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
 import com.example.tracker.entity.OrdemServico;
+import com.example.tracker.entity.OrdemServicoChecklistAtivo;
+import com.example.tracker.service.OrdemServicoChecklistAtivoService;
 import com.example.tracker.service.OrdemServicoService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrdemServicoController {
 
     private final OrdemServicoService ordemServicoService;
+    private final OrdemServicoChecklistAtivoService ordemServicoChecklistAtivoService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -96,6 +101,69 @@ public class OrdemServicoController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(ordens);
+    }
+
+    @GetMapping("/{id}/checklist-ativos")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<OrdemServicoChecklistAtivoResponseDTO>> listarChecklistAtivos(
+            @PathVariable Integer id) {
+        List<OrdemServicoChecklistAtivoResponseDTO> itens = ordemServicoChecklistAtivoService
+                .listarPorOrdemServico(id).stream()
+                .map(OrdemServicoChecklistAtivoResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(itens);
+    }
+
+    @GetMapping("/{id}/checklist-ativos/{codigoItem}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<OrdemServicoChecklistAtivoResponseDTO> buscarChecklistAtivoPorId(
+            @PathVariable Integer id,
+            @PathVariable Integer codigoItem) {
+        OrdemServicoChecklistAtivo item = ordemServicoChecklistAtivoService.buscarItem(id, codigoItem);
+        return ResponseEntity.ok(OrdemServicoChecklistAtivoResponseDTO.fromEntity(item));
+    }
+
+    @PostMapping("/{id}/checklist-ativos")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<OrdemServicoChecklistAtivoResponseDTO> adicionarChecklistAtivo(
+            @PathVariable Integer id,
+            @Valid @RequestBody OrdemServicoChecklistAtivoCreateDTO dto) {
+        OrdemServicoChecklistAtivo item = ordemServicoChecklistAtivoService.adicionar(id, dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(OrdemServicoChecklistAtivoResponseDTO.fromEntity(item));
+    }
+
+    @PutMapping("/{id}/checklist-ativos")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<OrdemServicoChecklistAtivoResponseDTO>> substituirChecklistAtivos(
+            @PathVariable Integer id,
+            @Valid @RequestBody List<OrdemServicoChecklistAtivoCreateDTO> itens) {
+        List<OrdemServicoChecklistAtivoResponseDTO> response = ordemServicoChecklistAtivoService
+                .substituirChecklist(id, itens).stream()
+                .map(OrdemServicoChecklistAtivoResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/checklist-ativos/{codigoItem}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<OrdemServicoChecklistAtivoResponseDTO> atualizarChecklistAtivo(
+            @PathVariable Integer id,
+            @PathVariable Integer codigoItem,
+            @Valid @RequestBody OrdemServicoChecklistAtivoCreateDTO dto) {
+        OrdemServicoChecklistAtivo item = ordemServicoChecklistAtivoService.atualizar(id, codigoItem, dto);
+        return ResponseEntity.ok(OrdemServicoChecklistAtivoResponseDTO.fromEntity(item));
+    }
+
+    @DeleteMapping("/{id}/checklist-ativos/{codigoItem}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Void> removerChecklistAtivo(
+            @PathVariable Integer id,
+            @PathVariable Integer codigoItem) {
+        ordemServicoChecklistAtivoService.remover(id, codigoItem);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

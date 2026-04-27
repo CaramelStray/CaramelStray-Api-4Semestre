@@ -142,31 +142,15 @@
         />
       </div>
 
-      <!-- Data de Agendamento com Popover -->
+      <!-- Data de Agendamento -->
       <FormField v-slot="{ value, handleChange }" name="dataAgendamento">
         <FormItem class="md:col-span-2">
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
             Data de Agendamento <span class="text-red-500 font-bold">*</span>
           </FormLabel>
-          <Popover v-model:open="calendarOpen">
-            <PopoverTrigger as-child>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  :class="['w-full justify-start text-left font-normal bg-muted/20 border-border hover:border-blue-500/50 transition-colors', !value && 'text-muted-foreground']"
-                >
-                  <CalendarIcon class="mr-2 h-4 w-4 text-muted-foreground" />
-                  {{ value ? formatDateDisplay(value) : 'Selecione uma data...' }}
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent class="w-auto p-0 z-[200]" align="start">
-              <Calendar
-                :min-value="amanhaToCal"
-                @update:model-value="val => { handleChange(calToString(val)); calendarOpen = false }"
-              />
-            </PopoverContent>
-          </Popover>
+          <FormControl>
+            <DatePickerInput :model-value="value" @update:model-value="handleChange" :min-value="amanhaToCal" />
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -373,11 +357,10 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar } from '@/components/ui/calendar'
+import { DatePickerInput } from '@/components/ui/date-picker'
 import {
   ChevronRight, FileText, Server, UserCheck, ArrowRight,
-  CalendarIcon, Loader2, PackageCheck, PackageX, UserX, CheckCircle2
+  Loader2, PackageCheck, PackageX, UserX, CheckCircle2
 } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
@@ -397,7 +380,6 @@ const step = ref(1)
 const loading = ref(false)
 const loadingSoftware = ref(false)
 const loadingTecnicos = ref(false)
-const calendarOpen = ref(false)
 
 const clientes = ref<any[]>([])
 const tecnicosDisponiveis = ref<TecnicoResponseDTO[]>([])
@@ -445,18 +427,6 @@ const amanhaToCal = computed(() => {
   d.setDate(d.getDate() + 1)
   return new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate())
 })
-
-function calToString(val: any): string {
-  if (!val) return ''
-  return val.toString()
-}
-
-function formatDateDisplay(isoDate: string): string {
-  if (!isoDate) return ''
-  const datePart = isoDate.split('T')[0]
-  const [year, month, day] = datePart.split('-')
-  return `${day}/${month}/${year}`
-}
 
 const formSchema = toTypedSchema(z.object({
   codigoCliente:         z.string({ required_error: '*' }).min(1, 'Selecione um cliente'),

@@ -73,18 +73,22 @@
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="dataInicio">
+          <FormField v-slot="{ value, handleChange }" name="dataInicio">
             <FormItem>
               <FormLabel class="flex items-center gap-1">Data de Início <span class="text-red-500 font-bold">*</span></FormLabel>
-              <FormControl><Input type="date" v-bind="componentField" /></FormControl>
+              <FormControl>
+                <DatePickerInput :model-value="value" @update:model-value="handleChange" :min-value="dataInicioMinValue" />
+              </FormControl>
               <FormMessage />
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="dataFim">
+          <FormField v-slot="{ value, handleChange }" name="dataFim">
             <FormItem>
               <FormLabel class="flex items-center gap-1">Data de Fim <span class="text-red-500 font-bold">*</span></FormLabel>
-              <FormControl><Input type="date" v-bind="componentField" /></FormControl>
+              <FormControl>
+                <DatePickerInput :model-value="value" @update:model-value="handleChange" :min-value="dataFimMinValue" />
+              </FormControl>
               <FormMessage />
             </FormItem>
           </FormField>
@@ -93,14 +97,6 @@
             <FormItem>
               <FormLabel class="flex items-center gap-1">Período de Manutenção (meses) <span class="text-red-500 font-bold">*</span></FormLabel>
               <FormControl><Input type="number" placeholder="Ex: 6" v-bind="componentField" /></FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-
-          <FormField v-slot="{ componentField }" name="vencimentoManutencaoPreventiva">
-            <FormItem>
-              <FormLabel class="flex items-center gap-1">Próxima Manutenção <span class="text-red-500 font-bold">*</span></FormLabel>
-              <FormControl><Input type="date" v-bind="componentField" /></FormControl>
               <FormMessage />
             </FormItem>
           </FormField>
@@ -271,6 +267,7 @@ import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import { useForm, useFieldArray } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
+import { CalendarDate } from '@internationalized/date'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -279,6 +276,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { DatePickerInput } from '@/components/ui/date-picker'
 import { ChevronRight, FileText, Server, Layers, Plus, Trash2, ArrowRight } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
@@ -328,7 +326,6 @@ const formSchema = toTypedSchema(z.object({
   dataInicio: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   dataFim: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   periodoManutencaoPreventiva: z.coerce.number({ required_error: 'Campo obrigatório' }).min(1, 'Informe um período válido'),
-  vencimentoManutencaoPreventiva: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   descricao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
 
   maquinas: z.array(z.object({
@@ -356,6 +353,15 @@ const form = useForm({
 })
 
 const formValues = form.values
+
+const dataInicioMinValue = new CalendarDate(2024, 1, 1)
+
+const dataFimMinValue = computed(() => {
+  const inicio = form.values.dataInicio
+  if (!inicio) return undefined
+  const [year, month, day] = inicio.split('-').map(Number)
+  return new CalendarDate(year, month, day)
+})
 
 const {
   fields: maquinasFields,
@@ -438,7 +444,6 @@ const popularFormEdicao = async (data: ContratoResponseDTO) => {
       dataInicio: data.dataInicio ?? '',
       dataFim: data.dataFim ?? '',
       periodoManutencaoPreventiva: data.periodoManutencaoPreventiva ?? 6,
-      vencimentoManutencaoPreventiva: data.vencimentoManutencaoPreventiva ?? '',
       descricao: data.descricao ?? '',
       maquinas: maquinasFormData,
       softwares: softwaresFormData
@@ -463,7 +468,7 @@ const nextStep = async () => {
   let fieldsToValidate: string[] = []
 
   if (step.value === 1) {
-    fieldsToValidate = ['codigoCliente', 'status', 'dataInicio', 'dataFim', 'periodoManutencaoPreventiva', 'vencimentoManutencaoPreventiva', 'descricao']
+    fieldsToValidate = ['codigoCliente', 'status', 'dataInicio', 'dataFim', 'periodoManutencaoPreventiva', 'descricao']
   } else if (step.value === 2) {
     fieldsToValidate = maquinasFields.value.flatMap((_, i) => [
       `maquinas[${i}].codigoMaquina`,
@@ -478,9 +483,27 @@ const nextStep = async () => {
 
   if (hasErrors) {
     erroValidacao.value = 'Corrija os campos destacados antes de continuar.'
-  } else {
-    step.value++
+    return
   }
+
+  if (step.value === 1) {
+    const { dataInicio, dataFim, periodoManutencaoPreventiva } = form.values
+    if (dataInicio && dataFim && dataFim < dataInicio) {
+      erroValidacao.value = 'A data de fim não pode ser anterior à data de início.'
+      return
+    }
+    if (dataInicio && dataFim && periodoManutencaoPreventiva) {
+      const inicio = new Date(`${dataInicio}T00:00:00`)
+      const fim = new Date(`${dataFim}T00:00:00`)
+      const mesesContrato = (fim.getFullYear() - inicio.getFullYear()) * 12 + (fim.getMonth() - inicio.getMonth())
+      if (periodoManutencaoPreventiva > mesesContrato) {
+        erroValidacao.value = `O período de manutenção (${periodoManutencaoPreventiva} meses) não pode ser maior que a duração do contrato (${mesesContrato} meses).`
+        return
+      }
+    }
+  }
+
+  step.value++
 }
 
 function closeDialog(val: boolean) {
@@ -507,7 +530,6 @@ const onSubmit = form.handleSubmit(async (values) => {
       status: values.status,
       periodoManutencaoPreventiva: values.periodoManutencaoPreventiva,
       conexaoInternet: conexaoInternet.value,
-      vencimentoManutencaoPreventiva: values.vencimentoManutencaoPreventiva
     }
     console.log('[DEBUG] payload.conexaoInternet:', payload.conexaoInternet)
 

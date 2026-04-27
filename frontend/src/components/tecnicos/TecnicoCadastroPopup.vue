@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { DatePickerInput } from '@/components/ui/date-picker'
 import { Plus, Trash2, ChevronRight, User, Wrench, ArrowRight, CheckCircle2 } from 'lucide-vue-next'
 
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
@@ -438,13 +439,13 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
               </FormItem>
             </FormField>
 
-            <FormField :name="`habilidades[${index}].dataValidade`" v-slot="{ componentField }">
+            <FormField :name="`habilidades[${index}].dataValidade`" v-slot="{ value, handleChange }">
               <FormItem>
                 <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
                   Data de Validade <span class="text-red-500 font-bold">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input type="date" class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors" v-bind="componentField" />
+                  <DatePickerInput :model-value="value" @update:model-value="handleChange" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

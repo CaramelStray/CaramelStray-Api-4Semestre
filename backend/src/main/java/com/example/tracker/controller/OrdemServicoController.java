@@ -3,6 +3,7 @@ package com.example.tracker.controller;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoResponseDTO;
+import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
 import com.example.tracker.entity.OrdemServico;
 import com.example.tracker.entity.OrdemServicoChecklistAtivo;
@@ -44,11 +45,23 @@ public class OrdemServicoController {
         return ResponseEntity.ok(ordens);
     }
 
+    @GetMapping("/dados-basicos")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<OrdemServicoDadosBasicosResponseDTO>> listarDadosBasicosOrdensServico() {
+        return ResponseEntity.ok(ordemServicoService.listarDadosBasicos());
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<OrdemServicoResponseDTO> buscarPorId(@PathVariable Integer id) {
         OrdemServico ordemServico = ordemServicoService.buscarPorId(id);
         return ResponseEntity.ok(OrdemServicoResponseDTO.fromEntity(ordemServico));
+    }
+
+    @GetMapping("/{id}/dados-basicos")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<OrdemServicoDadosBasicosResponseDTO> buscarDadosBasicosPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(ordemServicoService.buscarDadosBasicosPorId(id));
     }
 
     @GetMapping("/cliente/{codigoCliente}")

@@ -7,20 +7,15 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  Plus, Search, Pencil, Trash2, Code2, Layers, X, CheckCircle2
+  Plus, Search, Pencil, Code2, Layers, X, CheckCircle2
 } from 'lucide-vue-next'
 import HabilidadeCadastro from '@/components/habilidades/HabilidadeCadastroPopup.vue'
-import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 import { habilidadeService, type HabilidadeResponseDTO } from '@/services/habilidadeService'
 
 const isCadastroOpen = ref(false)
 const isEditOpen = ref(false)
 const editingHabilidade = ref<HabilidadeResponseDTO | null>(null)
 const searchQuery = ref('')
-const confirmOpen = ref(false)
-const confirmNome = ref('')
-const confirmId = ref<number | null>(null)
-const deletando = ref(false)
 
 const habilidades = ref<HabilidadeResponseDTO[]>([])
 const loading = ref(false)
@@ -50,27 +45,6 @@ const carregarHabilidades = async () => {
     erro.value = e.message
   } finally {
     loading.value = false
-  }
-}
-
-const removerHabilidade = (id: number, nome: string) => {
-  confirmId.value = id
-  confirmNome.value = nome
-  confirmOpen.value = true
-}
-
-const confirmarExclusao = async () => {
-  if (confirmId.value === null) return
-  deletando.value = true
-  try {
-    await habilidadeService.remover(confirmId.value)
-    confirmOpen.value = false
-    mostrarSucessoCadastro(`Certificação "${confirmNome.value}" removida com sucesso.`)
-    await carregarHabilidades()
-  } catch (e: any) {
-    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
-  } finally {
-    deletando.value = false
   }
 }
 
@@ -202,7 +176,7 @@ const getAvatarColor = (name: string) => {
             <TableHead class="pl-6 h-12 w-[100px]">Código</TableHead>
             <TableHead class="h-12">Descrição</TableHead>
             <TableHead class="h-12">Observações</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
         
@@ -235,9 +209,6 @@ const getAvatarColor = (name: string) => {
               <div class="flex items-center justify-end gap-1">
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(h)">
                   <Pencil class="size-5" />
-                </Button>
-                <Button variant="ghost" size="icon" @click="removerHabilidade(h.codigo, h.descricao)" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors">
-                  <Trash2 class="size-5" />
                 </Button>
               </div>
             </TableCell>
@@ -298,13 +269,6 @@ const getAvatarColor = (name: string) => {
       </Transition>
     </Teleport>
 
-    <ConfirmDeleteDialog
-      v-model:open="confirmOpen"
-      titulo="Excluir Certificação"
-      :descricao="`Tem certeza que deseja excluir a certificação &quot;${confirmNome}&quot;? Esta ação não pode ser desfeita.`"
-      :carregando="deletando"
-      @confirmar="confirmarExclusao"
-    />
 
   </div>
 </template>

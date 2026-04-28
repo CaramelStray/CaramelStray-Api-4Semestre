@@ -129,7 +129,9 @@ watch(() => props.initialData, (data) => {
 }, { immediate: true })
 
 const nextStep = async () => {
-  const step1Fields = ['nome', 'cpf', 'email', 'cargo', 'telefone', 'estado', 'disponibilidade']
+  const step1Fields = isEditMode.value
+    ? ['nome', 'cpf', 'cargo', 'telefone', 'estado', 'disponibilidade']
+    : ['nome', 'cpf', 'email', 'cargo', 'telefone', 'estado', 'disponibilidade']
   const results = await Promise.all(
     step1Fields.map(field => form.validateField(field as any))
   )
@@ -272,10 +274,11 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
                 type="text"
                 placeholder="000.000.000-00"
                 maxlength="14"
-                class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors"
+                :disabled="isEditMode"
+                class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 :name="componentField.name"
                 :model-value="componentField.modelValue"
-                @update:model-value="(val) => form.setFieldValue('cpf', applyCpfMask(val))"
+                @update:model-value="(val) => !isEditMode && form.setFieldValue('cpf', applyCpfMask(val))"
                 @blur="componentField.onBlur"
               />
             </FormControl>
@@ -283,7 +286,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="email">
+        <FormField v-if="!isEditMode" v-slot="{ componentField }" name="email">
           <FormItem>
             <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
               E-mail de Acesso <span class="text-red-500 font-bold">*</span>
@@ -295,15 +298,13 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="senha">
+        <FormField v-if="!isEditMode" v-slot="{ componentField }" name="senha">
           <FormItem>
             <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-              {{ isEditMode ? 'Nova Senha' : 'Senha Inicial' }}
-              <span v-if="!isEditMode" class="text-red-500 font-bold">*</span>
-              <span v-else class="text-xs text-muted-foreground font-normal">(opcional)</span>
+              Senha Inicial <span class="text-red-500 font-bold">*</span>
             </FormLabel>
             <FormControl>
-              <Input type="password" :placeholder="isEditMode ? 'Deixe em branco para manter a senha atual' : 'Mínimo 6 caracteres'" class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors" v-bind="componentField" />
+              <Input type="password" placeholder="Mínimo 6 caracteres" class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors" v-bind="componentField" />
             </FormControl>
             <FormMessage />
           </FormItem>

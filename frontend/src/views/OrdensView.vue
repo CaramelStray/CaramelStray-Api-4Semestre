@@ -8,13 +8,12 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil, Trash2, X,
+  ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil, X,
 } from 'lucide-vue-next'
 import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
 import { clienteService } from '@/services/clienteService'
 import { tecnicoService } from '@/services/tecnicoService'
 import OrdemServicoCadastroPopup from '@/components/ordemServico/OrdemServicoCadastroPopup.vue'
-import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
 const router = useRouter()
 const isCadastroOpen = ref(false)
@@ -22,10 +21,6 @@ const isEditOpen = ref(false)
 const editingOrdem = ref<OrdemServicoResponseDTO | null>(null)
 const searchQuery = ref('')
 const ordens = ref<OrdemServicoResponseDTO[]>([])
-const confirmOpen = ref(false)
-const confirmNome = ref('')
-const confirmId = ref<number | null>(null)
-const deletando = ref(false)
 const clienteMap = ref<Record<number, string>>({})
 const tecnicoMap = ref<Record<number, string>>({})
 const loading = ref(false)
@@ -127,26 +122,6 @@ const abrirEdicaoOrdem = (ordem: OrdemServicoResponseDTO) => {
   isEditOpen.value = true
 }
 
-const removerOrdem = (codigo: number) => {
-  confirmId.value = codigo
-  confirmNome.value = `#${codigo}`
-  confirmOpen.value = true
-}
-
-const confirmarExclusao = async () => {
-  if (confirmId.value === null) return
-  deletando.value = true
-  try {
-    await ordemServicoService.deletar(confirmId.value)
-    confirmOpen.value = false
-    await carregarOrdens()
-  } catch (e: any) {
-    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
-  } finally {
-    deletando.value = false
-  }
-}
-
 onMounted(carregarOrdens)
 </script>
 
@@ -207,7 +182,7 @@ onMounted(carregarOrdens)
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Abertura</TableHead>
             <TableHead class="h-12">Agendamento</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -250,9 +225,6 @@ onMounted(carregarOrdens)
                 </Button>
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicaoOrdem(o)">
                   <Pencil class="size-5" />
-                </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors" @click="removerOrdem(o.codigo)">
-                  <Trash2 class="size-5" />
                 </Button>
               </div>
             </TableCell>
@@ -304,13 +276,6 @@ onMounted(carregarOrdens)
       </Transition>
     </Teleport>
 
-    <ConfirmDeleteDialog
-      v-model:open="confirmOpen"
-      titulo="Excluir Ordem de Serviço"
-      :descricao="`Tem certeza que deseja excluir a ordem ${confirmNome}? Esta ação não pode ser desfeita.`"
-      :carregando="deletando"
-      @confirmar="confirmarExclusao"
-    />
 
   </div>
 </template>

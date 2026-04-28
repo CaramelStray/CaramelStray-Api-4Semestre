@@ -15,11 +15,10 @@ import {
 } from '@/components/ui/tooltip'
 import {
   Download, Plus, Users, Cpu, AlertTriangle, TrendingUp,
-  Pencil, Eye, Search, Trash2,
+  Pencil, Eye, Search,
   Info, XCircle, CheckCircle2, X
 } from 'lucide-vue-next'
 import ClienteCadastro from '@/components/clientes/ClienteCadastroPopup.vue'
-import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 import { onMounted } from 'vue'
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
@@ -29,10 +28,6 @@ const isCadastroOpen = ref(false)
 const isEditOpen = ref(false)
 const editingCliente = ref<ClienteResponseDTO | null>(null)
 const searchQuery = ref('')
-const confirmOpen = ref(false)
-const confirmNome = ref('')
-const confirmId = ref<number | null>(null)
-const deletando = ref(false)
 
 const criticidadeMap = {
   'CRÍTICO': { icon: XCircle, class: 'bg-red-500/20 text-red-400 border-red-500/30' },
@@ -153,27 +148,6 @@ const abrirEdicao = async (cliente: ClienteResponseDTO) => {
   isEditOpen.value = true
 }
 
-const removerCliente = (id: number, nome: string) => {
-  confirmId.value = id
-  confirmNome.value = nome
-  confirmOpen.value = true
-}
-
-const confirmarExclusao = async () => {
-  if (confirmId.value === null) return
-  deletando.value = true
-  try {
-    await clienteService.remover(confirmId.value)
-    confirmOpen.value = false
-    mostrarSucessoCadastro(`Cliente "${confirmNome.value}" removido com sucesso.`)
-    clientes.value = await clienteService.listar()
-  } catch (e: any) {
-    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
-  } finally {
-    deletando.value = false
-  }
-}
-
 const onEdicaoSucesso = async (cliente: ClienteResponseDTO) => {
   mostrarSucessoCadastro(`Cliente "${cliente.nomeEmpresa}" atualizado com sucesso.`)
   loading.value = true
@@ -284,7 +258,7 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
             <TableHead class="h-12">Localização</TableHead>
             <TableHead class="h-12">Alcance</TableHead>
             <TableHead class="h-12">Status</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
         
@@ -348,9 +322,6 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(c)">
                   <Pencil class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors" @click="removerCliente(c.id, c.nomeEmpresa)">
-                  <Trash2 class="size-5" />
-                </Button>
               </div>
             </TableCell>
           </TableRow>
@@ -411,13 +382,6 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
       </Transition>
     </Teleport>
 
-    <ConfirmDeleteDialog
-      v-model:open="confirmOpen"
-      titulo="Excluir Cliente"
-      :descricao="`Tem certeza que deseja excluir o cliente &quot;${confirmNome}&quot;? Esta ação não pode ser desfeita.`"
-      :carregando="deletando"
-      @confirmar="confirmarExclusao"
-    />
 
   </div>
 </template>

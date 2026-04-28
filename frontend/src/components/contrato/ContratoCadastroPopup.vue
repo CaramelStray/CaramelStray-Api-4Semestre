@@ -164,10 +164,10 @@
                 </FormItem>
               </FormField>
 
-              <FormField :name="`maquinas[${index}].dataInstalacao`" v-slot="{ componentField }">
+              <FormField :name="`maquinas[${index}].dataInstalacao`" v-slot="{ value, handleChange }">
                 <FormItem>
                   <FormLabel class="flex items-center gap-1">Data de Instalação <span class="text-red-500 font-bold">*</span></FormLabel>
-                  <FormControl><Input type="date" v-bind="componentField" /></FormControl>
+                  <FormControl><DatePickerInput :model-value="value" @update:model-value="handleChange" /></FormControl>
                   <FormMessage />
                 </FormItem>
               </FormField>

@@ -11,21 +11,16 @@ import {
 } from '@/components/ui/tooltip'
 import {
   Download, Plus, Monitor, Layers, AlertCircle, TerminalSquare,
-  Pencil, Eye, Search, ExternalLink, Trash2, X, CheckCircle2
+  Pencil, Eye, Search, ExternalLink, X, CheckCircle2
 } from 'lucide-vue-next'
 
 import { catalogoSoftwareService, type CatalogoSoftwareResponseDTO } from '@/services/catalogoSoftwareService'
 import SoftwareCadastroForm from '@/components/softwares/SoftwareCadastroPopup.vue'
-import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
 const isCadastroOpen = ref(false)
 const isEditOpen = ref(false)
 const editingSoftware = ref<CatalogoSoftwareResponseDTO | null>(null)
 const searchQuery = ref('')
-const confirmOpen = ref(false)
-const confirmNome = ref('')
-const confirmId = ref<number | null>(null)
-const deletando = ref(false)
 
 const softwares = ref<CatalogoSoftwareResponseDTO[]>([])
 const loading = ref(false)
@@ -131,27 +126,6 @@ const onEdicaoSucesso = (software: CatalogoSoftwareResponseDTO) => {
   carregarSoftwares()
 }
 
-const removerSoftware = (id: number, nome: string) => {
-  confirmId.value = id
-  confirmNome.value = nome
-  confirmOpen.value = true
-}
-
-const confirmarExclusao = async () => {
-  if (confirmId.value === null) return
-  deletando.value = true
-  try {
-    await catalogoSoftwareService.remover(confirmId.value)
-    confirmOpen.value = false
-    mostrarSucessoCadastro(`Software "${confirmNome.value}" removido com sucesso.`)
-    await carregarSoftwares()
-  } catch (e: any) {
-    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
-  } finally {
-    deletando.value = false
-  }
-}
-
 const abrirDocumentacao = (url: string) => {
   if (url) window.open(url, '_blank')
 }
@@ -249,7 +223,7 @@ onBeforeUnmount(() => {
               <TableHead class="h-12">Fornecedor</TableHead>
               <TableHead class="h-12 text-center">Status</TableHead>
               <TableHead class="h-12 text-center">Docs</TableHead>
-              <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+              <TableHead class="text-right pr-6 h-12">Ações</TableHead>
             </TableRow>
           </TableHeader>
           
@@ -328,9 +302,6 @@ onBeforeUnmount(() => {
                   <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(s)">
                     <Pencil class="size-4.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors" @click="removerSoftware(s.id, s.nomeSoftware)">
-                    <Trash2 class="size-4.5" />
-                  </Button>
                 </div>
               </TableCell>
             </TableRow>
@@ -398,13 +369,6 @@ onBeforeUnmount(() => {
       </Transition>
     </Teleport>
 
-    <ConfirmDeleteDialog
-      v-model:open="confirmOpen"
-      titulo="Excluir Software"
-      :descricao="`Tem certeza que deseja excluir o software &quot;${confirmNome}&quot;? Esta ação não pode ser desfeita.`"
-      :carregando="deletando"
-      @confirmar="confirmarExclusao"
-    />
 
   </div>
 </template>

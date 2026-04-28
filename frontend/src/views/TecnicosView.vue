@@ -22,23 +22,18 @@ import {
 
 import {
   Download, UserPlus, Users, MapPin, AlertTriangle, ShieldCheck,
-  Eye, Pencil, Search, Trash2, X, CheckCircle2
+  Eye, Pencil, Search, X, CheckCircle2
 } from 'lucide-vue-next'
 
 import { onMounted } from 'vue'
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
 import TecnicoCadastro from '@/components/tecnicos/TecnicoCadastroPopup.vue'
-import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
 const router = useRouter()
 const isCadastroOpen = ref(false)
 const isEditOpen = ref(false)
 const editingTecnico = ref<TecnicoResponseDTO | null>(null)
 const searchQuery = ref('')
-const confirmOpen = ref(false)
-const confirmNome = ref('')
-const confirmId = ref<number | null>(null)
-const deletando = ref(false)
 
 // Mapeamento de UI para os status dos técnicos
 const statusMap = {
@@ -151,27 +146,6 @@ const abrirEdicao = async (tecnico: TecnicoResponseDTO) => {
   isEditOpen.value = true
 }
 
-const removerTecnico = (id: number, nome: string) => {
-  confirmId.value = id
-  confirmNome.value = nome
-  confirmOpen.value = true
-}
-
-const confirmarExclusao = async () => {
-  if (confirmId.value === null) return
-  deletando.value = true
-  try {
-    await tecnicoService.deletar(confirmId.value)
-    confirmOpen.value = false
-    mostrarSucessoCadastro(`Técnico "${confirmNome.value}" removido com sucesso.`)
-    await carregarTecnicos()
-  } catch (e: any) {
-    alert('Erro ao remover: ' + (e.response?.data?.message || e.message))
-  } finally {
-    deletando.value = false
-  }
-}
-
 const onEdicaoSucesso = async (tecnico: TecnicoResponseDTO) => {
   mostrarSucessoCadastro(`Técnico "${tecnico.nome}" atualizado com sucesso.`)
   await carregarTecnicos()
@@ -268,7 +242,7 @@ const filteredTecnicos = computed(() => {
             <TableHead class="h-12">Certificações</TableHead>
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Disponibilidade</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -323,9 +297,6 @@ const filteredTecnicos = computed(() => {
                 </Button>
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(t)">
                   <Pencil class="size-5" />
-                </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors" @click="removerTecnico(t.id, t.nome)">
-                  <Trash2 class="size-5" />
                 </Button>
               </div>
             </TableCell>
@@ -387,13 +358,6 @@ const filteredTecnicos = computed(() => {
       </Transition>
     </Teleport>
 
-    <ConfirmDeleteDialog
-      v-model:open="confirmOpen"
-      titulo="Excluir Técnico"
-      :descricao="`Tem certeza que deseja excluir o técnico &quot;${confirmNome}&quot;? Esta ação não pode ser desfeita.`"
-      :carregando="deletando"
-      @confirmar="confirmarExclusao"
-    />
 
   </div>
 </template>

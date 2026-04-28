@@ -7,6 +7,7 @@ import com.example.tracker.entity.Contrato;
 import com.example.tracker.entity.MaquinaContrato;
 import com.example.tracker.entity.MaquinaSoftwareInstalado;
 import com.example.tracker.entity.OrdemServico;
+import com.example.tracker.entity.OrdemServicoChecklistAtivo;
 import com.example.tracker.entity.Tecnico;
 import com.example.tracker.repository.ClienteRepository;
 import com.example.tracker.repository.ContratoRepository;
@@ -31,6 +32,7 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     private final MaquinaSoftwareInstaladoRepository maquinaSoftwareInstaladoRepository;
     private final ContratoRepository contratoRepository;
     private final MaquinaContratoRepository maquinaContratoRepository;
+    private final OrdemServicoChecklistAtivoService ordemServicoChecklistAtivoService;
 
     public OrdemServicoServiceImpl(
             OrdemServicoRepository ordemServicoRepository,
@@ -38,13 +40,15 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
             TecnicoRepository tecnicoRepository,
             MaquinaSoftwareInstaladoRepository maquinaSoftwareInstaladoRepository,
             ContratoRepository contratoRepository,
-            MaquinaContratoRepository maquinaContratoRepository) {
+            MaquinaContratoRepository maquinaContratoRepository,
+            OrdemServicoChecklistAtivoService ordemServicoChecklistAtivoService) {
         this.ordemServicoRepository = ordemServicoRepository;
         this.clienteRepository = clienteRepository;
         this.tecnicoRepository = tecnicoRepository;
         this.maquinaSoftwareInstaladoRepository = maquinaSoftwareInstaladoRepository;
         this.contratoRepository = contratoRepository;
         this.maquinaContratoRepository = maquinaContratoRepository;
+        this.ordemServicoChecklistAtivoService = ordemServicoChecklistAtivoService;
     }
 
     @Override
@@ -167,7 +171,9 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
             entidade.setDataAbertura(LocalDateTime.now());
         }
 
-        return ordemServicoRepository.save(entidade);
+        OrdemServico ordemServicoSalva = ordemServicoRepository.save(entidade);
+        sincronizarChecklistSeInformado(dto, ordemServicoSalva);
+        return ordemServicoSalva;
     }
 
     @Override
@@ -180,7 +186,9 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
 
         mapearParaEntidade(dto, entidade, relacoes);
-        return ordemServicoRepository.save(Objects.requireNonNull(entidade));
+        OrdemServico ordemServicoSalva = ordemServicoRepository.save(Objects.requireNonNull(entidade));
+        sincronizarChecklistSeInformado(dto, ordemServicoSalva);
+        return ordemServicoSalva;
     }
 
     @Override
@@ -287,6 +295,16 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         entidade.setDataInicioExecucao(dto.getDataInicioExecucao());
         entidade.setDataFimExecucao(dto.getDataFimExecucao());
         entidade.setObservacaoGeral(dto.getObservacaoGeral());
+    }
+
+    private void sincronizarChecklistSeInformado(OrdemServicoCreateDTO dto, OrdemServico entidade) {
+        if (dto.getChecklistAtivos() == null) {
+            return;
+        }
+
+        List<OrdemServicoChecklistAtivo> checklistAtivos =
+                ordemServicoChecklistAtivoService.substituirChecklist(entidade.getCodigo(), dto.getChecklistAtivos());
+        entidade.setChecklistAtivos(checklistAtivos);
     }
 
     private Integer requireId(Integer id, String mensagem) {

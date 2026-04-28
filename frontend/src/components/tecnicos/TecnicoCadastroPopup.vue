@@ -166,6 +166,33 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
 
     if (isEditMode.value && props.initialData) {
       tecnico = await tecnicoService.atualizar(props.initialData.id, payload)
+
+      const habilidadesAntigas = props.initialData.habilidades ?? []
+      if (habilidadesAntigas.length > 0) {
+        await Promise.all(
+          habilidadesAntigas.map(hab =>
+            apiFetch(`/tecnico-habilidades?tecnicoId=${props.initialData!.id}&habilidadeId=${hab.habilidadeId}`, {
+              method: 'DELETE'
+            }).catch(() => {})
+          )
+        )
+      }
+
+      if (values.habilidades && values.habilidades.length > 0) {
+        await Promise.all(
+          values.habilidades.map(hab =>
+            apiFetch('/tecnico-habilidades', {
+              method: 'POST',
+              body: JSON.stringify({
+                tecnicoId: props.initialData!.id,
+                habilidadeId: Number(hab.habilidadeId),
+                nivel: hab.nivel,
+                dataValidade: hab.dataValidade || null
+              })
+            })
+          )
+        )
+      }
     } else {
       if (!values.senha) {
         form.setFieldError('senha', 'Senha é obrigatória para novo técnico')

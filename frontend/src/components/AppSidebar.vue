@@ -37,6 +37,7 @@ const data = {
     { title: "Mapa", url: "/mapa", icon: Map },
     { title: "Manutenção", url: "/manutencao", icon: Wrench },
     { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
+    { title: "Minhas Ordens", url: "/minhas-ordens", icon: ClipboardList },
 
   ],
     navCadastros: [

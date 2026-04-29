@@ -1,51 +1,23 @@
 <template>
   <!-- Steps Header -->
-  <div class="flex items-center gap-2 mb-6 border-b border-border pb-6 mt-2">
-    <div :class="['flex items-center gap-2 transition-colors', step === 1 ? 'text-blue-400 font-bold' : step > 1 ? 'text-blue-400/60' : 'text-muted-foreground']">
-      <div
-        class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-        :class="step === 1
-          ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-          : step > 1
-            ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60'
-            : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
-      >
-        <CheckCircle2 v-if="step > 1" class="w-4 h-4 text-blue-400/60" />
-        <FileText v-else class="w-4 h-4" />
+  <div class="flex items-center gap-2 mb-6 border-b border-border pb-6 mt-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+    <template v-for="(s, index) in stepsList" :key="s.id">
+      <div :class="['flex items-center gap-2 transition-colors', step === s.id ? 'text-blue-400 font-bold' : step > s.id ? 'text-blue-400/60' : 'text-muted-foreground']">
+        <div
+          class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
+          :class="step === s.id
+            ? 'border-blue-500 bg-blue-500/20 text-blue-400'
+            : step > s.id
+              ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60'
+              : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
+        >
+          <CheckCircle2 v-if="step > s.id" class="w-4 h-4 text-blue-400/60" />
+          <component :is="s.icon" v-else class="w-4 h-4" />
+        </div>
+        <span class="text-sm hidden sm:inline-block">{{ s.name }}</span>
       </div>
-      <span class="text-sm hidden sm:inline-block">Identificação</span>
-    </div>
-
-    <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
-
-    <div :class="['flex items-center gap-2 transition-colors', step === 2 ? 'text-blue-400 font-bold' : step > 2 ? 'text-blue-400/60' : 'text-muted-foreground']">
-      <div
-        class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-        :class="step === 2
-          ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-          : step > 2
-            ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60'
-            : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
-      >
-        <CheckCircle2 v-if="step > 2" class="w-4 h-4 text-blue-400/60" />
-        <Server v-else class="w-4 h-4" />
-      </div>
-      <span class="text-sm hidden sm:inline-block">Máquina</span>
-    </div>
-
-    <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
-
-    <div :class="['flex items-center gap-2 transition-colors', step === 3 ? 'text-blue-400 font-bold' : 'text-muted-foreground']">
-      <div
-        class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-        :class="step === 3
-          ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-          : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
-      >
-        <UserCheck class="w-4 h-4" />
-      </div>
-      <span class="text-sm hidden sm:inline-block">Técnico</span>
-    </div>
+      <ChevronRight v-if="index < stepsList.length - 1" class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
+    </template>
   </div>
 
   <form @submit="onSubmit">
@@ -55,7 +27,7 @@
 
       <!-- Cliente -->
       <FormField v-slot="{ value, handleChange }" name="codigoCliente">
-        <FormItem class="md:col-span-2">
+        <FormItem>
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
             Cliente <span class="text-red-500 font-bold">*</span>
           </FormLabel>
@@ -64,7 +36,7 @@
             @update:model-value="val => { handleChange(String(val)); onClienteChange(String(val)) }"
           >
             <FormControl>
-              <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
+              <SelectTrigger class="w-full bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
                 <SelectValue placeholder="Selecione um cliente..." />
               </SelectTrigger>
             </FormControl>
@@ -80,7 +52,7 @@
 
       <!-- Contrato -->
       <FormField v-slot="{ value, handleChange }" name="codigoContrato">
-        <FormItem class="md:col-span-2">
+        <FormItem>
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
             Contrato <span class="text-red-500 font-bold">*</span>
           </FormLabel>
@@ -90,7 +62,7 @@
             @update:model-value="val => { handleChange(String(val)); onContratoChange(String(val)) }"
           >
             <FormControl>
-              <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors disabled:opacity-50">
+              <SelectTrigger class="w-full bg-muted/20 border-border hover:border-blue-500/50 transition-colors disabled:opacity-50">
                 <SelectValue :placeholder="selectedClienteId ? 'Selecione um contrato...' : 'Selecione um cliente primeiro'" />
               </SelectTrigger>
             </FormControl>
@@ -115,7 +87,7 @@
             @update:model-value="val => handleChange(String(val))"
           >
             <FormControl>
-              <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
+              <SelectTrigger class="w-full bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
                 <SelectValue placeholder="Selecione a criticidade..." />
               </SelectTrigger>
             </FormControl>
@@ -144,7 +116,7 @@
 
       <!-- Data de Agendamento -->
       <FormField v-slot="{ value, handleChange }" name="dataAgendamento">
-        <FormItem class="md:col-span-2">
+        <FormItem>
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
             Data de Agendamento <span class="text-red-500 font-bold">*</span>
           </FormLabel>
@@ -159,7 +131,7 @@
       <FormField v-slot="{ componentField }" name="observacaoGeral">
         <FormItem class="md:col-span-2">
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-            Observação Geral <span class="text-red-500 font-bold">*</span>
+            Observação Geral
           </FormLabel>
           <FormControl>
             <Textarea
@@ -193,7 +165,7 @@
               @update:model-value="val => { handleChange(String(val)); onMaquinaChange(String(val)) }"
             >
               <FormControl>
-                <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
+                <SelectTrigger class="w-full bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
                   <SelectValue placeholder="Selecione uma máquina..." />
                 </SelectTrigger>
               </FormControl>
@@ -315,6 +287,122 @@
       </div>
     </div>
 
+    <!-- STEP 4: Checklist de Viagem -->
+    <div v-show="step === 4" class="space-y-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-semibold text-foreground">Checklist de Viagem</h3>
+          <p class="text-sm text-muted-foreground">Itens a serem verificados antes da viagem.</p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div v-if="fieldsViagem.length === 0" class="text-center p-6 border border-dashed border-border rounded-lg bg-muted/5">
+          <Map class="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
+          <p class="text-sm text-muted-foreground">Nenhum item adicionado ao checklist de viagem.</p>
+        </div>
+
+        <div v-for="(field, index) in fieldsViagem" :key="field.key" class="flex items-start gap-3 p-4 border border-border rounded-lg bg-muted/10">
+          <div class="flex-1 space-y-3">
+            <FormField :name="`checklistViagem[${index}].descricao`" v-slot="{ componentField }">
+              <FormItem>
+                <FormLabel class="text-xs text-muted-foreground">Descrição da Tarefa</FormLabel>
+                <FormControl>
+                  <input
+                    type="text"
+                    class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Ex: Verificar óleo do motor"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
+            <FormField :name="`checklistViagem[${index}].obrigatorio`" v-slot="{ value, handleChange }">
+              <FormItem class="flex flex-row items-center gap-2 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    :checked="value"
+                    @update:checked="handleChange"
+                    class="h-5 w-5 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                  />
+                </FormControl>
+                <FormLabel class="text-sm font-normal text-muted-foreground cursor-pointer" @click="handleChange(!value)">
+                  Item obrigatório
+                </FormLabel>
+              </FormItem>
+            </FormField>
+          </div>
+          <Button type="button" variant="ghost" size="icon" class="text-red-400 hover:text-red-300 hover:bg-red-500/10 mt-6" @click="removeViagem(index)">
+            <Trash2 class="w-4 h-4" />
+          </Button>
+        </div>
+
+        <Button type="button" variant="outline" class="w-full border-dashed border-border text-muted-foreground hover:text-foreground" @click="pushViagem({ descricao: '', obrigatorio: false })">
+          <Plus class="w-4 h-4 mr-2" /> Adicionar item ao checklist
+        </Button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Checklist de Manutenção -->
+    <div v-show="step === 5" class="space-y-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-semibold text-foreground">Checklist de Manutenção</h3>
+          <p class="text-sm text-muted-foreground">Itens a serem verificados durante a manutenção.</p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div v-if="fieldsManutencao.length === 0" class="text-center p-6 border border-dashed border-border rounded-lg bg-muted/5">
+          <Wrench class="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
+          <p class="text-sm text-muted-foreground">Nenhum item adicionado ao checklist de manutenção.</p>
+        </div>
+
+        <div v-for="(field, index) in fieldsManutencao" :key="field.key" class="flex items-start gap-3 p-4 border border-border rounded-lg bg-muted/10">
+          <div class="flex-1 space-y-3">
+            <FormField :name="`checklistManutencao[${index}].descricao`" v-slot="{ componentField }">
+              <FormItem>
+                <FormLabel class="text-xs text-muted-foreground">Descrição da Tarefa</FormLabel>
+                <FormControl>
+                  <input
+                    type="text"
+                    class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Ex: Limpeza dos filtros"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
+            <FormField :name="`checklistManutencao[${index}].obrigatorio`" v-slot="{ value, handleChange }">
+              <FormItem class="flex flex-row items-center gap-2 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    :checked="value"
+                    @update:checked="handleChange"
+                    class="h-5 w-5 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                  />
+                </FormControl>
+                <FormLabel class="text-sm font-normal text-muted-foreground cursor-pointer" @click="handleChange(!value)">
+                  Item obrigatório
+                </FormLabel>
+              </FormItem>
+            </FormField>
+          </div>
+          <Button type="button" variant="ghost" size="icon" class="text-red-400 hover:text-red-300 hover:bg-red-500/10 mt-6" @click="removeManutencao(index)">
+            <Trash2 class="w-4 h-4" />
+          </Button>
+        </div>
+
+        <Button type="button" variant="outline" class="w-full border-dashed border-border text-muted-foreground hover:text-foreground" @click="pushManutencao({ descricao: '', obrigatorio: false })">
+          <Plus class="w-4 h-4 mr-2" /> Adicionar item ao checklist
+        </Button>
+      </div>
+    </div>
+
     <!-- Footer Buttons -->
     <div class="flex items-center justify-end border-t border-border mt-10 pt-6">
       <div class="flex gap-3">
@@ -323,7 +411,7 @@
         </Button>
 
         <Button
-          v-if="step < 3"
+          v-if="step < 5"
           type="button"
           class="bg-blue-600 hover:bg-blue-500 text-white px-8 shadow-md shadow-blue-900/20"
           @click="nextStep"
@@ -332,7 +420,7 @@
         </Button>
 
         <Button
-          v-if="step === 3"
+          v-if="step === 5"
           type="submit"
           class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 shadow-md shadow-emerald-900/20"
           :disabled="loading"
@@ -348,11 +436,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
-import { useForm } from 'vee-validate'
+import { useForm, useFieldArray } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { CalendarDate } from '@internationalized/date'
 
+import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -360,7 +449,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DatePickerInput } from '@/components/ui/date-picker'
 import {
   ChevronRight, FileText, Server, UserCheck, ArrowRight,
-  Loader2, PackageCheck, PackageX, UserX, CheckCircle2
+  Loader2, PackageCheck, PackageX, UserX, CheckCircle2,
+  Map, Wrench, Plus, Trash2
 } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
@@ -377,6 +467,13 @@ const isEditMode = computed(() => !!props.initialData)
 const emit = defineEmits(['fechar', 'success'])
 
 const step = ref(1)
+const stepsList = [
+  { id: 1, name: 'Identificação', icon: FileText },
+  { id: 2, name: 'Máquina', icon: Server },
+  { id: 3, name: 'Técnico', icon: UserCheck },
+  { id: 4, name: 'Viagem', icon: Map },
+  { id: 5, name: 'Manutenção', icon: Wrench },
+]
 const loading = ref(false)
 const loadingSoftware = ref(false)
 const loadingTecnicos = ref(false)
@@ -433,9 +530,17 @@ const formSchema = toTypedSchema(z.object({
   codigoContrato:        z.string({ required_error: '*' }).min(1, 'Selecione um contrato'),
   criticidade:           z.string({ required_error: '*' }).min(1, 'Selecione a criticidade'),
   dataAgendamento:       z.string({ required_error: '*' }).min(1, 'Selecione a data de agendamento'),
-  observacaoGeral:       z.string({ required_error: '*' }).min(1, 'Informe a observação geral'),
+  observacaoGeral:       z.string().optional().or(z.literal('')),
   codigoMaquinaContrato: z.string({ required_error: '*' }).min(1, 'Selecione uma máquina'),
   codigoFuncionario:     z.string({ required_error: '*' }).min(1, 'Selecione um técnico'),
+  checklistViagem:       z.array(z.object({
+                           descricao: z.string().min(1, 'A descrição é obrigatória'),
+                           obrigatorio: z.boolean().default(false)
+                         })).optional(),
+  checklistManutencao:   z.array(z.object({
+                           descricao: z.string().min(1, 'A descrição é obrigatória'),
+                           obrigatorio: z.boolean().default(false)
+                         })).optional(),
 }))
 
 const form = useForm({
@@ -448,8 +553,13 @@ const form = useForm({
     observacaoGeral: '',
     codigoMaquinaContrato: '',
     codigoFuncionario: '',
+    checklistViagem: [],
+    checklistManutencao: [],
   }
 })
+
+const { fields: fieldsViagem, push: pushViagem, remove: removeViagem, replace: replaceViagem } = useFieldArray<{ descricao: string; obrigatorio: boolean }>('checklistViagem')
+const { fields: fieldsManutencao, push: pushManutencao, remove: removeManutencao, replace: replaceManutencao } = useFieldArray<{ descricao: string; obrigatorio: boolean }>('checklistManutencao')
 
 onMounted(async () => {
   try {
@@ -479,6 +589,8 @@ const popularFormEdicao = async (data: OrdemServicoResponseDTO) => {
       observacaoGeral: data.observacaoGeral ?? '',
       codigoMaquinaContrato: String(data.codigoMaquinaContrato),
       codigoFuncionario: data.codigoFuncionario ? String(data.codigoFuncionario) : '',
+      checklistViagem: data.checklistViagem ?? [],
+      checklistManutencao: data.checklistManutencao ?? [],
     }
   })
 
@@ -546,6 +658,9 @@ watch(step, async (newStep) => {
 const STEP_FIELDS: Record<number, string[]> = {
   1: ['codigoCliente', 'codigoContrato', 'criticidade', 'dataAgendamento', 'observacaoGeral'],
   2: ['codigoMaquinaContrato'],
+  3: ['codigoFuncionario'],
+  4: ['checklistViagem'],
+  5: ['checklistManutencao'],
 }
 
 const nextStep = async () => {
@@ -573,6 +688,8 @@ const onSubmit = form.handleSubmit(async (values) => {
       criticidade:             values.criticidade,
       dataAgendamento:         toLocalDateTimeString(values.dataAgendamento ?? ''),
       observacaoGeral:         values.observacaoGeral,
+      checklistViagem:         values.checklistViagem?.length ? values.checklistViagem : undefined,
+      checklistManutencao:     values.checklistManutencao?.length ? values.checklistManutencao : undefined,
     }
 
     if (isEditMode.value && props.initialData) {

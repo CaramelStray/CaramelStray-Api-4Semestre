@@ -14,6 +14,8 @@ export interface OrdemServicoResponseDTO {
   dataInicioExecucao?: string
   dataFimExecucao?: string
   observacaoGeral?: string
+  checklistViagem?: { descricao: string; obrigatorio: boolean }[]
+  checklistManutencao?: { descricao: string; obrigatorio: boolean }[]
 }
 
 export interface OrdemServicoCreateDTO {
@@ -29,6 +31,8 @@ export interface OrdemServicoCreateDTO {
   dataInicioExecucao?: string
   dataFimExecucao?: string
   observacaoGeral?: string
+  checklistViagem?: { descricao: string; obrigatorio: boolean }[]
+  checklistManutencao?: { descricao: string; obrigatorio: boolean }[]
 }
 
 export const ordemServicoService = {

@@ -114,11 +114,11 @@ const formatStatus = (s: string) => {
 
 const formatCriticidade = (c: string) => {
   switch(c) {
-    case 'CRITICA': return { label: 'Crítica', icon: Flame, color: 'text-red-500' }
-    case 'ALTA': return { label: 'Alta', icon: ArrowUp, color: 'text-orange-500' }
-    case 'MEDIA': return { label: 'Média', icon: Minus, color: 'text-amber-500' }
-    case 'BAIXA': return { label: 'Baixa', icon: ArrowDown, color: 'text-blue-500' }
-    default: return { label: c || '—', icon: null, color: 'text-muted-foreground' }
+    case 'CRITICA': return { label: 'Crítica', class: 'bg-red-500/10 text-red-500 border-red-500/30' }
+    case 'ALTA': return { label: 'Alta', class: 'bg-orange-500/10 text-orange-500 border-orange-500/30' }
+    case 'MEDIA': return { label: 'Média', class: 'bg-amber-500/10 text-amber-500 border-amber-500/30' }
+    case 'BAIXA': return { label: 'Baixa', class: 'bg-blue-500/10 text-blue-500 border-blue-500/30' }
+    default: return { label: c || '—', class: 'bg-muted/20 text-muted-foreground border-border' }
   }
 }
 
@@ -231,13 +231,13 @@ onMounted(carregarOrdens)
               {{ o.codigoFuncionario ? (tecnicoMap[o.codigoFuncionario] ?? '—') : '—' }}
             </TableCell>
             <TableCell>
-              <div class="flex items-center gap-1.5" :class="formatCriticidade(o.criticidade).color">
-                <component :is="formatCriticidade(o.criticidade).icon" v-if="formatCriticidade(o.criticidade).icon" class="w-4 h-4" />
-                <span class="text-sm font-medium">{{ formatCriticidade(o.criticidade).label }}</span>
-              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatCriticidade(o.criticidade).class">
+                {{ formatCriticidade(o.criticidade).label }}
+              </span>
             </TableCell>
             <TableCell>
-              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatStatus(o.status).class">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatStatus(o.status).class">
+                <span class="w-1.5 h-1.5 rounded-full bg-current opacity-80"></span>
                 {{ formatStatus(o.status).label }}
               </span>
             </TableCell>

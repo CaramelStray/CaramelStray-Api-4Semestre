@@ -304,17 +304,24 @@
 
         <div v-for="(field, index) in fieldsViagem" :key="field.key" class="flex items-start gap-3 p-4 border border-border rounded-lg bg-muted/10">
           <div class="flex-1 space-y-3">
-            <FormField :name="`checklistViagem[${index}].descricao`" v-slot="{ componentField }">
+            <FormField :name="`checklistViagem[${index}].codigoAtivo`" v-slot="{ value, handleChange }">
               <FormItem>
-                <FormLabel class="text-xs text-muted-foreground">Descrição da Tarefa</FormLabel>
-                <FormControl>
-                  <input
-                    type="text"
-                    class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Ex: Verificar óleo do motor"
-                    v-bind="componentField"
-                  />
-                </FormControl>
+                <FormLabel class="text-xs text-muted-foreground">Ativo</FormLabel>
+                <Select
+                  :model-value="value"
+                  @update:model-value="handleChange"
+                >
+                  <FormControl>
+                    <SelectTrigger class="w-full h-9 bg-transparent border-input">
+                      <SelectValue placeholder="Selecione um ativo..." />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent class="z-[200]">
+                    <SelectItem v-for="ativo in ativosList" :key="ativo.codigo" :value="String(ativo.codigo)">
+                      #{{ ativo.codigo }} — {{ ativo.catalogoDescricaoProduto || 'Ativo sem produto' }} ({{ ativo.numeroSerie || 'Sem NS' }})
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             </FormField>
@@ -339,8 +346,8 @@
           </Button>
         </div>
 
-        <Button type="button" variant="outline" class="w-full border-dashed border-border text-muted-foreground hover:text-foreground" @click="pushViagem({ descricao: '', obrigatorio: false })">
-          <Plus class="w-4 h-4 mr-2" /> Adicionar item ao checklist
+        <Button type="button" variant="outline" class="w-full border-dashed border-border text-muted-foreground hover:text-foreground" @click="pushViagem({ codigoAtivo: '', obrigatorio: false })">
+          <Plus class="w-4 h-4 mr-2" /> Adicionar ativo ao checklist
         </Button>
       </div>
     </div>
@@ -362,17 +369,24 @@
 
         <div v-for="(field, index) in fieldsManutencao" :key="field.key" class="flex items-start gap-3 p-4 border border-border rounded-lg bg-muted/10">
           <div class="flex-1 space-y-3">
-            <FormField :name="`checklistManutencao[${index}].descricao`" v-slot="{ componentField }">
+            <FormField :name="`checklistManutencao[${index}].codigoMaquina`" v-slot="{ value, handleChange }">
               <FormItem>
-                <FormLabel class="text-xs text-muted-foreground">Descrição da Tarefa</FormLabel>
-                <FormControl>
-                  <input
-                    type="text"
-                    class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Ex: Limpeza dos filtros"
-                    v-bind="componentField"
-                  />
-                </FormControl>
+                <FormLabel class="text-xs text-muted-foreground">Máquina</FormLabel>
+                <Select
+                  :model-value="value"
+                  @update:model-value="handleChange"
+                >
+                  <FormControl>
+                    <SelectTrigger class="w-full h-9 bg-transparent border-input">
+                      <SelectValue placeholder="Selecione uma máquina..." />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent class="z-[200]">
+                    <SelectItem v-for="m in maquinasFiltradas" :key="m.codigo" :value="String(m.codigo)">
+                      Máquina #{{ m.codigo }} (Catalogo {{ m.codigoCatalogoMaquina }})
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             </FormField>
@@ -397,8 +411,8 @@
           </Button>
         </div>
 
-        <Button type="button" variant="outline" class="w-full border-dashed border-border text-muted-foreground hover:text-foreground" @click="pushManutencao({ descricao: '', obrigatorio: false })">
-          <Plus class="w-4 h-4 mr-2" /> Adicionar item ao checklist
+        <Button type="button" variant="outline" class="w-full border-dashed border-border text-muted-foreground hover:text-foreground" @click="pushManutencao({ codigoMaquina: '', obrigatorio: false })">
+          <Plus class="w-4 h-4 mr-2" /> Adicionar máquina ao checklist
         </Button>
       </div>
     </div>
@@ -534,11 +548,11 @@ const formSchema = toTypedSchema(z.object({
   codigoMaquinaContrato: z.string({ required_error: '*' }).min(1, 'Selecione uma máquina'),
   codigoFuncionario:     z.string({ required_error: '*' }).min(1, 'Selecione um técnico'),
   checklistViagem:       z.array(z.object({
-                           descricao: z.string().min(1, 'A descrição é obrigatória'),
+                           codigoAtivo: z.string().min(1, 'Selecione um ativo'),
                            obrigatorio: z.boolean().default(false)
                          })).optional(),
   checklistManutencao:   z.array(z.object({
-                           descricao: z.string().min(1, 'A descrição é obrigatória'),
+                           codigoMaquina: z.string().min(1, 'Selecione uma máquina'),
                            obrigatorio: z.boolean().default(false)
                          })).optional(),
 }))
@@ -558,14 +572,15 @@ const form = useForm({
   }
 })
 
-const { fields: fieldsViagem, push: pushViagem, remove: removeViagem, replace: replaceViagem } = useFieldArray<{ descricao: string; obrigatorio: boolean }>('checklistViagem')
-const { fields: fieldsManutencao, push: pushManutencao, remove: removeManutencao, replace: replaceManutencao } = useFieldArray<{ descricao: string; obrigatorio: boolean }>('checklistManutencao')
+const { fields: fieldsViagem, push: pushViagem, remove: removeViagem, replace: replaceViagem } = useFieldArray<{ codigoAtivo: string; obrigatorio: boolean }>('checklistViagem')
+const { fields: fieldsManutencao, push: pushManutencao, remove: removeManutencao, replace: replaceManutencao } = useFieldArray<{ codigoMaquina: string; obrigatorio: boolean }>('checklistManutencao')
 
 onMounted(async () => {
   try {
     clientes.value = await clienteService.listar()
+    ativosList.value = await ativoService.listar()
   } catch (error) {
-    console.error('Erro ao carregar clientes:', error)
+    console.error('Erro ao carregar dependências:', error)
   }
 
   if (props.initialData) {

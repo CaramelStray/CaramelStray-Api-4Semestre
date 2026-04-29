@@ -1,5 +1,7 @@
 package com.example.tracker.controller;
 
+import com.example.tracker.dto.ordemservico.MinhaOrdemDetalhesResponseDTO;
+import com.example.tracker.dto.ordemservico.MinhasOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoResponseDTO;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -193,5 +196,19 @@ public class OrdemServicoController {
     public ResponseEntity<Void> deletarOrdemServico(@PathVariable Integer id) {
         ordemServicoService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/minhas-ordens")
+    @PreAuthorize("hasAuthority('ROLE_TECNICO')")
+    public ResponseEntity<List<MinhasOrdensResponseDTO>> buscarMinhasOrdens(Authentication authentication) {
+        return ResponseEntity.ok(ordemServicoService.buscarMinhasOrdens(authentication.getName()));
+    }
+
+    @GetMapping("/minhas-ordens/{id}")
+    @PreAuthorize("hasAuthority('ROLE_TECNICO')")
+    public ResponseEntity<MinhaOrdemDetalhesResponseDTO> buscarMinhaOrdem(
+            @PathVariable Integer id, Authentication authentication) {
+        OrdemServico ordemServico = ordemServicoService.buscarMinhaOrdem(id, authentication.getName());
+        return ResponseEntity.ok(MinhaOrdemDetalhesResponseDTO.fromEntity(ordemServico));
     }
 }

@@ -1,5 +1,6 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.ordemservico.MinhasOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.entity.OrdemServico;
@@ -8,6 +9,10 @@ import java.util.List;
 public interface OrdemServicoService {
 
     List<OrdemServico> listarTodos();
+
+    List<MinhasOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario);
+
+    OrdemServico buscarMinhaOrdem(Integer id, String emailUsuario);
 
     List<OrdemServicoDadosBasicosResponseDTO> listarDadosBasicos();
 

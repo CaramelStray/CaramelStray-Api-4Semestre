@@ -50,16 +50,16 @@ const stats = computed(() => [
     color: 'text-green-400',
   },
   {
-    label: 'Concluídas',
-    value: ordens.value.filter(o => o.status === 'CONCLUIDA').length.toString(),
-    sub: 'Finalizadas',
+    label: 'Finalizadas',
+    value: ordens.value.filter(o => o.status === 'CONCLUIDA' || o.status === 'FINALIZADA').length.toString(),
+    sub: 'Ordens fechadas',
     icon: CheckCircle2,
     color: 'text-purple-400',
   },
 ])
 
-const filteredOrdens = computed(() =>
-  ordens.value.filter(o => {
+const filteredOrdens = computed(() => {
+  const filtered = ordens.value.filter(o => {
     const nomeCliente = clienteMap.value[o.codigoCliente]?.toLowerCase() ?? ''
     const nomeTecnico = o.codigoFuncionario
       ? tecnicoMap.value[o.codigoFuncionario]?.toLowerCase() ?? ''
@@ -73,14 +73,40 @@ const filteredOrdens = computed(() =>
       nomeTecnico.includes(q)
     )
   })
-)
+
+  const criticidadeWeight = (c: string) => {
+    switch (c) {
+      case 'CRITICA': return 4
+      case 'ALTA': return 3
+      case 'MEDIA': return 2
+      case 'BAIXA': return 1
+      default: return 0
+    }
+  }
+
+  const isFinalizada = (s: string) => s === 'CONCLUIDA' || s === 'FINALIZADA' || s === 'CANCELADA'
+
+  return filtered.sort((a, b) => {
+    const aFin = isFinalizada(a.status) ? 1 : 0
+    const bFin = isFinalizada(b.status) ? 1 : 0
+    
+    if (aFin !== bFin) return aFin - bFin
+
+    const aCrit = criticidadeWeight(a.criticidade)
+    const bCrit = criticidadeWeight(b.criticidade)
+    if (aCrit !== bCrit) return bCrit - aCrit
+
+    return (b.codigo || 0) - (a.codigo || 0)
+  })
+})
 
 const formatStatus = (s: string) => {
   switch(s) {
     case 'AGUARDANDO': return { label: 'Aguardando', class: 'bg-amber-500/15 text-amber-500 border-amber-500/20' }
     case 'AGENDADO': return { label: 'Agendado', class: 'bg-blue-500/15 text-blue-500 border-blue-500/20' }
     case 'EM_EXECUCAO': return { label: 'Em Execução', class: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/20' }
-    case 'CONCLUIDA': return { label: 'Concluída', class: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' }
+    case 'CONCLUIDA':
+    case 'FINALIZADA': return { label: 'Finalizada', class: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' }
     case 'CANCELADA': return { label: 'Cancelada', class: 'bg-red-500/15 text-red-500 border-red-500/20' }
     default: return { label: s || '—', class: 'bg-muted/20 text-muted-foreground border-border' }
   }
@@ -188,7 +214,7 @@ onMounted(carregarOrdens)
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Abertura</TableHead>
             <TableHead class="h-12">Agendamento</TableHead>
-            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-[54px] h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
 

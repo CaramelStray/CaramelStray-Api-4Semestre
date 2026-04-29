@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/table'
 import {
   ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil, X,
+  Flame, ArrowDown, Minus, ArrowUp
 } from 'lucide-vue-next'
 import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
 import { clienteService } from '@/services/clienteService'
@@ -74,20 +75,26 @@ const filteredOrdens = computed(() =>
   })
 )
 
-const statusClass = (status: string) => ({
-  'AGUARDANDO':  'bg-amber-500',
-  'AGENDADO':    'bg-blue-400',
-  'EM_EXECUCAO': 'bg-blue-500',
-  'CONCLUIDA':   'bg-emerald-500',
-  'CANCELADA':   'bg-red-500',
-} as Record<string, string>)[status] ?? 'bg-gray-500'
+const formatStatus = (s: string) => {
+  switch(s) {
+    case 'AGUARDANDO': return { label: 'Aguardando', class: 'bg-amber-500/15 text-amber-500 border-amber-500/20' }
+    case 'AGENDADO': return { label: 'Agendado', class: 'bg-blue-500/15 text-blue-500 border-blue-500/20' }
+    case 'EM_EXECUCAO': return { label: 'Em Execução', class: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/20' }
+    case 'CONCLUIDA': return { label: 'Concluída', class: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' }
+    case 'CANCELADA': return { label: 'Cancelada', class: 'bg-red-500/15 text-red-500 border-red-500/20' }
+    default: return { label: s || '—', class: 'bg-muted/20 text-muted-foreground border-border' }
+  }
+}
 
-const criticidadeClass = (c: string) => ({
-  'CRITICA': 'text-red-400 font-semibold',
-  'ALTA':    'text-orange-400 font-semibold',
-  'MEDIA':   'text-amber-400',
-  'BAIXA':   'text-blue-400',
-} as Record<string, string>)[c] ?? 'text-muted-foreground'
+const formatCriticidade = (c: string) => {
+  switch(c) {
+    case 'CRITICA': return { label: 'Crítica', icon: Flame, color: 'text-red-500' }
+    case 'ALTA': return { label: 'Alta', icon: ArrowUp, color: 'text-orange-500' }
+    case 'MEDIA': return { label: 'Média', icon: Minus, color: 'text-amber-500' }
+    case 'BAIXA': return { label: 'Baixa', icon: ArrowDown, color: 'text-blue-500' }
+    default: return { label: c || '—', icon: null, color: 'text-muted-foreground' }
+  }
+}
 
 const formatDate = (d: string) =>
   d ? new Date(d).toLocaleDateString('pt-BR') : '—'
@@ -175,8 +182,7 @@ onMounted(carregarOrdens)
       <Table>
         <TableHeader>
           <TableRow class="hover:bg-transparent border-border text-xs uppercase font-bold text-muted-foreground">
-            <TableHead class="pl-6 h-12"># Ordem</TableHead>
-            <TableHead class="h-12">Cliente</TableHead>
+            <TableHead class="pl-6 h-12">Cliente</TableHead>
             <TableHead class="h-12">Técnico</TableHead>
             <TableHead class="h-12">Criticidade</TableHead>
             <TableHead class="h-12">Status</TableHead>
@@ -192,25 +198,22 @@ onMounted(carregarOrdens)
             :key="o.codigo"
             class="border-border hover:bg-muted/30 transition-colors even:bg-muted/50"
           >
-            <TableCell class="pl-6 py-3 font-mono text-sm font-medium text-foreground">
-              #{{ o.codigo }}
-            </TableCell>
-            <TableCell class="text-sm text-muted-foreground">
+            <TableCell class="pl-6 text-sm text-foreground font-medium">
               {{ clienteMap[o.codigoCliente] ?? '—' }}
             </TableCell>
             <TableCell class="text-sm text-muted-foreground">
               {{ o.codigoFuncionario ? (tecnicoMap[o.codigoFuncionario] ?? '—') : '—' }}
             </TableCell>
             <TableCell>
-              <span class="text-sm" :class="criticidadeClass(o.criticidade)">
-                {{ o.criticidade ?? '—' }}
-              </span>
+              <div class="flex items-center gap-1.5" :class="formatCriticidade(o.criticidade).color">
+                <component :is="formatCriticidade(o.criticidade).icon" v-if="formatCriticidade(o.criticidade).icon" class="w-4 h-4" />
+                <span class="text-sm font-medium">{{ formatCriticidade(o.criticidade).label }}</span>
+              </div>
             </TableCell>
             <TableCell>
-              <div class="flex items-center gap-2">
-                <div class="size-2 rounded-full" :class="statusClass(o.status)" />
-                <span class="text-sm text-foreground">{{ o.status ?? '—' }}</span>
-              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatStatus(o.status).class">
+                {{ formatStatus(o.status).label }}
+              </span>
             </TableCell>
             <TableCell class="text-sm text-muted-foreground">
               {{ formatDate(o.dataAbertura) }}

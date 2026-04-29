@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,17 +22,17 @@ import {
 
 import {
   Download, UserPlus, Users, MapPin, AlertTriangle, ShieldCheck,
-  Eye, Pencil, Search, MoreVertical, X, CheckCircle2
+  Eye, Pencil, Search, X, CheckCircle2
 } from 'lucide-vue-next'
 
 import { onMounted } from 'vue'
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
 import TecnicoCadastro from '@/components/tecnicos/TecnicoCadastroPopup.vue'
 
-/**
- * ESTADO GLOBAL E FILTRAGEM
- */
+const router = useRouter()
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingTecnico = ref<TecnicoResponseDTO | null>(null)
 const searchQuery = ref('')
 
 // Mapeamento de UI para os status dos técnicos
@@ -135,6 +136,21 @@ const fecharSucessoCadastro = () => {
   }
 }
 
+const abrirEdicao = async (tecnico: TecnicoResponseDTO) => {
+  try {
+    const dadosCompletos = await tecnicoService.buscarPorId(tecnico.id)
+    editingTecnico.value = dadosCompletos
+  } catch {
+    editingTecnico.value = tecnico
+  }
+  isEditOpen.value = true
+}
+
+const onEdicaoSucesso = async (tecnico: TecnicoResponseDTO) => {
+  mostrarSucessoCadastro(`Técnico "${tecnico.nome}" atualizado com sucesso.`)
+  await carregarTecnicos()
+}
+
 const onCadastroSucesso = async (tecnico: TecnicoResponseDTO) => {
   mostrarSucessoCadastro(`Técnico "${tecnico.nome}" cadastrado com sucesso.`)
   await carregarTecnicos()
@@ -226,7 +242,7 @@ const filteredTecnicos = computed(() => {
             <TableHead class="h-12">Certificações</TableHead>
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Disponibilidade</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -276,10 +292,10 @@ const filteredTecnicos = computed(() => {
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="router.push(`/tecnicos/${t.id}`)">
                   <Eye class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(t)">
                   <Pencil class="size-5" />
                 </Button>
               </div>
@@ -293,7 +309,7 @@ const filteredTecnicos = computed(() => {
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
-          
+
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
@@ -304,7 +320,7 @@ const filteredTecnicos = computed(() => {
                 <X class="w-6 h-6" />
               </Button>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <TecnicoCadastro
                 @fechar="isCadastroOpen = false"
@@ -314,7 +330,34 @@ const filteredTecnicos = computed(() => {
           </div>
         </div>
       </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false"></div>
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Técnico</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados do técnico selecionado.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isEditOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <TecnicoCadastro
+                :initialData="editingTecnico"
+                @fechar="isEditOpen = false"
+                @cadastrado="onEdicaoSucesso"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
+
 
   </div>
 </template>

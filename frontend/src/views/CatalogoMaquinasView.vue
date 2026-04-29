@@ -7,12 +7,14 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  Plus, Search, Pencil, Trash2, Settings, Wrench, X, CheckCircle2
+  Plus, Search, Pencil, Settings, Wrench, X, CheckCircle2
 } from 'lucide-vue-next'
 import CatalogoMaquinaCadastroPopup from '@/components/catalogoMaquinas/CatalogoMaquinaCadastroPopup.vue'
 import { catalogoMaquinaService, type CatalogoMaquinaResponseDTO } from '@/services/catalogoMaquinaService'
 
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingMaquina = ref<CatalogoMaquinaResponseDTO | null>(null)
 const searchQuery = ref('')
 
 const maquinas = ref<CatalogoMaquinaResponseDTO[]>([])
@@ -43,17 +45,6 @@ const carregarMaquinas = async () => {
     erro.value = e.message
   } finally {
     loading.value = false
-  }
-}
-
-const removerMaquina = async (codigo: number) => {
-  if (confirm('Tem certeza que deseja remover esta máquina?')) {
-    try {
-      await catalogoMaquinaService.remover(codigo)
-      await carregarMaquinas()
-    } catch (e: any) {
-      alert('Erro ao remover: ' + e.message)
-    }
   }
 }
 
@@ -93,8 +84,18 @@ const fecharSucessoCadastro = () => {
   }
 }
 
+const abrirEdicao = (maquina: CatalogoMaquinaResponseDTO) => {
+  editingMaquina.value = maquina
+  isEditOpen.value = true
+}
+
 const onCadastroSucesso = (maquina: CatalogoMaquinaResponseDTO) => {
   mostrarSucessoCadastro(`Máquina "${maquina.descricao}" cadastrada com sucesso.`)
+  carregarMaquinas()
+}
+
+const onEdicaoSucesso = (maquina: CatalogoMaquinaResponseDTO) => {
+  mostrarSucessoCadastro(`Máquina "${maquina.descricao}" atualizada com sucesso.`)
   carregarMaquinas()
 }
 
@@ -176,7 +177,7 @@ const getAvatarColor = (name: string) => {
             <TableHead class="h-12">Descrição</TableHead>
             <TableHead class="h-12">Especificação</TableHead>
             <TableHead class="h-12">Limite Manutenção</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
         
@@ -213,11 +214,8 @@ const getAvatarColor = (name: string) => {
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(m)">
                   <Pencil class="size-5" />
-                </Button>
-                <Button variant="ghost" size="icon" @click="removerMaquina(m.codigo)" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors">
-                  <Trash2 class="size-5" />
                 </Button>
               </div>
             </TableCell>
@@ -235,7 +233,7 @@ const getAvatarColor = (name: string) => {
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
-          
+
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[50vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
@@ -243,7 +241,7 @@ const getAvatarColor = (name: string) => {
                 <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para adicionar um novo modelo ao catálogo.</p>
               </div>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <CatalogoMaquinaCadastroPopup
                 @fechar="isCadastroOpen = false"
@@ -253,7 +251,31 @@ const getAvatarColor = (name: string) => {
           </div>
         </div>
       </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false"></div>
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[50vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Máquina</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados do modelo selecionado.</p>
+              </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <CatalogoMaquinaCadastroPopup
+                :initialData="editingMaquina"
+                @fechar="isEditOpen = false"
+                @sucesso="onEdicaoSucesso"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
+
 
   </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,8 +17,11 @@ import ContratoCadastroPopup from '@/components/contrato/ContratoCadastroPopup.v
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 
+const router = useRouter()
 const searchQuery = ref('')
 const showNovoContratoPopup = ref(false)
+const showEditContratoPopup = ref(false)
+const editingContrato = ref<ContratoResponseDTO | null>(null)
 const contratos = ref<ContratoResponseDTO[]>([])
 
 // Mapa: codigoContrato → ClienteResponseDTO
@@ -103,6 +107,15 @@ const carregarContratos = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const abrirDetalhesContrato = (contrato: ContratoResponseDTO) => {
+  router.push(`/contratos/${contrato.codigo}`)
+}
+
+const abrirEdicaoContrato = (contrato: ContratoResponseDTO) => {
+  editingContrato.value = contrato
+  showEditContratoPopup.value = true
 }
 
 onMounted(carregarContratos)
@@ -208,7 +221,7 @@ const stats = computed(() => [
             <TableHead class="h-12">Data Início</TableHead>
             <TableHead class="h-12">Data Fim</TableHead>
             <TableHead class="h-12">Status</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -257,10 +270,10 @@ const stats = computed(() => [
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-blue-400 transition-colors" @click="abrirDetalhesContrato(contrato)">
                   <Eye class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicaoContrato(contrato)">
                   <Pencil class="size-5" />
                 </Button>
               </div>
@@ -277,5 +290,7 @@ const stats = computed(() => [
     </div>
 
     <ContratoCadastroPopup v-model:open="showNovoContratoPopup" @success="carregarContratos" />
+    <ContratoCadastroPopup v-model:open="showEditContratoPopup" :initialData="editingContrato" @success="carregarContratos" />
+
   </div>
 </template>

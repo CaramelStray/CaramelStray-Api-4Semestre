@@ -33,4 +33,11 @@ export const contratoService = {
     method: 'POST',
     body: JSON.stringify(dto),
   }),
+  atualizar: (id: number, dto: Partial<ContratoRequestDTO>) => apiFetch<ContratoResponseDTO>(`/contratos/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(dto),
+  }),
+  remover: (id: number) => apiFetch<void>(`/contratos/${id}`, {
+    method: 'DELETE',
+  }),
 }

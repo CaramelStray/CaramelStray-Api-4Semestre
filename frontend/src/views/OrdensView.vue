@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +15,10 @@ import { clienteService } from '@/services/clienteService'
 import { tecnicoService } from '@/services/tecnicoService'
 import OrdemServicoCadastroPopup from '@/components/ordemServico/OrdemServicoCadastroPopup.vue'
 
+const router = useRouter()
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingOrdem = ref<OrdemServicoResponseDTO | null>(null)
 const searchQuery = ref('')
 const ordens = ref<OrdemServicoResponseDTO[]>([])
 const clienteMap = ref<Record<number, string>>({})
@@ -113,6 +117,11 @@ async function carregarOrdens() {
   }
 }
 
+const abrirEdicaoOrdem = (ordem: OrdemServicoResponseDTO) => {
+  editingOrdem.value = ordem
+  isEditOpen.value = true
+}
+
 onMounted(carregarOrdens)
 </script>
 
@@ -173,7 +182,7 @@ onMounted(carregarOrdens)
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Abertura</TableHead>
             <TableHead class="h-12">Agendamento</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -211,10 +220,10 @@ onMounted(carregarOrdens)
             </TableCell>
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="router.push(`/ordens/${o.codigo}`)">
                   <Eye class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicaoOrdem(o)">
                   <Pencil class="size-5" />
                 </Button>
               </div>
@@ -224,39 +233,49 @@ onMounted(carregarOrdens)
       </Table>
     </div>
 
-    <!-- Popup de Cadastro -->
+    <!-- Modais -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
-          <div
-            class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            @click="isCadastroOpen = false"
-          />
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false" />
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
                 <h2 class="text-2xl font-bold tracking-tight">Nova Ordem de Serviço</h2>
                 <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para abrir uma nova ordem de serviço.</p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                @click="isCadastroOpen = false"
-                class="hover:bg-red-500/10 hover:text-red-500"
-              >
+              <Button variant="ghost" size="icon" @click="isCadastroOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
                 <X class="w-6 h-6" />
               </Button>
             </div>
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
-              <OrdemServicoCadastroPopup
-                @fechar="isCadastroOpen = false"
-                @success="carregarOrdens"
-              />
+              <OrdemServicoCadastroPopup @fechar="isCadastroOpen = false" @success="carregarOrdens" />
+            </div>
+          </div>
+        </div>
+      </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false" />
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Ordem de Serviço</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados da ordem selecionada.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isEditOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <OrdemServicoCadastroPopup :initialData="editingOrdem" @fechar="isEditOpen = false" @success="carregarOrdens" />
             </div>
           </div>
         </div>
       </Transition>
     </Teleport>
+
 
   </div>
 </template>

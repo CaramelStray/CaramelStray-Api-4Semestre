@@ -7,12 +7,14 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  Plus, Search, Pencil, Trash2, Code2, Layers, X, CheckCircle2
+  Plus, Search, Pencil, Code2, Layers, X, CheckCircle2
 } from 'lucide-vue-next'
 import HabilidadeCadastro from '@/components/habilidades/HabilidadeCadastroPopup.vue'
 import { habilidadeService, type HabilidadeResponseDTO } from '@/services/habilidadeService'
 
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingHabilidade = ref<HabilidadeResponseDTO | null>(null)
 const searchQuery = ref('')
 
 const habilidades = ref<HabilidadeResponseDTO[]>([])
@@ -46,17 +48,6 @@ const carregarHabilidades = async () => {
   }
 }
 
-const removerHabilidade = async (id: number) => {
-  if (confirm('Tem certeza que deseja remover esta habilidade?')) {
-    try {
-      await habilidadeService.remover(id)
-      await carregarHabilidades()
-    } catch (e: any) {
-      alert('Erro ao remover: ' + e.message)
-    }
-  }
-}
-
 onMounted(() => {
   carregarHabilidades()
 })
@@ -75,13 +66,6 @@ const stats = computed(() =>[
     icon: Code2, 
     color: 'text-blue-400' 
   },
-  { 
-    label: 'Categorias (Exemplo)',
-    value: '—', 
-    sub: 'Mapeamento futuro', 
-    icon: Layers, 
-    color: 'text-purple-400' 
-  }
 ])
 
 const filteredHabilidades = computed(() => {
@@ -100,8 +84,18 @@ const fecharSucessoCadastro = () => {
   }
 }
 
+const abrirEdicao = (habilidade: HabilidadeResponseDTO) => {
+  editingHabilidade.value = habilidade
+  isEditOpen.value = true
+}
+
 const onCadastroSucesso = (habilidade: HabilidadeResponseDTO) => {
   mostrarSucessoCadastro(`Certificação "${habilidade.descricao}" cadastrada com sucesso.`)
+  carregarHabilidades()
+}
+
+const onEdicaoSucesso = (habilidade: HabilidadeResponseDTO) => {
+  mostrarSucessoCadastro(`Certificação "${habilidade.descricao}" atualizada com sucesso.`)
   carregarHabilidades()
 }
 
@@ -182,7 +176,7 @@ const getAvatarColor = (name: string) => {
             <TableHead class="pl-6 h-12 w-[100px]">Código</TableHead>
             <TableHead class="h-12">Descrição</TableHead>
             <TableHead class="h-12">Observações</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
         
@@ -213,11 +207,8 @@ const getAvatarColor = (name: string) => {
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(h)">
                   <Pencil class="size-5" />
-                </Button>
-                <Button variant="ghost" size="icon" @click="removerHabilidade(h.codigo)" class="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors">
-                  <Trash2 class="size-5" />
                 </Button>
               </div>
             </TableCell>
@@ -235,15 +226,15 @@ const getAvatarColor = (name: string) => {
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
-          
+
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[50vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
-                <h2 class="text-2xl font-bold tracking-tight">Nova Habilidade</h2>
-                <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para adicionar uma nova competência.</p>
+                <h2 class="text-2xl font-bold tracking-tight">Nova Certificação</h2>
+                <p class="text-sm text-muted-foreground mt-1">Preencha os dados abaixo para adicionar uma nova certificação.</p>
               </div>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <HabilidadeCadastro
                 @fechar="isCadastroOpen = false"
@@ -253,7 +244,31 @@ const getAvatarColor = (name: string) => {
           </div>
         </div>
       </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false"></div>
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[50vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Certificação</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados da certificação selecionada.</p>
+              </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <HabilidadeCadastro
+                :initialData="editingHabilidade"
+                @fechar="isEditOpen = false"
+                @sucesso="onEdicaoSucesso"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
+
 
   </div>
 </template>

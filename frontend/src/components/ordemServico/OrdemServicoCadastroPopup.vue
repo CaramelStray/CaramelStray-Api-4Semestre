@@ -142,31 +142,15 @@
         />
       </div>
 
-      <!-- Data de Agendamento com Popover -->
+      <!-- Data de Agendamento -->
       <FormField v-slot="{ value, handleChange }" name="dataAgendamento">
         <FormItem class="md:col-span-2">
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
             Data de Agendamento <span class="text-red-500 font-bold">*</span>
           </FormLabel>
-          <Popover v-model:open="calendarOpen">
-            <PopoverTrigger as-child>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  :class="['w-full justify-start text-left font-normal bg-muted/20 border-border hover:border-blue-500/50 transition-colors', !value && 'text-muted-foreground']"
-                >
-                  <CalendarIcon class="mr-2 h-4 w-4 text-muted-foreground" />
-                  {{ value ? formatDateDisplay(value) : 'Selecione uma data...' }}
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent class="w-auto p-0 z-[200]" align="start">
-              <Calendar
-                :min-value="amanhaToCal"
-                @update:model-value="val => { handleChange(calToString(val)); calendarOpen = false }"
-              />
-            </PopoverContent>
-          </Popover>
+          <FormControl>
+            <DatePickerInput :model-value="value" @update:model-value="handleChange" :min-value="amanhaToCal" />
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -354,7 +338,7 @@
           :disabled="loading"
         >
           <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
-          {{ loading ? 'Salvando...' : 'Abrir Ordem de Serviço' }}
+          {{ loading ? 'Salvando...' : isEditMode ? 'Salvar Alterações' : 'Abrir Ordem de Serviço' }}
         </Button>
       </div>
     </div>
@@ -363,7 +347,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -373,17 +357,22 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar } from '@/components/ui/calendar'
+import { DatePickerInput } from '@/components/ui/date-picker'
 import {
   ChevronRight, FileText, Server, UserCheck, ArrowRight,
-  CalendarIcon, Loader2, PackageCheck, PackageX, UserX, CheckCircle2
+  Loader2, PackageCheck, PackageX, UserX, CheckCircle2
 } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
 import { maquinaSoftwareInstaladoService } from '@/services/maquinaSoftwareInstaladoService'
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
-import { ordemServicoService } from '@/services/ordemServicoService'
+import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
+
+const props = defineProps<{
+  initialData?: OrdemServicoResponseDTO | null
+}>()
+
+const isEditMode = computed(() => !!props.initialData)
 
 const emit = defineEmits(['fechar', 'success'])
 
@@ -391,7 +380,6 @@ const step = ref(1)
 const loading = ref(false)
 const loadingSoftware = ref(false)
 const loadingTecnicos = ref(false)
-const calendarOpen = ref(false)
 
 const clientes = ref<any[]>([])
 const tecnicosDisponiveis = ref<TecnicoResponseDTO[]>([])
@@ -440,18 +428,6 @@ const amanhaToCal = computed(() => {
   return new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate())
 })
 
-function calToString(val: any): string {
-  if (!val) return ''
-  return val.toString()
-}
-
-function formatDateDisplay(isoDate: string): string {
-  if (!isoDate) return ''
-  const datePart = isoDate.split('T')[0]
-  const [year, month, day] = datePart.split('-')
-  return `${day}/${month}/${year}`
-}
-
 const formSchema = toTypedSchema(z.object({
   codigoCliente:         z.string({ required_error: '*' }).min(1, 'Selecione um cliente'),
   codigoContrato:        z.string({ required_error: '*' }).min(1, 'Selecione um contrato'),
@@ -481,7 +457,41 @@ onMounted(async () => {
   } catch (error) {
     console.error('Erro ao carregar clientes:', error)
   }
+
+  if (props.initialData) {
+    await nextTick()
+    await popularFormEdicao(props.initialData)
+  }
 })
+
+const popularFormEdicao = async (data: OrdemServicoResponseDTO) => {
+  // Pré-seleciona cliente
+  selectedClienteId.value = String(data.codigoCliente)
+  selectedContratoId.value = String(data.codigoContrato)
+  selectedMaquinaId.value = String(data.codigoMaquinaContrato)
+
+  form.resetForm({
+    values: {
+      codigoCliente: String(data.codigoCliente),
+      codigoContrato: String(data.codigoContrato),
+      criticidade: data.criticidade ?? '',
+      dataAgendamento: data.dataAgendamento?.split('T')[0] ?? '',
+      observacaoGeral: data.observacaoGeral ?? '',
+      codigoMaquinaContrato: String(data.codigoMaquinaContrato),
+      codigoFuncionario: data.codigoFuncionario ? String(data.codigoFuncionario) : '',
+    }
+  })
+
+  // Busca software da máquina se existir
+  if (data.codigoMaquinaContrato) {
+    loadingSoftware.value = true
+    try {
+      const resultados = await maquinaSoftwareInstaladoService.buscarPorMaquinaContrato(data.codigoMaquinaContrato)
+      softwareInstalado.value = resultados.length > 0 ? resultados[0] : null
+    } catch { softwareInstalado.value = null }
+    finally { loadingSoftware.value = false }
+  }
+}
 
 function onClienteChange(val: string) {
   selectedClienteId.value = val
@@ -554,23 +564,31 @@ function getInitials(nome: string): string {
 const onSubmit = form.handleSubmit(async (values) => {
   loading.value = true
   try {
-    await ordemServicoService.criar({
+    const payload = {
       codigoCliente:           Number(values.codigoCliente),
       codigoContrato:          Number(values.codigoContrato),
       codigoMaquinaContrato:   Number(values.codigoMaquinaContrato),
       codigoFuncionario:       Number(values.codigoFuncionario),
       codigoSoftwareInstalado: softwareInstalado.value?.codigo ?? undefined,
-      status:                  'AGENDADO',
       criticidade:             values.criticidade,
-      dataAbertura:            todayLocalDateTime(),
       dataAgendamento:         toLocalDateTimeString(values.dataAgendamento ?? ''),
       observacaoGeral:         values.observacaoGeral,
-    })
+    }
+
+    if (isEditMode.value && props.initialData) {
+      await ordemServicoService.atualizar(props.initialData.codigo, payload)
+    } else {
+      await ordemServicoService.criar({
+        ...payload,
+        status: 'AGENDADO',
+        dataAbertura: todayLocalDateTime(),
+      })
+    }
 
     emit('fechar')
     emit('success')
   } catch (error: any) {
-    console.error('Erro ao abrir ordem de serviço:', error)
+    console.error('Erro ao salvar ordem de serviço:', error)
     alert('Ocorreu um erro ao salvar a ordem de serviço. Verifique o console.')
   } finally {
     loading.value = false

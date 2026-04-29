@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import { useForm, useFieldArray } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -25,12 +25,19 @@ import {
 import { Plus, Trash2, ChevronRight, Building2, Users, ArrowRight, CheckCircle2 } from 'lucide-vue-next'
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 
+const props = defineProps<{
+  initialData?: ClienteResponseDTO | null
+}>()
+
 const emit = defineEmits<{
   fechar: []
   sucesso: [cliente: ClienteResponseDTO]
 }>()
 
+const isEditMode = computed(() => !!props.initialData)
+
 const step = ref(1)
+const erroValidacao = ref('')
 
 const paises = [
   'Brasil',
@@ -130,7 +137,41 @@ const form = useForm({
   }
 })
 
-const { fields, push, remove } = useFieldArray<{ nome: string; email: string; telefone: string }>('contatos')
+const { fields, push, remove, replace } = useFieldArray<{ nome: string; email: string; telefone: string }>('contatos')
+
+const popularFormEdicao = async (data: ClienteResponseDTO) => {
+  await nextTick()
+  const contatosExistentes = ((data as any).contatos ?? []).map((c: any) => ({
+    nome: c.nome || c.nomeContato || '',
+    email: c.email || c.emailContato || '',
+    telefone: c.telefone || c.telefoneContato || ''
+  }))
+  form.resetForm({
+    values: {
+      internacional: data.internacional,
+      nomeEmpresa: data.nomeEmpresa,
+      documento: data.documento,
+      email: data.emailContato,
+      telefone: data.telefoneContato,
+      responsavel: data.nomeResponsavel,
+      rua: data.rua,
+      numero: data.numero,
+      pais: data.pais,
+      estado: data.estadoRegiao,
+      cidade: data.cidade,
+      fusoHorario: data.fusoHorario,
+      classificacaoDistancia: data.classificacaoDistancia as any,
+      observacoes: data.observacao || '',
+      contatos: contatosExistentes,
+    }
+  })
+  await nextTick()
+  if (contatosExistentes.length > 0) replace(contatosExistentes)
+}
+
+watch(() => props.initialData, (data) => {
+  if (data) popularFormEdicao(data)
+}, { immediate: true })
 
 watch(() => form.values.internacional, () => {
   form.setFieldValue('documento', '')
@@ -143,15 +184,23 @@ const nextStep = async () => {
     'nomeEmpresa', 'documento', 'responsavel', 'email', 'telefone',
     'rua', 'numero', 'pais', 'estado', 'cidade', 'fusoHorario', 'classificacaoDistancia',
   ]
-  await form.validate()
-  const hasErrors = step1Fields.some(f => form.errors.value[f as keyof typeof form.errors.value])
-  if (!hasErrors) step.value = 2
+  const results = await Promise.all(
+    step1Fields.map(field => form.validateField(field as any))
+  )
+  const hasErrors = results.some(r => !r.valid)
+  if (hasErrors) {
+    erroValidacao.value = 'Corrija os campos destacados antes de continuar.'
+  } else {
+    erroValidacao.value = ''
+    step.value = 2
+  }
 }
 
 
 const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
+  erroValidacao.value = ''
   try {
-    const clienteCriado = await clienteService.criar({
+    const payload = {
       nomeEmpresa:            values.nomeEmpresa,
       documento:              values.documento,
       emailContato:           values.email,
@@ -167,11 +216,18 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       observacao:             values.observacoes,
       ativo:                  true,
       classificacaoDistancia: values.classificacaoDistancia,
-    })
+    }
 
-    resetForm()
-    step.value = 1
-    emit('sucesso', clienteCriado)
+    let cliente: ClienteResponseDTO
+    if (isEditMode.value && props.initialData) {
+      cliente = await clienteService.atualizar(props.initialData.id, payload)
+    } else {
+      cliente = await clienteService.criar(payload)
+      resetForm()
+      step.value = 1
+    }
+
+    emit('sucesso', cliente)
     emit('fechar')
   } catch (error: any) {
     const data = error.response?.data
@@ -183,9 +239,11 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       form.setFieldError('email', 'Este e-mail já está em uso por outro cliente.')
       step.value = 1
     } else {
-      alert('Erro na validação: ' + (data?.message || 'Verifique os dados informados.'))
+      erroValidacao.value = 'Erro ao salvar: ' + (data?.message || 'Verifique os dados informados.')
     }
   }
+}, () => {
+  erroValidacao.value = 'Preencha todos os campos obrigatórios antes de salvar.'
 })
 </script>
 
@@ -618,7 +676,11 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
         </Button>
       </div>
 
-      <div class="flex items-center justify-end border-t border-border mt-10 pt-6">
+      <div class="border-t border-border mt-10 pt-6 space-y-3">
+        <p v-if="erroValidacao" class="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-md px-4 py-2">
+          {{ erroValidacao }}
+        </p>
+        <div class="flex items-center justify-end">
         <div class="flex gap-3">
           <Button type="button" variant="ghost" class="hover:bg-muted/30" @click="emit('fechar')">
             Cancelar
@@ -642,9 +704,10 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
               type="submit"
               class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 shadow-md shadow-emerald-900/20"
             >
-              Salvar Cliente
+              {{ isEditMode ? 'Salvar Alterações' : 'Salvar Cliente' }}
             </Button>
           </template>
+        </div>
         </div>
       </div>
 

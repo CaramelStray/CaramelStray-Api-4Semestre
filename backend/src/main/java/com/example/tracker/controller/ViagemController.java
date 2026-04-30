@@ -43,6 +43,14 @@ public class ViagemController {
         return ResponseEntity.ok(viagens);
     }
 
+    @GetMapping("/ordem-servico/{codigoOrdemServico}")
+    public ResponseEntity<List<ViagemResponseDTO>> buscarPorOrdemServico(@PathVariable Integer codigoOrdemServico) {
+        List<ViagemResponseDTO> viagens = service.buscarPorOrdemServico(codigoOrdemServico).stream()
+                .map(ViagemResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(viagens);
+    }
+
     @GetMapping("/status")
     public ResponseEntity<List<ViagemResponseDTO>> buscarPorStatus(@RequestParam String status) {
         List<ViagemResponseDTO> viagens = service.buscarPorStatus(status).stream()

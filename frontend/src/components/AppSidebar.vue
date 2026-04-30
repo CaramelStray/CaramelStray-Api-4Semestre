@@ -2,9 +2,9 @@
 import { computed } from 'vue'
 import type { SidebarProps } from '@/components/ui/sidebar'
 import {
-  LayoutDashboard, Map, Wrench, ClipboardList,
+  LayoutDashboard, Map, Wrench, ClipboardList, CalendarDays,
   Users, UserCog, FileText,
-  Settings2, GalleryVerticalEnd, Plus, Monitor, Award, Server,
+  Settings2, GalleryVerticalEnd, Plus, Monitor, Award, Server, Package,
 } from "lucide-vue-next"
 
 import NavMain from '@/components/NavMain.vue'
@@ -38,12 +38,14 @@ const navCadastros = [
   { title: "Clientes", url: "/clientes", icon: Users },
   { title: "Técnicos", url: "/tecnicos", icon: UserCog },
   { title: "Contratos", url: "/contratos", icon: FileText },
+  { title: "Ativos", url: "/ativos", icon: Package },
 ]
 
 const navCatalogo = [
   { title: "Sistemas", url: "/softwares", icon: Monitor },
   { title: "Certificações", url: "/certificacoes", icon: Award },
   { title: "Máquinas", url: "/catalogo-maquinas", icon: Server },
+  { title: "Ativos", url: "/catalogo-ativos", icon: Package },
 ]
 
 const navConfig = [

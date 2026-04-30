@@ -9,8 +9,16 @@ import com.example.tracker.repository.MaquinaContratoRepository;
 import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
 import com.example.tracker.repository.MaquinaSoftwareInstaladoRepository;
 import com.example.tracker.repository.TipoManutencaoRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -28,16 +36,19 @@ public class MaquinaHistoricoManutencaoServiceImpl implements MaquinaHistoricoMa
     private final MaquinaContratoRepository maquinaContratoRepository;
     private final MaquinaSoftwareInstaladoRepository maquinaSoftwareInstaladoRepository;
     private final TipoManutencaoRepository tipoManutencaoRepository;
+    private final EntityManager entityManager;
 
     public MaquinaHistoricoManutencaoServiceImpl(
             MaquinaHistoricoManutencaoRepository maquinaHistoricoManutencaoRepository,
             MaquinaContratoRepository maquinaContratoRepository,
             MaquinaSoftwareInstaladoRepository maquinaSoftwareInstaladoRepository,
-            TipoManutencaoRepository tipoManutencaoRepository) {
+            TipoManutencaoRepository tipoManutencaoRepository,
+            EntityManager entityManager) {
         this.maquinaHistoricoManutencaoRepository = maquinaHistoricoManutencaoRepository;
         this.maquinaContratoRepository = maquinaContratoRepository;
         this.maquinaSoftwareInstaladoRepository = maquinaSoftwareInstaladoRepository;
         this.tipoManutencaoRepository = tipoManutencaoRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -112,7 +123,7 @@ public class MaquinaHistoricoManutencaoServiceImpl implements MaquinaHistoricoMa
             }
         }
 
-        List<MaquinaHistoricoManutencao> manutencoes = maquinaHistoricoManutencaoRepository.filtrarParaRelatorio(
+        List<MaquinaHistoricoManutencao> manutencoes = filtrarParaRelatorio(
                 codigoMaquinaContrato,
                 codigoSoftwareInstalado,
                 codigoTipoManutencao,
@@ -371,6 +382,60 @@ public class MaquinaHistoricoManutencaoServiceImpl implements MaquinaHistoricoMa
             return null;
         }
         return valor.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private List<MaquinaHistoricoManutencao> filtrarParaRelatorio(
+            Integer codigoMaquinaContrato,
+            Integer codigoSoftwareInstalado,
+            Integer codigoTipoManutencao,
+            String status,
+            String criticidade,
+            LocalDateTime vencimentoInicio,
+            LocalDateTime vencimentoFim) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<MaquinaHistoricoManutencao> query = cb.createQuery(MaquinaHistoricoManutencao.class);
+        Root<MaquinaHistoricoManutencao> root = query.from(MaquinaHistoricoManutencao.class);
+
+        root.fetch("maquinaContrato", JoinType.LEFT).fetch("catalogoMaquina", JoinType.LEFT);
+        root.fetch("softwareInstalado", JoinType.LEFT).fetch("software", JoinType.LEFT);
+        root.fetch("tipoManutencao", JoinType.LEFT);
+
+        Join<MaquinaHistoricoManutencao, MaquinaContrato> maquinaContrato =
+                root.join("maquinaContrato", JoinType.LEFT);
+        Join<MaquinaHistoricoManutencao, MaquinaSoftwareInstalado> softwareInstalado =
+                root.join("softwareInstalado", JoinType.LEFT);
+        Join<MaquinaHistoricoManutencao, TipoManutencao> tipoManutencao =
+                root.join("tipoManutencao", JoinType.LEFT);
+
+        List<Predicate> predicates = new ArrayList<>();
+        if (codigoMaquinaContrato != null) {
+            predicates.add(cb.equal(maquinaContrato.get("codigo"), codigoMaquinaContrato));
+        }
+        if (codigoSoftwareInstalado != null) {
+            predicates.add(cb.equal(softwareInstalado.get("codigo"), codigoSoftwareInstalado));
+        }
+        if (codigoTipoManutencao != null) {
+            predicates.add(cb.equal(tipoManutencao.get("codigo"), codigoTipoManutencao));
+        }
+        if (status != null) {
+            predicates.add(cb.equal(cb.lower(root.<String>get("status")), status));
+        }
+        if (criticidade != null) {
+            predicates.add(cb.equal(cb.lower(root.<String>get("criticidade")), criticidade));
+        }
+        if (vencimentoInicio != null) {
+            predicates.add(cb.greaterThanOrEqualTo(root.<LocalDateTime>get("vencimento"), vencimentoInicio));
+        }
+        if (vencimentoFim != null) {
+            predicates.add(cb.lessThanOrEqualTo(root.<LocalDateTime>get("vencimento"), vencimentoFim));
+        }
+
+        query.select(root)
+                .distinct(true)
+                .where(predicates.toArray(Predicate[]::new))
+                .orderBy(cb.asc(root.get("vencimento")), cb.asc(root.get("codigo")));
+
+        return entityManager.createQuery(query).getResultList();
     }
 
     private String formatarData(LocalDateTime data) {

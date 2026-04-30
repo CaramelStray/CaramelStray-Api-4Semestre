@@ -47,7 +47,7 @@ const onSubmit = form.handleSubmit(async (values) => {
     localStorage.setItem('user_email', response.email)
     localStorage.setItem('user_role', response.auth)
 
-    router.push('/')
+    router.push(response.auth === 'ROLE_TECNICO' ? '/minhas-ordens' : '/')
     
   } catch (error: any) {
     const status = error.response?.status

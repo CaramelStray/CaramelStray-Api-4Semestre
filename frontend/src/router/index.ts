@@ -79,6 +79,11 @@ const router = createRouter({
       meta: { roles: ['ROLE_ADMIN'] },
     },
     {
+      path: '/ativos',
+      component: () => import('@/views/AtivosView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
+    },
+    {
       path: '/catalogo-ativos',
       component: () => import('@/views/CatalogoAtivosView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },

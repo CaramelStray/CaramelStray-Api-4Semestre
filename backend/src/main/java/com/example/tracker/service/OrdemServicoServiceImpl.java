@@ -1,5 +1,6 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.ordemservico.MinhasOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.entity.Cliente;
@@ -55,6 +56,36 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     @Transactional(readOnly = true)
     public List<OrdemServico> listarTodos() {
         return ordemServicoRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MinhasOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
+        return tecnicoRepository.findByUsuarioEmail(emailUsuario)
+                .map(tecnico -> ordemServicoRepository.findByFuncionarioId(tecnico.getId())
+                        .stream()
+                        .map(MinhasOrdensResponseDTO::fromEntity)
+                        .toList())
+                .orElse(List.of());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrdemServico buscarMinhaOrdem(Integer id, String emailUsuario) {
+        Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
+
+        Tecnico tecnico = tecnicoRepository.findByUsuarioEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Tecnico nao encontrado para o usuario autenticado"));
+
+        OrdemServico ordemServico = ordemServicoRepository.findById(Objects.requireNonNull(idNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
+
+        if (ordemServico.getFuncionario() == null
+                || !Objects.equals(ordemServico.getFuncionario().getId(), tecnico.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado: esta ordem nao esta atribuida a voce");
+        }
+
+        return ordemServico;
     }
 
     @Override

@@ -16,6 +16,24 @@ export interface OrdemServicoResponseDTO {
   observacaoGeral?: string
 }
 
+export interface OrdemServicoChecklistAtivoResponseDTO {
+  codigo: number
+  codigoOrdemServico: number
+  codigoFuncionario?: number
+  codigoAtivo: number
+  codigoCatalogoAtivo?: number
+  descricaoAtivo?: string
+  descricaoProduto?: string
+  modelo?: string
+  marca?: string
+  numeroSerie?: string
+  lote?: string
+  statusAtivo?: string
+  levado: boolean
+  devolvido: boolean
+  observacao?: string
+}
+
 export interface OrdemServicoCreateDTO {
   codigoCliente: number
   codigoFuncionario?: number
@@ -37,6 +55,9 @@ export const ordemServicoService = {
 
   buscarPorId: (id: number) =>
     apiFetch<OrdemServicoResponseDTO>(`/ordens-servico/${id}`),
+
+  listarChecklistAtivos: (id: number) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO[]>(`/ordens-servico/${id}/checklist-ativos`),
 
   buscarPorCliente: (codigoCliente: number) =>
     apiFetch<OrdemServicoResponseDTO[]>(`/ordens-servico/cliente/${codigoCliente}`),

@@ -58,6 +58,14 @@ const router = createRouter({
       component: () => import('@/views/OrdemDetalhesView.vue'),
     },
     {
+      path: '/viagem-preparacao',
+      component: () => import('@/views/ViagemPreparacaoView.vue'),
+    },
+    {
+      path: '/viagem-preparacao/:id',
+      component: () => import('@/views/ViagemPreparacaoDetalhesView.vue'),
+    },
+    {
       path: '/relatorio-manutencao',
       component: () => import('@/views/RelatorioManutencaoView.vue'),
     },

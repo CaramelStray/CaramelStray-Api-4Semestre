@@ -3,7 +3,7 @@ import type { SidebarProps } from '@/components/ui/sidebar'
 import {
   LayoutDashboard, Map, Wrench, ClipboardList,
   Users, Bot, UserCog, FileText,
-  Settings2, GalleryVerticalEnd, Plus, Monitor, Award, Server, Laptop, Cpu
+  Settings2, GalleryVerticalEnd, Plus, Monitor, Award, Server, Laptop, Cpu, Route
 } from "lucide-vue-next"
 
 import NavMain from '@/components/NavMain.vue'
@@ -37,6 +37,7 @@ const data = {
     { title: "Mapa", url: "/mapa", icon: Map },
     { title: "Manutenção", url: "/manutencao", icon: Wrench },
     { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
+    { title: "Preparacao de Viagem", url: "/viagem-preparacao", icon: Route },
 
   ],
     navCadastros: [

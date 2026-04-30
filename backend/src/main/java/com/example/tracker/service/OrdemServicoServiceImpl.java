@@ -2,6 +2,7 @@ package com.example.tracker.service;
 
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
+import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
 import com.example.tracker.entity.Cliente;
 import com.example.tracker.entity.Contrato;
 import com.example.tracker.entity.MaquinaContrato;
@@ -72,6 +73,19 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         return ordemServicoRepository.findById(Objects.requireNonNull(idNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
     }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrdemServicoResponseDTO buscarCompletoPorId(Integer id) {
+        Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
+
+        OrdemServico os = ordemServicoRepository.findByIdCompleto(idNaoNulo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
+
+        return OrdemServicoResponseDTO.fromEntity(os);
+    }
+
 
     @Override
     @Transactional(readOnly = true)

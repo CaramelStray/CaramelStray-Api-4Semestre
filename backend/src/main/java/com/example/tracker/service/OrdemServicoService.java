@@ -2,6 +2,7 @@ package com.example.tracker.service;
 
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
+import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
 import com.example.tracker.entity.OrdemServico;
 import java.util.List;
 
@@ -14,6 +15,8 @@ public interface OrdemServicoService {
     OrdemServico buscarPorId(Integer id);
 
     OrdemServicoDadosBasicosResponseDTO buscarDadosBasicosPorId(Integer id);
+
+    OrdemServicoResponseDTO buscarCompletoPorId(Integer id);
 
     List<OrdemServico> buscarPorCliente(Integer codigoCliente);
 

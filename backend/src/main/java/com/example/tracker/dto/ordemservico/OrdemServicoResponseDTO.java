@@ -58,7 +58,6 @@ public class OrdemServicoResponseDTO {
     dto.setDataFimExecucao(os.getDataFimExecucao());
     dto.setObservacaoGeral(os.getObservacaoGeral());
 
-    // ✅ CHECKLIST ATIVOS (já existia)
     List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos = os.getChecklistAtivos() == null
             ? List.of()
             : os.getChecklistAtivos().stream()

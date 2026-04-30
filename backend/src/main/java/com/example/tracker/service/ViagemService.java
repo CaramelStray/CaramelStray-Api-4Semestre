@@ -9,8 +9,8 @@ public interface ViagemService {
     Viagem buscarPorId(Integer id);
     List<Viagem> listarTodas();
     void excluir(Integer id);
-    
     List<Viagem> buscarPorCliente(Integer idCliente);
+    List<Viagem> buscarPorOrdemServico(Integer codigoOrdemServico);
     List<Viagem> buscarPorStatus(String status);
     Viagem atualizar(Integer id, ViagemCreateDTO dto);
 }

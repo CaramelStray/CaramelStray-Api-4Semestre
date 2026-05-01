@@ -19,31 +19,9 @@ const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
 })
 
-<<<<<<< HEAD
-const data = {
-  user: {
-    name: "Usuário",
-    email: "usuario@altave.com.br",
-    avatar: "",
-  },
-  teams: [
-    {
-      name: "Altave",
-      logo: GalleryVerticalEnd,
-      plan: "Gestão de Ativos",
-    },
-  ],
-  navGeral: [
-    { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-    { title: "Mapa", url: "/mapa", icon: Map },
-    { title: "Manutenção", url: "/manutencao", icon: Wrench },
-    { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
-    { title: "Minhas Ordens", url: "/minhas-ordens", icon: ClipboardList },
-=======
 const role = computed(() => localStorage.getItem('user_role'))
-const userEmail = computed(() => localStorage.getItem('user_email') ?? '')
+const userEmail = computed(() => localStorage.getItem('user_email') ?? 'usuario@altave.com.br')
 const isTecnico = computed(() => role.value === 'ROLE_TECNICO')
->>>>>>> f9eff56174ba46e7afc3f2d3c47054cdc0531944
 
 const teams = [
   { name: "Altave", logo: GalleryVerticalEnd, plan: "Gestão de Ativos" },
@@ -54,6 +32,7 @@ const navGeralAdmin = [
   { title: "Mapa", url: "/mapa", icon: Map },
   { title: "Manutenção", url: "/manutencao", icon: Wrench },
   { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
+  { title: "Minhas Ordens", url: "/minhas-ordens", icon: ClipboardList },
 ]
 
 const navCadastros = [
@@ -73,7 +52,7 @@ const navConfig = [
 ]
 
 const navGeralTecnico = [
-  { title: "Minhas Ordens", url: "/minhas-ordens", icon: ClipboardList },
+  { title: "Ordens Técnico", url: "/ordens-tecnico", icon: ClipboardList },
 ]
 
 const currentUser = computed(() => ({
@@ -90,7 +69,6 @@ const currentUser = computed(() => ({
     </SidebarHeader>
 
     <SidebarContent>
-
       <template v-if="!isTecnico">
         <div class="px-3 pt-2 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:pt-2">
           <RouterLink to="/ordens">
@@ -111,7 +89,6 @@ const currentUser = computed(() => ({
       </template>
 
       <NavMain label="" :items="navConfig" />
-
     </SidebarContent>
 
     <SidebarFooter>

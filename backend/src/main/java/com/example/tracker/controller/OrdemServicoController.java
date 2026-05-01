@@ -75,7 +75,7 @@ public class OrdemServicoController {
     }
 
     @GetMapping("/funcionario/{codigoFuncionario}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TECNICO')")
     public ResponseEntity<List<OrdemServicoResponseDTO>> buscarPorFuncionario(@PathVariable Integer codigoFuncionario) {
         List<OrdemServicoResponseDTO> ordens = ordemServicoService.buscarPorFuncionario(codigoFuncionario).stream()
                 .map(OrdemServicoResponseDTO::fromEntity)

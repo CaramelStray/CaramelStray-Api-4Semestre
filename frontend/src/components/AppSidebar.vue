@@ -3,8 +3,9 @@ import { computed } from 'vue'
 import type { SidebarProps } from '@/components/ui/sidebar'
 import {
   LayoutDashboard, Map, Wrench, ClipboardList,
-  Users, UserCog, FileText,
-  Settings2, GalleryVerticalEnd, Plus, Monitor, Award, Server,
+  Users, Bot, UserCog, FileText,
+  Settings2, GalleryVerticalEnd, Plus, Monitor, Award, Server, Laptop, Cpu, Route
+
 } from "lucide-vue-next"
 
 import NavMain from '@/components/NavMain.vue'
@@ -32,6 +33,7 @@ const navGeralAdmin = [
   { title: "Mapa", url: "/mapa", icon: Map },
   { title: "Manutenção", url: "/manutencao", icon: Wrench },
   { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
+  { title: "Preparacao de Viagem", url: "/viagem-preparacao", icon: Route }
 ]
 
 const navCadastros = [
@@ -59,6 +61,7 @@ const currentUser = computed(() => ({
   email: userEmail.value,
   avatar: "",
 }))
+
 </script>
 
 <template>

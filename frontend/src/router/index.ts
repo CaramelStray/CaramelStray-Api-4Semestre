@@ -79,6 +79,14 @@ const router = createRouter({
       meta: { roles: ['ROLE_ADMIN'] },
     },
     {
+      path: '/viagem-preparacao',
+      component: () => import('@/views/ViagemPreparacaoView.vue'),
+    },
+    {
+      path: '/viagem-preparacao/:id',
+      component: () => import('@/views/ViagemPreparacaoDetalhesView.vue'),
+    },
+    {
       path: '/relatorio-manutencao',
       component: () => import('@/views/RelatorioManutencaoView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },

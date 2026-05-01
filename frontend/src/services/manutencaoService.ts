@@ -1,24 +1,20 @@
 import { apiFetch } from './api'
 
-export interface ManutencaoResponseDTO {
+// Espelha exatamente o MaquinaHistoricoManutencaoResponseDTO do backend
+export interface ManutencaoRelatorioDTO {
   codigo: number
+  codigoMaquinaContrato: number | null
+  codigoSoftwareInstalado: number | null
+  codigoTipoManutencao: number | null
   status: string
   criticidade: string
-  vencimento: string
-  dataAgendamento?: string
-  observacaoGeral?: string
-
-  tipoManutencao?: {
-    descricao: string
-  }
-
-  maquinaContrato?: {
-    codigo: number
-  }
+  vencimento: string | null
+  dataAgendamento: string | null
+  dataInicioExecucao: string | null
+  dataFimExecucao: string | null
+  observacaoGeral: string | null
 }
 
 export const manutencaoService = {
-  async listar(): Promise<ManutencaoResponseDTO[]> {
-    return await apiFetch<ManutencaoResponseDTO[]>('/maquina-historico-manutencao')
-  }
+  listarRelatorio: () => apiFetch<ManutencaoRelatorioDTO[]>('/maquinas-historicos-manutencao'),
 }

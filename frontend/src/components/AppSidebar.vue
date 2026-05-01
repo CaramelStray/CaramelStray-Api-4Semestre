@@ -32,7 +32,8 @@ const navGeralAdmin = [
   { title: "Mapa", url: "/mapa", icon: Map },
   { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
   { title: "Minhas Ordens", url: "/minhas-ordens", icon: ClipboardList },
-  { title: "Preparacao de Viagem", url: "/viagem-preparacao", icon: Route }
+  { title: "Preparacao de Viagem", url: "/viagem-preparacao", icon: Route },
+  { title: "Histórico de Manutenções", url: "/relatorio-manutencao", icon: Wrench }
 ]
 
 const navCadastros = [

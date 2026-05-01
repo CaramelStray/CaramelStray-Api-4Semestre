@@ -80,12 +80,24 @@ const router = createRouter({
       meta: { roles: ['ROLE_ADMIN'] },
     },
     {
+      path: '/ativos',
+      component: () => import('@/views/AtivosView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
+    },
+    {
+      path: '/catalogo-ativos',
+      component: () => import('@/views/CatalogoAtivosView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
+    },
+    {
       path: '/viagem-preparacao',
       component: () => import('@/views/ViagemPreparacaoView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
     },
     {
       path: '/viagem-preparacao/:id',
       component: () => import('@/views/ViagemPreparacaoDetalhesView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
     },
     {
       path: '/relatorio-manutencao',

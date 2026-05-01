@@ -91,10 +91,12 @@ const router = createRouter({
     {
       path: '/viagem-preparacao',
       component: () => import('@/views/ViagemPreparacaoView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
     },
     {
       path: '/viagem-preparacao/:id',
       component: () => import('@/views/ViagemPreparacaoDetalhesView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
     },
     {
       path: '/relatorio-manutencao',

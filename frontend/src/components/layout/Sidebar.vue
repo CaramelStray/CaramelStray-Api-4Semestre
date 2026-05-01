@@ -24,6 +24,7 @@ const pageTitle = computed(() => {
     '/mapa': 'Mapa (GIS)',
     '/manutencao': 'Manutenção',
     '/ordens': 'Gestão de Ordens',
+    '/viagem-preparacao': 'Preparacao de Viagem',
     '/clientes': 'Clientes',
     '/maquinas': 'Máquinas',
     '/tecnicos': 'Técnicos',

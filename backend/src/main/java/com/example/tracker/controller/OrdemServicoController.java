@@ -57,8 +57,7 @@ public class OrdemServicoController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<OrdemServicoResponseDTO> buscarPorId(@PathVariable Integer id) {
-        OrdemServico ordemServico = ordemServicoService.buscarPorId(id);
-        return ResponseEntity.ok(OrdemServicoResponseDTO.fromEntity(ordemServico));
+        return ResponseEntity.ok(ordemServicoService.buscarCompletoPorId(id));
     }
 
     @GetMapping("/{id}/dados-basicos")
@@ -91,7 +90,8 @@ public class OrdemServicoController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<OrdemServicoResponseDTO>> buscarPorSoftwareInstalado(
             @PathVariable Integer codigoSoftwareInstalado) {
-        List<OrdemServicoResponseDTO> ordens = ordemServicoService.buscarPorSoftwareInstalado(codigoSoftwareInstalado).stream()
+        List<OrdemServicoResponseDTO> ordens = ordemServicoService.buscarPorSoftwareInstalado(codigoSoftwareInstalado)
+                .stream()
                 .map(OrdemServicoResponseDTO::fromEntity)
                 .collect(Collectors.toList());
 
@@ -112,7 +112,8 @@ public class OrdemServicoController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<OrdemServicoResponseDTO>> buscarPorMaquinaContrato(
             @PathVariable Integer codigoMaquinaContrato) {
-        List<OrdemServicoResponseDTO> ordens = ordemServicoService.buscarPorMaquinaContrato(codigoMaquinaContrato).stream()
+        List<OrdemServicoResponseDTO> ordens = ordemServicoService.buscarPorMaquinaContrato(codigoMaquinaContrato)
+                .stream()
                 .map(OrdemServicoResponseDTO::fromEntity)
                 .collect(Collectors.toList());
 

@@ -88,10 +88,21 @@ const router = createRouter({
       component: () => import('@/views/CatalogoAtivosView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },
     },
+      path: '/viagem-preparacao',
+      component: () => import('@/views/ViagemPreparacaoView.vue'),
+    },
+    {
+      path: '/viagem-preparacao/:id',
+      component: () => import('@/views/ViagemPreparacaoDetalhesView.vue'),
+    },
     {
       path: '/relatorio-manutencao',
       component: () => import('@/views/RelatorioManutencaoView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },
+    },
+    {
+      path: '/configuracoes',
+      component: () => import('@/views/ConfiguracoesView.vue'),
     },
   ],
 })

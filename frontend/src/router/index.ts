@@ -91,6 +91,10 @@ const router = createRouter({
       component: () => import('@/views/RelatorioManutencaoView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },
     },
+    {
+      path: '/configuracoes',
+      component: () => import('@/views/ConfiguracoesView.vue'),
+    },
   ],
 })
 

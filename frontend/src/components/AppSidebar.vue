@@ -31,7 +31,6 @@ const teams = [
 const navGeralAdmin = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Mapa", url: "/mapa", icon: Map },
-  { title: "Manutenção", url: "/manutencao", icon: Wrench },
   { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
   { title: "Preparacao de Viagem", url: "/viagem-preparacao", icon: Route }
 ]

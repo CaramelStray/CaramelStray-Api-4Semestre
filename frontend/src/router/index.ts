@@ -1,3 +1,4 @@
+import path from 'path/win32'
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Página inicial de cada role após login
@@ -90,6 +91,11 @@ const router = createRouter({
       path: '/relatorio-manutencao',
       component: () => import('@/views/RelatorioManutencaoView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },
+    },
+    {
+      path: '/ordens-tecnico',
+      component: () => import('@/views/OrdensTecnicoView.vue'),
+      meta: { roles: ['ROLE_TECNICO'] },
     },
     {
       path: '/configuracoes',

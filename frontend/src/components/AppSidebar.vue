@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<SidebarProps>(), {
 })
 
 const role = computed(() => localStorage.getItem('user_role'))
-const userEmail = computed(() => localStorage.getItem('user_email') ?? '')
+const userEmail = computed(() => localStorage.getItem('user_email') ?? 'usuario@altave.com.br')
 const isTecnico = computed(() => role.value === 'ROLE_TECNICO')
 
 const teams = [
@@ -32,6 +32,7 @@ const navGeralAdmin = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Mapa", url: "/mapa", icon: Map },
   { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
+  { title: "Minhas Ordens", url: "/minhas-ordens", icon: ClipboardList },
   { title: "Preparacao de Viagem", url: "/viagem-preparacao", icon: Route }
 ]
 
@@ -52,7 +53,7 @@ const navConfig = [
 ]
 
 const navGeralTecnico = [
-  { title: "Minhas Ordens", url: "/minhas-ordens", icon: ClipboardList },
+  { title: "Ordens Técnico", url: "/ordens-tecnico", icon: ClipboardList },
 ]
 
 const currentUser = computed(() => ({
@@ -70,7 +71,6 @@ const currentUser = computed(() => ({
     </SidebarHeader>
 
     <SidebarContent>
-
       <template v-if="!isTecnico">
         <div class="px-3 pt-2 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:pt-2">
           <RouterLink to="/ordens">
@@ -91,7 +91,6 @@ const currentUser = computed(() => ({
       </template>
 
       <NavMain label="" :items="navConfig" />
-
     </SidebarContent>
 
     <SidebarFooter>

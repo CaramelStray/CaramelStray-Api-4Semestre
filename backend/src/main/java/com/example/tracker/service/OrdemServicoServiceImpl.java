@@ -1,6 +1,6 @@
 package com.example.tracker.service;
 
-import com.example.tracker.dto.ordemservico.MinhasOrdensResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
@@ -61,18 +61,18 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MinhasOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
+    public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         return tecnicoRepository.findByUsuarioEmail(emailUsuario)
                 .map(tecnico -> ordemServicoRepository.findByFuncionarioId(tecnico.getId())
                         .stream()
-                        .map(MinhasOrdensResponseDTO::fromEntity)
+                        .map(TecnicosOrdensResponseDTO::fromEntity)
                         .toList())
                 .orElse(List.of());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public OrdemServico buscarMinhaOrdem(Integer id, String emailUsuario) {
+    public OrdemServico buscarTecnicoOrdem(Integer id, String emailUsuario) {
         Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
 
         Tecnico tecnico = tecnicoRepository.findByUsuarioEmail(emailUsuario)

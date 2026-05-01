@@ -1,6 +1,6 @@
 package com.example.tracker.service;
 
-import com.example.tracker.dto.ordemservico.MinhasOrdensResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
@@ -11,9 +11,9 @@ public interface OrdemServicoService {
 
     List<OrdemServico> listarTodos();
 
-    List<MinhasOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario);
+    List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario);
 
-    OrdemServico buscarMinhaOrdem(Integer id, String emailUsuario);
+    OrdemServico buscarTecnicoOrdem(Integer id, String emailUsuario);
 
     List<OrdemServicoDadosBasicosResponseDTO> listarDadosBasicos();
 

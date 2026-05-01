@@ -1,7 +1,7 @@
 package com.example.tracker.controller;
 
-import com.example.tracker.dto.ordemservico.MinhaOrdemDetalhesResponseDTO;
-import com.example.tracker.dto.ordemservico.MinhasOrdensResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicoOrdemDetalhesResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoResponseDTO;
@@ -77,7 +77,7 @@ public class OrdemServicoController {
     }
 
     @GetMapping("/funcionario/{codigoFuncionario}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TECNICO')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<OrdemServicoResponseDTO>> buscarPorFuncionario(@PathVariable Integer codigoFuncionario) {
         List<OrdemServicoResponseDTO> ordens = ordemServicoService.buscarPorFuncionario(codigoFuncionario).stream()
                 .map(OrdemServicoResponseDTO::fromEntity)
@@ -201,15 +201,15 @@ public class OrdemServicoController {
 
     @GetMapping("/minhas-ordens")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
-    public ResponseEntity<List<MinhasOrdensResponseDTO>> buscarMinhasOrdens(Authentication authentication) {
+    public ResponseEntity<List<TecnicosOrdensResponseDTO>> buscarMinhasOrdens(Authentication authentication) {
         return ResponseEntity.ok(ordemServicoService.buscarMinhasOrdens(authentication.getName()));
     }
 
-    @GetMapping("/minhas-ordens/{id}")
+    @GetMapping("/tecnico-ordens/{id}")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
-    public ResponseEntity<MinhaOrdemDetalhesResponseDTO> buscarMinhaOrdem(
+    public ResponseEntity<TecnicoOrdemDetalhesResponseDTO> buscarTecnicoOrdem(
             @PathVariable Integer id, Authentication authentication) {
-        OrdemServico ordemServico = ordemServicoService.buscarMinhaOrdem(id, authentication.getName());
-        return ResponseEntity.ok(MinhaOrdemDetalhesResponseDTO.fromEntity(ordemServico));
+        OrdemServico ordemServico = ordemServicoService.buscarTecnicoOrdem(id, authentication.getName());
+        return ResponseEntity.ok(TecnicoOrdemDetalhesResponseDTO.fromEntity(ordemServico));
     }
 }

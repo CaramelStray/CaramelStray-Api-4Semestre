@@ -7,12 +7,11 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  Package, Plus, Search, X, CheckCircle2, Pencil, Trash2,
+  Package, Plus, Search, X, CheckCircle2, Pencil,
 } from 'lucide-vue-next'
 
 import { catalogoAtivoService, type CatalogoAtivoResponseDTO } from '@/services/catalogoAtivoService'
 import CatalogoAtivoFormPopup from '@/components/catalogoAtivos/CatalogoAtivoFormPopup.vue'
-import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue'
 
 const isCadastroOpen = ref(false)
 const isEditOpen = ref(false)
@@ -24,10 +23,6 @@ const loading = ref(false)
 const erro = ref('')
 const sucessoMsg = ref('')
 let sucessoTimeout: ReturnType<typeof setTimeout> | null = null
-
-const deleteDialogOpen = ref(false)
-const deletingItem = ref<CatalogoAtivoResponseDTO | null>(null)
-const deletingLoading = ref(false)
 
 const stats = computed(() => [
   {
@@ -98,26 +93,6 @@ const onEdicaoSucesso = async (item: CatalogoAtivoResponseDTO) => {
   await carregar()
 }
 
-const abrirExclusao = (item: CatalogoAtivoResponseDTO) => {
-  deletingItem.value = item
-  deleteDialogOpen.value = true
-}
-
-const confirmarExclusao = async () => {
-  if (!deletingItem.value) return
-  deletingLoading.value = true
-  try {
-    await catalogoAtivoService.deletar(deletingItem.value.codigo)
-    mostrarSucesso(`"${deletingItem.value.descricaoProduto}" excluído com sucesso.`)
-    deleteDialogOpen.value = false
-    deletingItem.value = null
-    await carregar()
-  } catch (e: any) {
-    alert('Erro ao excluir: ' + e.message)
-  } finally {
-    deletingLoading.value = false
-  }
-}
 
 const filteredCatalogo = computed(() => {
   const q = searchQuery.value.toLowerCase()
@@ -245,24 +220,12 @@ const filteredCatalogo = computed(() => {
                 <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(item)">
                   <Pencil class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-red-400 transition-colors" @click="abrirExclusao(item)">
-                  <Trash2 class="size-5" />
-                </Button>
               </div>
             </TableCell>
           </TableRow>
         </TableBody>
       </Table>
     </div>
-
-    <ConfirmDeleteDialog
-      :open="deleteDialogOpen"
-      titulo="Excluir Produto do Catálogo"
-      :descricao="`Tem certeza que deseja excluir '${deletingItem?.descricaoProduto ?? ''}'? Esta ação não pode ser desfeita.`"
-      :carregando="deletingLoading"
-      @update:open="deleteDialogOpen = $event"
-      @confirmar="confirmarExclusao"
-    />
 
     <Teleport to="body">
       <Transition name="modal">

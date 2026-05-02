@@ -164,7 +164,8 @@ CREATE TABLE public.tb_cad_catalogo_ativo (
     marca character varying(255),
     descricao text,
     especificacao text,
-    tipo character varying(100)
+    tipo character varying(100) NOT NULL,
+    CONSTRAINT ck_catalogo_ativo_tipo CHECK (((tipo)::text = ANY ((ARRAY['FERRAMENTA'::character varying, 'EQUIPAMENTO'::character varying, 'COMPONENTE'::character varying, 'PERIFERICO'::character varying, 'EPI'::character varying, 'CONSUMIVEL'::character varying])::text[])))
 );
 
 
@@ -909,7 +910,10 @@ CREATE TABLE public.tb_srv_ordem_servico_checklist_ativo (
     descricao_ativo character varying(255),
     levado boolean DEFAULT false NOT NULL,
     devolvido boolean DEFAULT false NOT NULL,
-    observacao text
+    observacao text,
+    status_intervencao character varying(50),
+    data_intervencao timestamp without time zone,
+    observacao_intervencao text
 );
 
 
@@ -1298,6 +1302,7 @@ COPY public.tb_cad_habilidade (codigo, descricao, observacao) FROM stdin;
 
 COPY public.tb_cad_perfil (codigo, descricao) FROM stdin;
 1	ROLE_ADMIN
+2	ROLE_TECNICO
 \.
 
 
@@ -1589,7 +1594,7 @@ SELECT pg_catalog.setval('public.tb_cad_habilidade_codigo_seq', 1, false);
 -- Name: tb_cad_perfil_id_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
 --
 
-SELECT pg_catalog.setval('public.tb_cad_perfil_id_seq', 1, true);
+SELECT pg_catalog.setval('public.tb_cad_perfil_id_seq', 2, true);
 
 
 --
@@ -2548,8 +2553,8 @@ INSERT INTO public.tb_cad_usuario (codigo, ativo, data_criacao, email, senha) OV
 ON CONFLICT (codigo) DO NOTHING;
 
 INSERT INTO public.tb_cad_usuario_perfil (codigo_usuario, codigo_perfil) VALUES
-    (2, 1),
-    (3, 1),
+    (2, 2),
+    (3, 2),
     (4, 1)
 ON CONFLICT (codigo_usuario, codigo_perfil) DO NOTHING;
 

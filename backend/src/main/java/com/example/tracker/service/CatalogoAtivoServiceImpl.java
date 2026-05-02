@@ -5,6 +5,8 @@ import com.example.tracker.dto.catalogoativo.CatalogoAtivoResponseDTO;
 import com.example.tracker.entity.CatalogoAtivo;
 import com.example.tracker.repository.CatalogoAtivoRepository;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @RequiredArgsConstructor
 public class CatalogoAtivoServiceImpl implements CatalogoAtivoService {
+
+    private static final Set<String> TIPOS_PERMITIDOS =
+            Set.of("FERRAMENTA", "EQUIPAMENTO", "COMPONENTE", "PERIFERICO", "EPI", "CONSUMIVEL");
 
     private final CatalogoAtivoRepository catalogoAtivoRepository;
 
@@ -63,11 +68,36 @@ public class CatalogoAtivoServiceImpl implements CatalogoAtivoService {
     }
 
     private void mapearParaEntidade(CatalogoAtivoCreateDTO dto, CatalogoAtivo entity) {
-        entity.setDescricaoProduto(dto.getDescricaoProduto());
-        entity.setModelo(dto.getModelo());
-        entity.setMarca(dto.getMarca());
-        entity.setDescricao(dto.getDescricao());
-        entity.setEspecificacao(dto.getEspecificacao());
-        entity.setTipo(dto.getTipo());
+        entity.setDescricaoProduto(limparString(dto.getDescricaoProduto()));
+        entity.setModelo(limparString(dto.getModelo()));
+        entity.setMarca(limparString(dto.getMarca()));
+        entity.setDescricao(limparString(dto.getDescricao()));
+        entity.setEspecificacao(limparString(dto.getEspecificacao()));
+        entity.setTipo(normalizarTipo(dto.getTipo()));
+    }
+
+    private String normalizarTipo(String tipo) {
+        String tipoNormalizado = limparString(tipo);
+        if (tipoNormalizado == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O tipo do ativo é obrigatório");
+        }
+
+        tipoNormalizado = tipoNormalizado.toUpperCase(Locale.ROOT);
+        if (!TIPOS_PERMITIDOS.contains(tipoNormalizado)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Tipo do ativo inválido. Tipos permitidos: FERRAMENTA, EQUIPAMENTO, COMPONENTE, PERIFERICO, EPI, CONSUMIVEL");
+        }
+
+        return tipoNormalizado;
+    }
+
+    private String limparString(String valor) {
+        if (valor == null) {
+            return null;
+        }
+
+        String valorLimpo = valor.trim();
+        return valorLimpo.isEmpty() ? null : valorLimpo;
     }
 }

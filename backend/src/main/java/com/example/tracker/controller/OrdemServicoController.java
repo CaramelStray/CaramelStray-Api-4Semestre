@@ -3,6 +3,7 @@ package com.example.tracker.controller;
 import com.example.tracker.dto.ordemservico.TecnicoOrdemDetalhesResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
+import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCheckinDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
@@ -211,5 +212,33 @@ public class OrdemServicoController {
             @PathVariable Integer id, Authentication authentication) {
         OrdemServico ordemServico = ordemServicoService.buscarTecnicoOrdem(id, authentication.getName());
         return ResponseEntity.ok(TecnicoOrdemDetalhesResponseDTO.fromEntity(ordemServico));
+    }
+
+    @GetMapping("/minhas-ordens/{id}/checklist-ativos/intervencao")
+    @PreAuthorize("hasAuthority('ROLE_TECNICO')")
+    public ResponseEntity<List<OrdemServicoChecklistAtivoResponseDTO>> listarChecklistAtivosIntervencao(
+            @PathVariable Integer id,
+            Authentication authentication) {
+        List<OrdemServicoChecklistAtivoResponseDTO> itens = ordemServicoChecklistAtivoService
+                .listarItensIntervencaoTecnico(id, authentication.getName()).stream()
+                .map(OrdemServicoChecklistAtivoResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(itens);
+    }
+
+    @PatchMapping("/minhas-ordens/{id}/checklist-ativos/{codigoItem}/checkin")
+    @PreAuthorize("hasAuthority('ROLE_TECNICO')")
+    public ResponseEntity<OrdemServicoChecklistAtivoResponseDTO> registrarCheckinChecklistAtivo(
+            @PathVariable Integer id,
+            @PathVariable Integer codigoItem,
+            @RequestBody OrdemServicoChecklistAtivoCheckinDTO dto,
+            Authentication authentication) {
+        OrdemServicoChecklistAtivo item = ordemServicoChecklistAtivoService.registrarCheckinTecnico(
+                id,
+                codigoItem,
+                dto,
+                authentication.getName());
+        return ResponseEntity.ok(OrdemServicoChecklistAtivoResponseDTO.fromEntity(item));
     }
 }

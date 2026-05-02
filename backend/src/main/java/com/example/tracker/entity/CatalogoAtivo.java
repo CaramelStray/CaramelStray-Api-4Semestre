@@ -31,7 +31,7 @@ public class CatalogoAtivo {
     @Column(name = "especificacao")
     private String especificacao;
 
-    @Column(name = "tipo", length = 100)
+    @Column(name = "tipo", nullable = false, length = 100)
     private String tipo;
 
     public Integer getCodigo() {

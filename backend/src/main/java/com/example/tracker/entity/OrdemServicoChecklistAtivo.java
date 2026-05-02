@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(
@@ -46,6 +47,15 @@ public class OrdemServicoChecklistAtivo {
 
     @Column(name = "observacao")
     private String observacao;
+
+    @Column(name = "status_intervencao", length = 50)
+    private String statusIntervencao;
+
+    @Column(name = "data_intervencao")
+    private LocalDateTime dataIntervencao;
+
+    @Column(name = "observacao_intervencao")
+    private String observacaoIntervencao;
 
     public Integer getCodigo() {
         return codigo;
@@ -109,5 +119,29 @@ public class OrdemServicoChecklistAtivo {
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public String getStatusIntervencao() {
+        return statusIntervencao;
+    }
+
+    public void setStatusIntervencao(String statusIntervencao) {
+        this.statusIntervencao = statusIntervencao;
+    }
+
+    public LocalDateTime getDataIntervencao() {
+        return dataIntervencao;
+    }
+
+    public void setDataIntervencao(LocalDateTime dataIntervencao) {
+        this.dataIntervencao = dataIntervencao;
+    }
+
+    public String getObservacaoIntervencao() {
+        return observacaoIntervencao;
+    }
+
+    public void setObservacaoIntervencao(String observacaoIntervencao) {
+        this.observacaoIntervencao = observacaoIntervencao;
     }
 }

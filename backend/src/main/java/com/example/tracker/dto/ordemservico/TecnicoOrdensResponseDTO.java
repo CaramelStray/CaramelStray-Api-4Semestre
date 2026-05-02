@@ -3,7 +3,7 @@ package com.example.tracker.dto.ordemservico;
 import com.example.tracker.entity.OrdemServico;
 import java.time.LocalDateTime;
 
-public class MinhasOrdensResponseDTO {
+public class TecnicoOrdensResponseDTO {
 
     private Integer codigo;
     private String nomeCliente;
@@ -12,8 +12,8 @@ public class MinhasOrdensResponseDTO {
     private LocalDateTime dataAbertura;
     private LocalDateTime dataAgendamento;
 
-    public static MinhasOrdensResponseDTO fromEntity(OrdemServico os) {
-        MinhasOrdensResponseDTO dto = new MinhasOrdensResponseDTO();
+    public static TecnicoOrdensResponseDTO fromEntity(OrdemServico os) {
+        TecnicoOrdensResponseDTO dto = new TecnicoOrdensResponseDTO();
         dto.setCodigo(os.getCodigo());
         dto.setNomeCliente(os.getCliente() != null ? os.getCliente().getNomeEmpresa() : null);
         dto.setStatus(os.getStatus());

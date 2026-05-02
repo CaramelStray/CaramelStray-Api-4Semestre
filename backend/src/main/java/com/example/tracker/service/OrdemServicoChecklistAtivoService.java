@@ -1,5 +1,6 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCheckinDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
 import com.example.tracker.entity.OrdemServicoChecklistAtivo;
 import java.util.List;
@@ -7,6 +8,8 @@ import java.util.List;
 public interface OrdemServicoChecklistAtivoService {
 
     List<OrdemServicoChecklistAtivo> listarPorOrdemServico(Integer codigoOrdemServico);
+
+    List<OrdemServicoChecklistAtivo> listarItensIntervencaoTecnico(Integer codigoOrdemServico, String emailUsuario);
 
     OrdemServicoChecklistAtivo buscarItem(Integer codigoOrdemServico, Integer codigoItem);
 
@@ -20,6 +23,12 @@ public interface OrdemServicoChecklistAtivoService {
             Integer codigoOrdemServico,
             Integer codigoItem,
             OrdemServicoChecklistAtivoCreateDTO dto);
+
+    OrdemServicoChecklistAtivo registrarCheckinTecnico(
+            Integer codigoOrdemServico,
+            Integer codigoItem,
+            OrdemServicoChecklistAtivoCheckinDTO dto,
+            String emailUsuario);
 
     void remover(Integer codigoOrdemServico, Integer codigoItem);
 }

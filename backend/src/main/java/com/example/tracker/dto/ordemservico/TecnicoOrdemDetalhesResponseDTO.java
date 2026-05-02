@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MinhaOrdemDetalhesResponseDTO {
+public class TecnicoOrdemDetalhesResponseDTO {
 
     private Integer codigo;
     private String status;
@@ -41,8 +41,8 @@ public class MinhaOrdemDetalhesResponseDTO {
 
     private List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos;
 
-    public static MinhaOrdemDetalhesResponseDTO fromEntity(OrdemServico os) {
-        MinhaOrdemDetalhesResponseDTO dto = new MinhaOrdemDetalhesResponseDTO();
+    public static TecnicoOrdemDetalhesResponseDTO fromEntity(OrdemServico os) {
+        TecnicoOrdemDetalhesResponseDTO dto = new TecnicoOrdemDetalhesResponseDTO();
 
         dto.setCodigo(os.getCodigo());
         dto.setStatus(os.getStatus());

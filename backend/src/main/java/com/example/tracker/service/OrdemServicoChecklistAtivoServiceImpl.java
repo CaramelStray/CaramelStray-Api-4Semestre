@@ -1,5 +1,6 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCheckinDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
 import com.example.tracker.entity.Ativo;
 import com.example.tracker.entity.CatalogoAtivo;
@@ -10,8 +11,10 @@ import com.example.tracker.repository.AtivoRepository;
 import com.example.tracker.repository.OrdemServicoChecklistAtivoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.TecnicoRepository;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoChecklistAtivoService {
+
+    private static final Set<String> STATUS_INTERVENCAO_PERMITIDOS =
+            Set.of("PENDENTE", "UTILIZADO", "INSTALADO", "NAO_UTILIZADO", "RETORNADO", "DANIFICADO", "PERDIDO");
+    private static final Set<String> TIPOS_ATIVO_INTERVENCAO_PERMITIDOS =
+            Set.of("COMPONENTE", "PERIFERICO");
+    private static final Set<String> STATUS_ORDEM_BLOQUEADOS =
+            Set.of("FINALIZADA", "FINALIZADO", "CANCELADA", "CANCELADO");
+    private static final int TAMANHO_MAXIMO_OBSERVACAO_INTERVENCAO = 2000;
 
     private final OrdemServicoChecklistAtivoRepository checklistRepository;
     private final OrdemServicoRepository ordemServicoRepository;
@@ -45,6 +56,22 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
                 requireId(codigoOrdemServico, "Codigo da ordem de servico e obrigatorio");
         buscarOrdemServico(codigoOrdemServicoNaoNulo);
         return checklistRepository.findByOrdemServicoCodigoOrderByCodigoAsc(codigoOrdemServicoNaoNulo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrdemServicoChecklistAtivo> listarItensIntervencaoTecnico(
+            Integer codigoOrdemServico,
+            String emailUsuario) {
+        Integer codigoOrdemServicoNaoNulo =
+                requireId(codigoOrdemServico, "Codigo da ordem de servico e obrigatorio");
+
+        OrdemServico ordemServico = buscarOrdemServico(codigoOrdemServicoNaoNulo);
+        validarTecnicoPodeAlterarOrdem(ordemServico, emailUsuario);
+
+        return checklistRepository.findByOrdemServicoCodigoOrderByCodigoAsc(codigoOrdemServicoNaoNulo).stream()
+                .filter(this::isItemElegivelParaIntervencao)
+                .toList();
     }
 
     @Override
@@ -103,6 +130,7 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
         }
 
         checklistRepository.deleteByOrdemServicoCodigo(codigoOrdemServicoNaoNulo);
+        checklistRepository.flush();
 
         List<OrdemServicoChecklistAtivo> novosItens = itens.stream()
                 .map(dto -> {
@@ -137,6 +165,43 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
         validarDuplicidade(codigoOrdemServicoNaoNulo, itemValidado.ativo().getCodigo(), codigoItemNaoNulo);
 
         aplicarCampos(item, ordemServico, itemValidado, dto);
+        return checklistRepository.save(item);
+    }
+
+    @Override
+    @Transactional
+    public OrdemServicoChecklistAtivo registrarCheckinTecnico(
+            Integer codigoOrdemServico,
+            Integer codigoItem,
+            OrdemServicoChecklistAtivoCheckinDTO dto,
+            String emailUsuario) {
+        Integer codigoOrdemServicoNaoNulo =
+                requireId(codigoOrdemServico, "Codigo da ordem de servico e obrigatorio");
+        Integer codigoItemNaoNulo = requireId(codigoItem, "Codigo do item do checklist e obrigatorio");
+
+        if (dto == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Dados do check-in do item do checklist sao obrigatorios");
+        }
+
+        OrdemServico ordemServico = buscarOrdemServico(codigoOrdemServicoNaoNulo);
+        validarTecnicoPodeAlterarOrdem(ordemServico, emailUsuario);
+        validarOrdemEditavel(ordemServico);
+
+        OrdemServicoChecklistAtivo item = checklistRepository
+                .findByCodigoAndOrdemServicoCodigo(codigoItemNaoNulo, codigoOrdemServicoNaoNulo)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Item do checklist de ativos nao encontrado"));
+
+        validarItemElegivelParaIntervencao(item);
+
+        String statusIntervencao = normalizarStatusIntervencao(dto.getStatusIntervencao());
+        item.setStatusIntervencao(statusIntervencao);
+        item.setDataIntervencao(dto.getDataIntervencao() != null ? dto.getDataIntervencao() : LocalDateTime.now());
+        item.setObservacaoIntervencao(limparObservacaoIntervencao(dto.getObservacaoIntervencao()));
+
         return checklistRepository.save(item);
     }
 
@@ -231,6 +296,9 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
         item.setLevado(Boolean.TRUE.equals(dto.getLevado()));
         item.setDevolvido(Boolean.TRUE.equals(dto.getDevolvido()));
         item.setObservacao(limparString(dto.getObservacao()));
+        item.setStatusIntervencao(normalizarStatusIntervencaoOpcional(dto.getStatusIntervencao()));
+        item.setDataIntervencao(dto.getDataIntervencao());
+        item.setObservacaoIntervencao(limparObservacaoIntervencao(dto.getObservacaoIntervencao()));
     }
 
     private String montarDescricaoAtivo(Ativo ativo) {
@@ -259,6 +327,97 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
             return null;
         }
         return valorLimpo;
+    }
+
+    private void validarTecnicoPodeAlterarOrdem(OrdemServico ordemServico, String emailUsuario) {
+        if (emailUsuario == null || emailUsuario.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario nao autenticado");
+        }
+
+        Tecnico tecnico = tecnicoRepository.findByUsuarioEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Tecnico nao encontrado para o usuario autenticado"));
+
+        if (ordemServico.getFuncionario() == null
+                || !Objects.equals(ordemServico.getFuncionario().getId(), tecnico.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso negado: esta ordem nao esta atribuida a voce");
+        }
+    }
+
+    private void validarOrdemEditavel(OrdemServico ordemServico) {
+        String status = normalizar(ordemServico.getStatus());
+        if (status != null && STATUS_ORDEM_BLOQUEADOS.contains(status)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Nao e permitido registrar check-in em ordem finalizada ou cancelada");
+        }
+    }
+
+    private void validarItemElegivelParaIntervencao(OrdemServicoChecklistAtivo item) {
+        if (!isItemElegivelParaIntervencao(item)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Check-in de intervencao permitido apenas para componentes ou perifericos");
+        }
+    }
+
+    private boolean isItemElegivelParaIntervencao(OrdemServicoChecklistAtivo item) {
+        if (item == null || item.getAtivo() == null || item.getAtivo().getCatalogoAtivo() == null) {
+            return false;
+        }
+
+        String tipoAtivo = normalizar(item.getAtivo().getCatalogoAtivo().getTipo());
+        return tipoAtivo != null && TIPOS_ATIVO_INTERVENCAO_PERMITIDOS.contains(tipoAtivo);
+    }
+
+    private String normalizarStatusIntervencao(String statusIntervencao) {
+        String statusNormalizado = normalizar(statusIntervencao);
+        if (statusNormalizado == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status da intervencao e obrigatorio");
+        }
+
+        if (!STATUS_INTERVENCAO_PERMITIDOS.contains(statusNormalizado)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Status da intervencao invalido");
+        }
+
+        return statusNormalizado;
+    }
+
+    private String normalizarStatusIntervencaoOpcional(String statusIntervencao) {
+        String statusNormalizado = normalizar(statusIntervencao);
+        if (statusNormalizado == null) {
+            return null;
+        }
+
+        if (!STATUS_INTERVENCAO_PERMITIDOS.contains(statusNormalizado)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Status da intervencao invalido");
+        }
+
+        return statusNormalizado;
+    }
+
+    private String limparObservacaoIntervencao(String observacaoIntervencao) {
+        String observacaoTratada = limparString(observacaoIntervencao);
+        if (observacaoTratada != null && observacaoTratada.length() > TAMANHO_MAXIMO_OBSERVACAO_INTERVENCAO) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A observacao da intervencao deve possuir no maximo "
+                            + TAMANHO_MAXIMO_OBSERVACAO_INTERVENCAO
+                            + " caracteres");
+        }
+        return observacaoTratada;
+    }
+
+    private String normalizar(String valor) {
+        String valorLimpo = limparString(valor);
+        return valorLimpo == null ? null : valorLimpo.toUpperCase(Locale.ROOT);
     }
 
     private Integer requireId(Integer id, String mensagem) {

@@ -222,7 +222,7 @@ public class OrdemServicoController {
         return ResponseEntity.ok(TecnicoOrdemDetalhesResponseDTO.fromEntity(ordemServico));
     }
 
-    @GetMapping("/minhas-ordens/{id}/checklist-ativos/intervencao")
+    @GetMapping("/tecnico-ordens/{id}/checklist-ativos/intervencao")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
     public ResponseEntity<List<OrdemServicoChecklistAtivoResponseDTO>> listarChecklistAtivosIntervencao(
             @PathVariable Integer id,
@@ -235,7 +235,7 @@ public class OrdemServicoController {
         return ResponseEntity.ok(itens);
     }
 
-    @PatchMapping("/minhas-ordens/{id}/checklist-ativos/{codigoItem}/checkin")
+    @PatchMapping("/tecnico-ordens/{id}/checklist-ativos/{codigoItem}/checkin")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
     public ResponseEntity<OrdemServicoChecklistAtivoResponseDTO> registrarCheckinChecklistAtivo(
             @PathVariable Integer id,

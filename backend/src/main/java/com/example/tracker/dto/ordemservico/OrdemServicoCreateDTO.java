@@ -26,6 +26,7 @@ public class OrdemServicoCreateDTO {
 
     private String status;
     private String criticidade;
+    private String tipoOrdem;
 
     // pode vir null → service resolve com now()
     private LocalDateTime dataAbertura;

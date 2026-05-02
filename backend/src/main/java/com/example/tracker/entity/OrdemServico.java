@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,9 @@ public class OrdemServico {
     @Column(name = "criticidade", length = 50)
     private String criticidade;
 
+    @Column(name = "tipo_ordem", length = 50)
+    private String tipoOrdem;
+
     @Column(name = "data_abertura", nullable = false)
     private LocalDateTime dataAbertura;
 
@@ -65,6 +69,9 @@ public class OrdemServico {
 
     @OneToMany(mappedBy = "ordemServico")
     private List<OrdemServicoChecklistAtivo> checklistAtivos = new ArrayList<>();
+
+    @OneToOne(mappedBy = "ordemServico")
+    private MaquinaHistoricoManutencao historicoManutencao;
 
     public Integer getCodigo() {
         return codigo;
@@ -130,6 +137,14 @@ public class OrdemServico {
         this.criticidade = criticidade;
     }
 
+    public String getTipoOrdem() {
+        return tipoOrdem;
+    }
+
+    public void setTipoOrdem(String tipoOrdem) {
+        this.tipoOrdem = tipoOrdem;
+    }
+
     public LocalDateTime getDataAbertura() {
         return dataAbertura;
     }
@@ -176,5 +191,13 @@ public class OrdemServico {
 
     public void setChecklistAtivos(List<OrdemServicoChecklistAtivo> checklistAtivos) {
         this.checklistAtivos = checklistAtivos;
+    }
+
+    public MaquinaHistoricoManutencao getHistoricoManutencao() {
+        return historicoManutencao;
+    }
+
+    public void setHistoricoManutencao(MaquinaHistoricoManutencao historicoManutencao) {
+        this.historicoManutencao = historicoManutencao;
     }
 }

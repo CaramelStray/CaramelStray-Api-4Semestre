@@ -9,6 +9,7 @@ public class TecnicosOrdensResponseDTO {
     private String nomeCliente;
     private String status;
     private String criticidade;
+    private String tipoOrdem;
     private LocalDateTime dataAbertura;
     private LocalDateTime dataAgendamento;
 
@@ -18,6 +19,7 @@ public class TecnicosOrdensResponseDTO {
         dto.setNomeCliente(os.getCliente() != null ? os.getCliente().getNomeEmpresa() : null);
         dto.setStatus(os.getStatus());
         dto.setCriticidade(os.getCriticidade());
+        dto.setTipoOrdem(os.getTipoOrdem());
         dto.setDataAbertura(os.getDataAbertura());
         dto.setDataAgendamento(os.getDataAgendamento());
         return dto;
@@ -34,6 +36,9 @@ public class TecnicosOrdensResponseDTO {
 
     public String getCriticidade() { return criticidade; }
     public void setCriticidade(String criticidade) { this.criticidade = criticidade; }
+
+    public String getTipoOrdem() { return tipoOrdem; }
+    public void setTipoOrdem(String tipoOrdem) { this.tipoOrdem = tipoOrdem; }
 
     public LocalDateTime getDataAbertura() { return dataAbertura; }
     public void setDataAbertura(LocalDateTime dataAbertura) { this.dataAbertura = dataAbertura; }

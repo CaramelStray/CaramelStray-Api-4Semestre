@@ -12,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { catalogoAtivoService, type CatalogoAtivoResponseDTO, type CatalogoAtivoCreateDTO } from '@/services/catalogoAtivoService'
 import { Package } from 'lucide-vue-next'
 
@@ -28,7 +29,9 @@ const formSchema = toTypedSchema(z.object({
   descricaoProduto: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   modelo: z.string().optional(),
   marca: z.string().optional(),
-  tipo: z.string().optional(),
+  tipo: z.enum(['FERRAMENTA', 'EQUIPAMENTO', 'COMPONENTE', 'PERIFERICO', 'EPI', 'CONSUMIVEL'], {
+    required_error: 'Selecione um tipo',
+  }),
   descricao: z.string().optional(),
   especificacao: z.string().optional(),
 }))
@@ -39,7 +42,7 @@ const form = useForm({
     descricaoProduto: '',
     modelo: '',
     marca: '',
-    tipo: '',
+    tipo: undefined as any,
     descricao: '',
     especificacao: '',
   },
@@ -51,7 +54,7 @@ watch(() => props.initialData, (data) => {
       descricaoProduto: data.descricaoProduto ?? '',
       modelo: data.modelo ?? '',
       marca: data.marca ?? '',
-      tipo: data.tipo ?? '',
+      tipo: (data.tipo as any) ?? undefined,
       descricao: data.descricao ?? '',
       especificacao: data.especificacao ?? '',
     })
@@ -66,7 +69,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       descricaoProduto: values.descricaoProduto,
       modelo: values.modelo || undefined,
       marca: values.marca || undefined,
-      tipo: values.tipo || undefined,
+      tipo: values.tipo,
       descricao: values.descricao || undefined,
       especificacao: values.especificacao || undefined,
     }
@@ -132,12 +135,26 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="tipo">
+        <FormField v-slot="{ value, handleChange }" name="tipo">
           <FormItem>
-            <FormLabel>Tipo</FormLabel>
-            <FormControl>
-              <Input type="text" placeholder="Ex: Notebook, Servidor, Impressora" v-bind="componentField" />
-            </FormControl>
+            <FormLabel class="flex items-center gap-1">
+              Tipo <span class="text-red-500 font-bold">*</span>
+            </FormLabel>
+            <Select :model-value="value" @update:model-value="val => handleChange(String(val))">
+              <FormControl>
+                <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
+                  <SelectValue placeholder="Selecione um tipo..." />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent class="z-[200]">
+                <SelectItem value="FERRAMENTA">Ferramenta</SelectItem>
+                <SelectItem value="EQUIPAMENTO">Equipamento</SelectItem>
+                <SelectItem value="COMPONENTE">Componente</SelectItem>
+                <SelectItem value="PERIFERICO">Periférico</SelectItem>
+                <SelectItem value="EPI">EPI</SelectItem>
+                <SelectItem value="CONSUMIVEL">Consumível</SelectItem>
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         </FormField>

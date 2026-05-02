@@ -1,5 +1,6 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
@@ -7,6 +8,7 @@ import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
 import com.example.tracker.entity.Cliente;
 import com.example.tracker.entity.Contrato;
 import com.example.tracker.entity.MaquinaContrato;
+import com.example.tracker.entity.MaquinaHistoricoManutencao;
 import com.example.tracker.entity.MaquinaSoftwareInstalado;
 import com.example.tracker.entity.OrdemServico;
 import com.example.tracker.entity.OrdemServicoChecklistAtivo;
@@ -14,6 +16,7 @@ import com.example.tracker.entity.Tecnico;
 import com.example.tracker.repository.ClienteRepository;
 import com.example.tracker.repository.ContratoRepository;
 import com.example.tracker.repository.MaquinaContratoRepository;
+import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
 import com.example.tracker.repository.MaquinaSoftwareInstaladoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.TecnicoRepository;
@@ -35,6 +38,8 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     private final ContratoRepository contratoRepository;
     private final MaquinaContratoRepository maquinaContratoRepository;
     private final OrdemServicoChecklistAtivoService ordemServicoChecklistAtivoService;
+    private final MaquinaHistoricoManutencaoRepository maquinaHistoricoManutencaoRepository;
+    private final MaquinaChecklistManutencaoService maquinaChecklistManutencaoService;
 
     public OrdemServicoServiceImpl(
             OrdemServicoRepository ordemServicoRepository,
@@ -43,7 +48,9 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
             MaquinaSoftwareInstaladoRepository maquinaSoftwareInstaladoRepository,
             ContratoRepository contratoRepository,
             MaquinaContratoRepository maquinaContratoRepository,
-            OrdemServicoChecklistAtivoService ordemServicoChecklistAtivoService) {
+            OrdemServicoChecklistAtivoService ordemServicoChecklistAtivoService,
+            MaquinaHistoricoManutencaoRepository maquinaHistoricoManutencaoRepository,
+            MaquinaChecklistManutencaoService maquinaChecklistManutencaoService) {
         this.ordemServicoRepository = ordemServicoRepository;
         this.clienteRepository = clienteRepository;
         this.tecnicoRepository = tecnicoRepository;
@@ -51,6 +58,8 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         this.contratoRepository = contratoRepository;
         this.maquinaContratoRepository = maquinaContratoRepository;
         this.ordemServicoChecklistAtivoService = ordemServicoChecklistAtivoService;
+        this.maquinaHistoricoManutencaoRepository = maquinaHistoricoManutencaoRepository;
+        this.maquinaChecklistManutencaoService = maquinaChecklistManutencaoService;
     }
 
     @Override
@@ -218,6 +227,7 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
 
         OrdemServico ordemServicoSalva = ordemServicoRepository.save(entidade);
         sincronizarChecklistSeInformado(dto, ordemServicoSalva);
+        criarHistoricoManutencaoVinculado(ordemServicoSalva);
         return ordemServicoSalva;
     }
 
@@ -335,11 +345,37 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
 
         entidade.setStatus(dto.getStatus());
         entidade.setCriticidade(dto.getCriticidade());
+        entidade.setTipoOrdem(dto.getTipoOrdem());
         entidade.setDataAbertura(dto.getDataAbertura());
         entidade.setDataAgendamento(dto.getDataAgendamento());
         entidade.setDataInicioExecucao(dto.getDataInicioExecucao());
         entidade.setDataFimExecucao(dto.getDataFimExecucao());
         entidade.setObservacaoGeral(dto.getObservacaoGeral());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MaquinaChecklistManutencaoResponseDTO> listarChecklistMaquina(Integer id) {
+        requireId(id, "Id da ordem de servico e obrigatorio");
+        return maquinaChecklistManutencaoService.listarPorOrdemServico(id);
+    }
+
+    private void criarHistoricoManutencaoVinculado(OrdemServico os) {
+        MaquinaContrato maquinaContrato = os.getMaquinaContrato();
+        if (maquinaContrato == null) {
+            return;
+        }
+
+        MaquinaHistoricoManutencao historico = new MaquinaHistoricoManutencao();
+        historico.setOrdemServico(os);
+        historico.setMaquinaContrato(maquinaContrato);
+        historico.setSoftwareInstalado(os.getSoftwareInstalado());
+        historico.setStatus(os.getStatus());
+        historico.setCriticidade(os.getCriticidade());
+        historico.setDataAgendamento(os.getDataAgendamento());
+        MaquinaHistoricoManutencao historicoSalvo = maquinaHistoricoManutencaoRepository.save(historico);
+
+        os.setHistoricoManutencao(historicoSalvo);
     }
 
     private void sincronizarChecklistSeInformado(OrdemServicoCreateDTO dto, OrdemServico entidade) {

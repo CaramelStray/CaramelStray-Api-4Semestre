@@ -13,6 +13,7 @@ public class OrdemServicoDadosBasicosResponseDTO {
     private Integer numeroContrato;
     private String status;
     private String criticidade;
+    private String tipoOrdem;
 
     public static OrdemServicoDadosBasicosResponseDTO fromEntity(OrdemServico ordemServico) {
         OrdemServicoDadosBasicosResponseDTO dto = new OrdemServicoDadosBasicosResponseDTO();
@@ -35,6 +36,7 @@ public class OrdemServicoDadosBasicosResponseDTO {
 
         dto.setStatus(ordemServico.getStatus());
         dto.setCriticidade(ordemServico.getCriticidade());
+        dto.setTipoOrdem(ordemServico.getTipoOrdem());
 
         return dto;
     }
@@ -109,5 +111,13 @@ public class OrdemServicoDadosBasicosResponseDTO {
 
     public void setCriticidade(String criticidade) {
         this.criticidade = criticidade;
+    }
+
+    public String getTipoOrdem() {
+        return tipoOrdem;
+    }
+
+    public void setTipoOrdem(String tipoOrdem) {
+        this.tipoOrdem = tipoOrdem;
     }
 }

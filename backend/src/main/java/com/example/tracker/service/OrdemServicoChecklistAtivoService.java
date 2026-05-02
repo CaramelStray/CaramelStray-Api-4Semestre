@@ -30,5 +30,9 @@ public interface OrdemServicoChecklistAtivoService {
             OrdemServicoChecklistAtivoCheckinDTO dto,
             String emailUsuario);
 
+    OrdemServicoChecklistAtivo marcarLevado(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario);
+
+    OrdemServicoChecklistAtivo marcarDevolvido(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario);
+
     void remover(Integer codigoOrdemServico, Integer codigoItem);
 }

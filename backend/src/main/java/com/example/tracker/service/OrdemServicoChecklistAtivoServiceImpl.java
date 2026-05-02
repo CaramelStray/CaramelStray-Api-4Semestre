@@ -207,6 +207,39 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
 
     @Override
     @Transactional
+    public OrdemServicoChecklistAtivo marcarLevado(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario) {
+        Integer codigoOs = requireId(codigoOrdemServico, "Codigo da ordem de servico e obrigatorio");
+        Integer codigoIt = requireId(codigoItem, "Codigo do item e obrigatorio");
+        OrdemServico ordemServico = buscarOrdemServico(codigoOs);
+        validarTecnicoPodeAlterarOrdem(ordemServico, emailUsuario);
+        validarOrdemEditavel(ordemServico);
+        OrdemServicoChecklistAtivo item = checklistRepository
+                .findByCodigoAndOrdemServicoCodigo(codigoIt, codigoOs)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item do checklist nao encontrado"));
+        item.setLevado(true);
+        return checklistRepository.save(item);
+    }
+
+    @Override
+    @Transactional
+    public OrdemServicoChecklistAtivo marcarDevolvido(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario) {
+        Integer codigoOs = requireId(codigoOrdemServico, "Codigo da ordem de servico e obrigatorio");
+        Integer codigoIt = requireId(codigoItem, "Codigo do item e obrigatorio");
+        OrdemServico ordemServico = buscarOrdemServico(codigoOs);
+        validarTecnicoPodeAlterarOrdem(ordemServico, emailUsuario);
+        validarOrdemEditavel(ordemServico);
+        OrdemServicoChecklistAtivo item = checklistRepository
+                .findByCodigoAndOrdemServicoCodigo(codigoIt, codigoOs)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item do checklist nao encontrado"));
+        if (!Boolean.TRUE.equals(item.getLevado())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O ativo precisa ser levado antes de ser devolvido");
+        }
+        item.setDevolvido(true);
+        return checklistRepository.save(item);
+    }
+
+    @Override
+    @Transactional
     public void remover(Integer codigoOrdemServico, Integer codigoItem) {
         OrdemServicoChecklistAtivo item = buscarItem(codigoOrdemServico, codigoItem);
         checklistRepository.delete(item);

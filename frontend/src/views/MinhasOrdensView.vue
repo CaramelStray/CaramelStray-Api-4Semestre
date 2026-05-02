@@ -26,23 +26,22 @@ import {
 
 import {
   ordemServicoService,
-  type OrdemServicoResponseDTO,
+  type TecnicosOrdensResponseDTO,
 } from '@/services/ordemServicoService'
 
 const router = useRouter()
 
-const ordens = ref<OrdemServicoResponseDTO[]>([])
+const ordens = ref<TecnicosOrdensResponseDTO[]>([])
 const searchQuery = ref('')
 const loading = ref(false)
 const erro = ref('')
 
-const codigoTecnicoLogado = Number(localStorage.getItem('codigo_funcionario') ?? 1)
-
 const ordensFiltradas = computed(() => {
   const q = searchQuery.value.toLowerCase()
 
-  return ordens.value.filter((ordem) =>
+  return ordens.value.filter((ordem: TecnicosOrdensResponseDTO) =>
     ordem.codigo.toString().includes(q) ||
+    ordem.nomeCliente?.toLowerCase().includes(q) ||
     ordem.status?.toLowerCase().includes(q) ||
     ordem.criticidade?.toLowerCase().includes(q) ||
     formatDate(ordem.dataAbertura).toLowerCase().includes(q) ||
@@ -115,7 +114,7 @@ async function carregarOrdensDoTecnico() {
   erro.value = ''
 
   try {
-    ordens.value = await ordemServicoService.buscarPorFuncionario(codigoTecnicoLogado)
+    ordens.value = await ordemServicoService.tecnicosOrdens()
   } catch (error: any) {
     erro.value = error?.message ?? 'Erro ao carregar ordens do técnico.'
   } finally {
@@ -140,7 +139,7 @@ onMounted(carregarOrdensDoTecnico)
 
       <div class="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
         <UserCheck class="w-4 h-4 text-blue-400" />
-        Técnico #{{ codigoTecnicoLogado }}
+        Minhas ordens
       </div>
     </div>
 
@@ -209,12 +208,11 @@ onMounted(carregarOrdensDoTecnico)
         <TableHeader>
           <TableRow class="hover:bg-transparent border-border text-xs uppercase font-bold text-muted-foreground">
             <TableHead class="pl-6 h-12"># Ordem</TableHead>
+            <TableHead class="h-12">Cliente</TableHead>
             <TableHead class="h-12">Criticidade</TableHead>
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Data de abertura</TableHead>
             <TableHead class="h-12">Data de agendamento</TableHead>
-            <TableHead class="h-12">Início execução</TableHead>
-            <TableHead class="h-12">Fim execução</TableHead>
             <TableHead class="text-right pr-6 h-12">Visualizar</TableHead>
           </TableRow>
         </TableHeader>
@@ -227,6 +225,10 @@ onMounted(carregarOrdensDoTecnico)
           >
             <TableCell class="pl-6 py-3 font-mono text-sm font-medium text-foreground">
               #{{ ordem.codigo }}
+            </TableCell>
+
+            <TableCell class="text-sm text-foreground">
+              {{ ordem.nomeCliente ?? '—' }}
             </TableCell>
 
             <TableCell>
@@ -252,20 +254,12 @@ onMounted(carregarOrdensDoTecnico)
               {{ formatDate(ordem.dataAgendamento) }}
             </TableCell>
 
-            <TableCell class="text-sm text-muted-foreground">
-              {{ formatDate(ordem.dataInicioExecucao) }}
-            </TableCell>
-
-            <TableCell class="text-sm text-muted-foreground">
-              {{ formatDate(ordem.dataFimExecucao) }}
-            </TableCell>
-
             <TableCell class="text-right pr-6">
               <Button
                 variant="ghost"
                 size="icon"
                 class="h-9 w-9 text-muted-foreground hover:text-white transition-colors"
-                @click="router.push(`/ordens/${ordem.codigo}`)"
+                @click="router.push(`/minhas-ordens/${ordem.codigo}`)"
               >
                 <Eye class="size-5" />
               </Button>
@@ -273,7 +267,7 @@ onMounted(carregarOrdensDoTecnico)
           </TableRow>
 
           <TableRow v-if="ordensFiltradas.length === 0">
-            <TableCell colspan="8" class="py-12 text-center text-muted-foreground">
+            <TableCell colspan="7" class="py-12 text-center text-muted-foreground">
               Nenhuma ordem encontrada para este técnico.
             </TableCell>
           </TableRow>

@@ -749,7 +749,8 @@ CREATE TABLE public.tb_srv_maquina_historico_manutencao (
     codigo integer NOT NULL,
     codigo_maquina_contrato integer NOT NULL,
     codigo_software_instalado integer,
-    codigo_tipo_manutencao integer NOT NULL,
+    codigo_tipo_manutencao integer,
+    codigo_ordem_servico integer,
     status character varying(100),
     criticidade character varying(50),
     vencimento timestamp without time zone,
@@ -874,6 +875,7 @@ CREATE TABLE public.tb_srv_ordem_servico (
     codigo_maquina_contrato integer NOT NULL,
     status character varying(100),
     criticidade character varying(50),
+    tipo_ordem character varying(50),
     data_abertura timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     data_agendamento timestamp without time zone,
     data_inicio_execucao timestamp without time zone,
@@ -2370,6 +2372,14 @@ ALTER TABLE ONLY public.tb_srv_maquina_historico_manutencao
 
 ALTER TABLE ONLY public.tb_srv_maquina_historico_manutencao
     ADD CONSTRAINT fk_historico_manutencao_tipo FOREIGN KEY (codigo_tipo_manutencao) REFERENCES public.tb_cad_tipo_manutencao(codigo) ON DELETE CASCADE;
+
+
+--
+-- Name: tb_srv_maquina_historico_manutencao fk_historico_manutencao_ordem_servico; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_maquina_historico_manutencao
+    ADD CONSTRAINT fk_historico_manutencao_ordem_servico FOREIGN KEY (codigo_ordem_servico) REFERENCES public.tb_srv_ordem_servico(codigo) ON DELETE CASCADE;
 
 
 --

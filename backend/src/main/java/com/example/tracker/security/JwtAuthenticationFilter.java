@@ -36,11 +36,12 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                         .parseToken(authorization.replaceAll("Bearer ", ""));
                 SecurityContextHolder.getContext().setAuthentication(credentials);
             }
-            chain.doFilter(request, response);
         } catch (Throwable t) {
             HttpServletResponse servletResponse = (HttpServletResponse) response;
             servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, t.getMessage());
+            return;
         }
+        chain.doFilter(request, response);
     }
 
 }

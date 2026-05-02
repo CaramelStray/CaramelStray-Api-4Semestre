@@ -1,8 +1,10 @@
 package com.example.tracker.dto.ordemservico;
 
+import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
 import com.example.tracker.entity.CatalogoMaquina;
 import com.example.tracker.entity.Contrato;
 import com.example.tracker.entity.MaquinaContrato;
+import com.example.tracker.entity.MaquinaHistoricoManutencao;
 import com.example.tracker.entity.OrdemServico;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +15,7 @@ public class TecnicoOrdemDetalhesResponseDTO {
     private Integer codigo;
     private String status;
     private String criticidade;
+    private String tipoOrdem;
     private LocalDateTime dataAbertura;
     private LocalDateTime dataAgendamento;
     private LocalDateTime dataInicioExecucao;
@@ -40,6 +43,7 @@ public class TecnicoOrdemDetalhesResponseDTO {
     private String manutencaoFeitaMaquina;
 
     private List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos;
+    private List<MaquinaChecklistManutencaoResponseDTO> checklistMaquina;
 
     public static TecnicoOrdemDetalhesResponseDTO fromEntity(OrdemServico os) {
         TecnicoOrdemDetalhesResponseDTO dto = new TecnicoOrdemDetalhesResponseDTO();
@@ -47,6 +51,7 @@ public class TecnicoOrdemDetalhesResponseDTO {
         dto.setCodigo(os.getCodigo());
         dto.setStatus(os.getStatus());
         dto.setCriticidade(os.getCriticidade());
+        dto.setTipoOrdem(os.getTipoOrdem());
         dto.setDataAbertura(os.getDataAbertura());
         dto.setDataAgendamento(os.getDataAgendamento());
         dto.setDataInicioExecucao(os.getDataInicioExecucao());
@@ -92,6 +97,14 @@ public class TecnicoOrdemDetalhesResponseDTO {
                         .collect(Collectors.toList());
         dto.setChecklistAtivos(checklist);
 
+        MaquinaHistoricoManutencao historico = os.getHistoricoManutencao();
+        List<MaquinaChecklistManutencaoResponseDTO> checklistMaquina = historico == null || historico.getChecklistItems() == null
+                ? List.of()
+                : historico.getChecklistItems().stream()
+                        .map(MaquinaChecklistManutencaoResponseDTO::fromEntity)
+                        .collect(Collectors.toList());
+        dto.setChecklistMaquina(checklistMaquina);
+
         return dto;
     }
 
@@ -103,6 +116,9 @@ public class TecnicoOrdemDetalhesResponseDTO {
 
     public String getCriticidade() { return criticidade; }
     public void setCriticidade(String criticidade) { this.criticidade = criticidade; }
+
+    public String getTipoOrdem() { return tipoOrdem; }
+    public void setTipoOrdem(String tipoOrdem) { this.tipoOrdem = tipoOrdem; }
 
     public LocalDateTime getDataAbertura() { return dataAbertura; }
     public void setDataAbertura(LocalDateTime dataAbertura) { this.dataAbertura = dataAbertura; }
@@ -172,4 +188,7 @@ public class TecnicoOrdemDetalhesResponseDTO {
 
     public List<OrdemServicoChecklistAtivoResponseDTO> getChecklistAtivos() { return checklistAtivos; }
     public void setChecklistAtivos(List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos) { this.checklistAtivos = checklistAtivos; }
+
+    public List<MaquinaChecklistManutencaoResponseDTO> getChecklistMaquina() { return checklistMaquina; }
+    public void setChecklistMaquina(List<MaquinaChecklistManutencaoResponseDTO> checklistMaquina) { this.checklistMaquina = checklistMaquina; }
 }

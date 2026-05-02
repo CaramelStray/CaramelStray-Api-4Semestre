@@ -1,5 +1,6 @@
 package com.example.tracker.controller;
 
+import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoAdicionarDTO;
 import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
 import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoUpdateDTO;
 import com.example.tracker.entity.MaquinaChecklistManutencao;
@@ -38,6 +39,16 @@ public class MaquinaChecklistManutencaoController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<MaquinaChecklistManutencaoResponseDTO> adicionarItem(
+            @PathVariable Integer codigoHistoricoManutencao,
+            @Valid @RequestBody MaquinaChecklistManutencaoAdicionarDTO dto) {
+        MaquinaChecklistManutencao item = service.adicionarItem(codigoHistoricoManutencao, dto.getCodigoTarefa());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(MaquinaChecklistManutencaoResponseDTO.fromEntity(item));
     }
 
     @PostMapping("/gerar")

@@ -1,5 +1,6 @@
 package com.example.tracker.controller;
 
+import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicoOrdemDetalhesResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
@@ -184,6 +185,13 @@ public class OrdemServicoController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/checklist-maquina")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<MaquinaChecklistManutencaoResponseDTO>> listarChecklistMaquina(
+            @PathVariable Integer id) {
+        return ResponseEntity.ok(ordemServicoService.listarChecklistMaquina(id));
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<OrdemServicoResponseDTO> atualizarOrdemServico(
@@ -200,7 +208,7 @@ public class OrdemServicoController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/minhas-ordens")
+    @GetMapping("/tecnicos-ordens")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
     public ResponseEntity<List<TecnicosOrdensResponseDTO>> buscarMinhasOrdens(Authentication authentication) {
         return ResponseEntity.ok(ordemServicoService.buscarMinhasOrdens(authentication.getName()));
@@ -239,6 +247,28 @@ public class OrdemServicoController {
                 codigoItem,
                 dto,
                 authentication.getName());
+        return ResponseEntity.ok(OrdemServicoChecklistAtivoResponseDTO.fromEntity(item));
+    }
+
+    @PatchMapping("/minhas-ordens/{id}/checklist-ativos/{codigoItem}/levar")
+    @PreAuthorize("hasAuthority('ROLE_TECNICO')")
+    public ResponseEntity<OrdemServicoChecklistAtivoResponseDTO> marcarLevado(
+            @PathVariable Integer id,
+            @PathVariable Integer codigoItem,
+            Authentication authentication) {
+        OrdemServicoChecklistAtivo item = ordemServicoChecklistAtivoService
+                .marcarLevado(id, codigoItem, authentication.getName());
+        return ResponseEntity.ok(OrdemServicoChecklistAtivoResponseDTO.fromEntity(item));
+    }
+
+    @PatchMapping("/minhas-ordens/{id}/checklist-ativos/{codigoItem}/devolver")
+    @PreAuthorize("hasAuthority('ROLE_TECNICO')")
+    public ResponseEntity<OrdemServicoChecklistAtivoResponseDTO> marcarDevolvido(
+            @PathVariable Integer id,
+            @PathVariable Integer codigoItem,
+            Authentication authentication) {
+        OrdemServicoChecklistAtivo item = ordemServicoChecklistAtivoService
+                .marcarDevolvido(id, codigoItem, authentication.getName());
         return ResponseEntity.ok(OrdemServicoChecklistAtivoResponseDTO.fromEntity(item));
     }
 }

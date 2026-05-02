@@ -49,17 +49,17 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 | 2 | Alta | Como técnico, quero registrar os dados da execução da manutenção para documentar o que foi realizado na visita | 30 | 2 |
 | 3 | Alta | Como gestor, quero definir a criticidade de uma ordem de manutenção para organizar os atendimentos por impacto | 40 | 2 |
 | 4 | Alta | Como gestor, quero registrar viagens de manutenção associadas a ordens para planejar o deslocamento dos técnicos | 50 | 2 |
-| 5 | Alta | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | 50 | 3 |
-| 6 | Alta | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | 40 | 3 |
+| 5 | Alta | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | 50 | 2 |
+| 6 | Alta | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | 40 | 2 |
 | 7 | Média | Como gestor, quero cadastrar sistemas instalados nos clientes para registrar os equipamentos sob contrato de manutenção | 40 | 1 |
 | 8 | Média | Como gestor, quero cadastrar contratos de manutenção vinculados a clientes e sistemas para definir intervalos e SLAs de atendimento | 40 | 1 |
-| 9 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
-| 10 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 60 | 2 |
-| 11 | Média | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | 40 | 2 |
-| 12 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 40 | 2 |
-| 13 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 40 | 3 |
-| 14 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
-| 15| Baixa | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 60 | 2 |
+| 9 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 40 | 1 |
+| 10 | Média | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | 40 | 2 |
+| 11 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 40 | 2 |
+| 12 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 2 |
+| 13 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 60 | 3 |
+| 14 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 40 | 3 |
+| 15| Baixa | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 60 | 3 |
 | 16 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 40 | 1 |
 | 17 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 40 | 1 |
 | 18 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 60 | 3 |
@@ -72,7 +72,7 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 | Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Site Tracker                                  |
 | --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------- |----------------------------------------------- |
 | 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Jira](https://patriciamoraesviegas.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZDkzMDgzMDkzMzZiNGU2NTk0NDgwZjZhODZjNGRlOGQiLCJwIjoiaiJ9)  |[Sprint 1 entrega](http://tracker.pedrohenribeiro.com/) |
-| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](#) |[Sprint 2 Tasks](#)|  |
+| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](documentacao/sprints/sprint2) |[Sprint 2 Tasks](#)|  |
 | 🔖 **SPRINT 3** | 11/05 - 31/05 | [Em processo...](#)| [Em processo...](#) ||
 | ⚡️ **feira de soluções** |  |  |  ||
 

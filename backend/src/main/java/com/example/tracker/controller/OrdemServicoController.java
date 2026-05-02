@@ -1,7 +1,7 @@
 package com.example.tracker.controller;
 
-import com.example.tracker.dto.ordemservico.MinhaOrdemDetalhesResponseDTO;
-import com.example.tracker.dto.ordemservico.MinhasOrdensResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicoOrdemDetalhesResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicoOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCheckinDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
@@ -200,21 +200,21 @@ public class OrdemServicoController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/minhas-ordens")
+    @GetMapping("/tecnico-ordens")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
-    public ResponseEntity<List<MinhasOrdensResponseDTO>> buscarMinhasOrdens(Authentication authentication) {
-        return ResponseEntity.ok(ordemServicoService.buscarMinhasOrdens(authentication.getName()));
+    public ResponseEntity<List<TecnicoOrdensResponseDTO>> buscarTecnicoOrdens(Authentication authentication) {
+        return ResponseEntity.ok(ordemServicoService.buscarTecnicoOrdens(authentication.getName()));
     }
 
-    @GetMapping("/minhas-ordens/{id}")
+    @GetMapping("/tecnico-ordens/{id}")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
-    public ResponseEntity<MinhaOrdemDetalhesResponseDTO> buscarMinhaOrdem(
+    public ResponseEntity<TecnicoOrdemDetalhesResponseDTO> buscarTecnicoOrdem(
             @PathVariable Integer id, Authentication authentication) {
-        OrdemServico ordemServico = ordemServicoService.buscarMinhaOrdem(id, authentication.getName());
-        return ResponseEntity.ok(MinhaOrdemDetalhesResponseDTO.fromEntity(ordemServico));
+        OrdemServico ordemServico = ordemServicoService.buscarTecnicoOrdem(id, authentication.getName());
+        return ResponseEntity.ok(TecnicoOrdemDetalhesResponseDTO.fromEntity(ordemServico));
     }
 
-    @GetMapping("/minhas-ordens/{id}/checklist-ativos/intervencao")
+    @GetMapping("/tecnico-ordens/{id}/checklist-ativos/intervencao")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
     public ResponseEntity<List<OrdemServicoChecklistAtivoResponseDTO>> listarChecklistAtivosIntervencao(
             @PathVariable Integer id,
@@ -227,7 +227,7 @@ public class OrdemServicoController {
         return ResponseEntity.ok(itens);
     }
 
-    @PatchMapping("/minhas-ordens/{id}/checklist-ativos/{codigoItem}/checkin")
+    @PatchMapping("/tecnico-ordens/{id}/checklist-ativos/{codigoItem}/checkin")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
     public ResponseEntity<OrdemServicoChecklistAtivoResponseDTO> registrarCheckinChecklistAtivo(
             @PathVariable Integer id,

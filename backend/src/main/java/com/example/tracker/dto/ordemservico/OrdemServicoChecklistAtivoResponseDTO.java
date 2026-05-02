@@ -3,6 +3,7 @@ package com.example.tracker.dto.ordemservico;
 import com.example.tracker.entity.Ativo;
 import com.example.tracker.entity.CatalogoAtivo;
 import com.example.tracker.entity.OrdemServicoChecklistAtivo;
+import java.time.LocalDateTime;
 
 public class OrdemServicoChecklistAtivoResponseDTO {
 
@@ -15,12 +16,16 @@ public class OrdemServicoChecklistAtivoResponseDTO {
     private String descricaoProduto;
     private String modelo;
     private String marca;
+    private String tipo;
     private String numeroSerie;
     private String lote;
     private String statusAtivo;
     private Boolean levado;
     private Boolean devolvido;
     private String observacao;
+    private String statusIntervencao;
+    private LocalDateTime dataIntervencao;
+    private String observacaoIntervencao;
 
     public static OrdemServicoChecklistAtivoResponseDTO fromEntity(OrdemServicoChecklistAtivo item) {
         OrdemServicoChecklistAtivoResponseDTO dto = new OrdemServicoChecklistAtivoResponseDTO();
@@ -47,6 +52,7 @@ public class OrdemServicoChecklistAtivoResponseDTO {
                 dto.setDescricaoProduto(catalogo.getDescricaoProduto());
                 dto.setModelo(catalogo.getModelo());
                 dto.setMarca(catalogo.getMarca());
+                dto.setTipo(catalogo.getTipo());
             }
         }
 
@@ -54,6 +60,9 @@ public class OrdemServicoChecklistAtivoResponseDTO {
         dto.setLevado(Boolean.TRUE.equals(item.getLevado()));
         dto.setDevolvido(Boolean.TRUE.equals(item.getDevolvido()));
         dto.setObservacao(item.getObservacao());
+        dto.setStatusIntervencao(item.getStatusIntervencao());
+        dto.setDataIntervencao(item.getDataIntervencao());
+        dto.setObservacaoIntervencao(item.getObservacaoIntervencao());
         return dto;
     }
 
@@ -129,6 +138,14 @@ public class OrdemServicoChecklistAtivoResponseDTO {
         this.marca = marca;
     }
 
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
     public String getNumeroSerie() {
         return numeroSerie;
     }
@@ -175,5 +192,29 @@ public class OrdemServicoChecklistAtivoResponseDTO {
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public String getStatusIntervencao() {
+        return statusIntervencao;
+    }
+
+    public void setStatusIntervencao(String statusIntervencao) {
+        this.statusIntervencao = statusIntervencao;
+    }
+
+    public LocalDateTime getDataIntervencao() {
+        return dataIntervencao;
+    }
+
+    public void setDataIntervencao(LocalDateTime dataIntervencao) {
+        this.dataIntervencao = dataIntervencao;
+    }
+
+    public String getObservacaoIntervencao() {
+        return observacaoIntervencao;
+    }
+
+    public void setObservacaoIntervencao(String observacaoIntervencao) {
+        this.observacaoIntervencao = observacaoIntervencao;
     }
 }

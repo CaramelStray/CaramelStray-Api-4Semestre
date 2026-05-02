@@ -19,5 +19,6 @@ public class CatalogoAtivoCreateDTO {
 
     private String especificacao;
 
+    @NotBlank(message = "O tipo do ativo é obrigatório.")
     private String tipo;
 }

@@ -3,7 +3,7 @@
     <header class="page-header">
       <div class="header-left">
         <span class="divider"></span>
-        <h1>Relatório de Manutenções</h1>
+        <h1>Histórico de Manutenções</h1>
       </div>
     </header>
 
@@ -58,7 +58,7 @@
         />
       </div>
 
-      <button class="pdf-button">
+      <button class="pdf-button" @click="gerarRelatorioGeral">
         <span>＋</span>
         GERAR PDF
       </button>
@@ -76,6 +76,7 @@
             <th>STATUS</th>
             <th>VENCIMENTO</th>
             <th>OBSERVAÇÃO</th>
+            <th>AÇÕES</th>
           </tr>
         </thead>
 
@@ -94,6 +95,11 @@
             </td>
             <td>{{ formatarData(item.vencimento) }}</td>
             <td>{{ item.observacaoGeral ?? '—' }}</td>
+            <td>
+              <button class="btn-pdf" @click="gerarPdfItem(item)">
+                📄 PDF
+              </button>
+            </td>
           </tr>
 
           <tr v-if="vencidasFiltradas.length === 0">
@@ -115,6 +121,7 @@
             <th>STATUS</th>
             <th>VENCIMENTO</th>
             <th>OBSERVAÇÃO</th>
+            <th>AÇÕES</th>
           </tr>
         </thead>
 
@@ -133,6 +140,11 @@
             </td>
             <td>{{ formatarData(item.vencimento) }}</td>
             <td>{{ item.observacaoGeral ?? '—' }}</td>
+            <td>
+              <button class="btn-pdf" @click="gerarPdfItem(item)">
+                📄 PDF
+              </button>
+            </td>
           </tr>
 
           <tr v-if="proximasFiltradas.length === 0">
@@ -205,6 +217,42 @@ function classeCriticidade(criticidade: string) {
   if (criticidade === 'ALTA') return 'danger'
   if (criticidade === 'MEDIA') return 'warning'
   return 'success'
+}
+
+function gerarPdfItem(item: ManutencaoRelatorioDTO) {
+  const token = localStorage.getItem('token')
+  const url = `http://localhost:8080/maquinas-historicos-manutencao/relatorio/pdf?codigoMaquinaContrato=${item.codigoMaquinaContrato ?? ''}`
+
+  fetch(url, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then(res => res.blob())
+    .then(blob => {
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = `relatorio-manutencao-${item.codigo}.pdf`
+      link.click()
+    })
+    .catch(() => alert('Erro ao gerar PDF'))
+}
+
+function gerarRelatorioGeral() {
+  const token = localStorage.getItem('token')
+
+  fetch('http://localhost:8080/maquinas-historicos-manutencao/relatorio/pdf', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then(res => {
+      if (!res.ok) throw new Error('Erro ao gerar PDF')
+      return res.blob()
+    })
+    .then(blob => {
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = 'relatorio-manutencoes.pdf'
+      link.click()
+    })
+    .catch(() => alert('Erro ao gerar relatório PDF'))
 }
 </script>
 
@@ -405,5 +453,21 @@ tbody tr:hover {
 
 .feedback.erro {
   color: #ef4444;
+}
+.btn-pdf {
+  background: transparent;
+  border: 1px solid #243755;
+  color: #8fb0dc;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-pdf:hover {
+  background: #1e3a5f;
+  color: #dbeafe;
+  border-color: #3b82f6;
 }
 </style>

@@ -12,7 +12,7 @@
 
 ## Gráfico
 
-![Burndown Chart Sprint 2](assets/burndown_chart.png)
+![Burndown Chart Sprint 2](../assets/burndown_chart.png)
 
 > 💡 A linha **vermelha** mostra o progresso real. A linha **cinza tracejada** é o ritmo ideal.
 

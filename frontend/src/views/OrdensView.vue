@@ -8,7 +8,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil, X,
+  ClipboardList, Clock, CheckCircle2, AlertTriangle, Search, Plus, Eye, Pencil, X, Wrench,
 } from 'lucide-vue-next'
 import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
 import { clienteService } from '@/services/clienteService'
@@ -57,8 +57,13 @@ const stats = computed(() => [
   },
 ])
 
+const ordensInstalacaoPendentes = computed(() =>
+  ordens.value.filter(o => o.tipoOrdem === 'INSTALACAO' && o.status === 'ABERTA')
+)
+
 const filteredOrdens = computed(() =>
   ordens.value.filter(o => {
+    if (o.tipoOrdem === 'INSTALACAO' && o.status === 'ABERTA') return false
     const nomeCliente = clienteMap.value[o.codigoCliente]?.toLowerCase() ?? ''
     const nomeTecnico = o.codigoFuncionario
       ? tecnicoMap.value[o.codigoFuncionario]?.toLowerCase() ?? ''
@@ -166,6 +171,40 @@ onMounted(carregarOrdens)
       </Button>
     </div>
 
+    <!-- Ordens de Instalação Pendentes -->
+    <div v-if="ordensInstalacaoPendentes.length > 0" class="rounded-xl overflow-hidden border-2 border-amber-600 dark:border-amber-500/50">
+      <div class="flex items-center gap-3 px-5 py-4 border-b border-amber-700 dark:border-amber-500/30 bg-amber-600 dark:bg-amber-500/20">
+        <AlertTriangle class="w-5 h-5 text-white dark:text-amber-400 shrink-0 animate-pulse" />
+        <div class="flex-1">
+          <p class="text-sm font-bold text-white dark:text-amber-300">Ordens de Instalação Pendentes</p>
+          <p class="text-xs text-white/90 dark:text-amber-400/70">Estas ordens foram geradas automaticamente ao criar o contrato e precisam ser preenchidas.</p>
+        </div>
+        <span class="text-xs font-bold text-white dark:text-amber-300 bg-amber-700 dark:bg-amber-500/30 border border-amber-500 dark:border-amber-500/40 px-2.5 py-1 rounded-full">
+          {{ ordensInstalacaoPendentes.length }} pendente{{ ordensInstalacaoPendentes.length > 1 ? 's' : '' }}
+        </span>
+      </div>
+      <div class="divide-y divide-amber-200 dark:divide-amber-500/10 bg-amber-50 dark:bg-amber-500/5">
+        <div
+          v-for="o in ordensInstalacaoPendentes"
+          :key="o.codigo"
+          class="flex items-center gap-4 px-5 py-3 hover:bg-amber-100 dark:hover:bg-amber-500/10 transition-colors"
+        >
+          <Wrench class="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
+          <span class="font-mono text-sm font-medium text-amber-900 dark:text-foreground w-12">#{{ o.codigo }}</span>
+          <span class="text-sm text-amber-800 dark:text-foreground/70 flex-1 font-medium">{{ clienteMap[o.codigoCliente] ?? '—' }}</span>
+          <span class="text-xs text-white dark:text-amber-400 font-semibold bg-amber-600 dark:bg-amber-500/15 border border-amber-600 dark:border-amber-500/30 px-2 py-0.5 rounded-full">Instalação · Aguardando preenchimento</span>
+          <div class="flex items-center gap-1 shrink-0">
+            <Button variant="ghost" size="icon" class="h-8 w-8 text-amber-700 dark:text-muted-foreground hover:text-amber-900 dark:hover:text-foreground transition-colors" @click="router.push(`/ordens/${o.codigo}`)">
+              <Eye class="size-4" />
+            </Button>
+            <Button variant="ghost" size="icon" class="h-8 w-8 text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-500/10" @click="abrirEdicaoOrdem(o)">
+              <Pencil class="size-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Tabela -->
     <div class="rounded-md border border-border bg-sidebar overflow-hidden">
       <div class="p-4 border-b border-border bg-muted/5">
@@ -192,8 +231,28 @@ onMounted(carregarOrdens)
             :key="o.codigo"
             class="border-border hover:bg-muted/30 transition-colors even:bg-muted/50"
           >
-            <TableCell class="pl-6 py-3 font-mono text-sm font-medium text-foreground">
-              #{{ o.codigo }}
+            <TableCell class="pl-6 py-3">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-mono text-sm font-medium text-foreground">#{{ o.codigo }}</span>
+                <span
+                  v-if="o.tipoOrdem === 'INSTALACAO'"
+                  class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-500/15 border border-blue-500/30 text-blue-700 dark:text-blue-400"
+                >
+                  <Wrench class="size-2.5" /> Instalação
+                </span>
+                <span
+                  v-else-if="o.tipoOrdem === 'MANUTENCAO_PREVENTIVA'"
+                  class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400"
+                >
+                  <Wrench class="size-2.5" /> Prev.
+                </span>
+                <span
+                  v-else-if="o.tipoOrdem === 'MANUTENCAO_CORRETIVA'"
+                  class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-red-500/15 border border-red-500/30 text-red-700 dark:text-red-400"
+                >
+                  <Wrench class="size-2.5" /> Corr.
+                </span>
+              </div>
             </TableCell>
             <TableCell class="text-sm text-muted-foreground">
               {{ clienteMap[o.codigoCliente] ?? '—' }}

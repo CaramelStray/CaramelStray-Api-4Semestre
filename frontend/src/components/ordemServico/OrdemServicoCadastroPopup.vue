@@ -50,7 +50,6 @@
       <span class="text-sm hidden sm:inline-block">Técnico</span>
     </div>
 
-    <template v-if="!isEditMode">
       <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
 
       <div :class="['flex items-center gap-2 transition-colors', step === 4 ? 'text-blue-400 font-bold' : step > 4 ? 'text-blue-400/60' : 'text-muted-foreground']">
@@ -81,7 +80,6 @@
         </div>
         <span class="text-sm hidden sm:inline-block">Manutenção</span>
       </div>
-    </template>
   </div>
 
   <form @submit="onSubmit">
@@ -182,7 +180,6 @@
               </SelectTrigger>
             </FormControl>
             <SelectContent class="z-[200]">
-              <SelectItem value="INSTALACAO">Instalação</SelectItem>
               <SelectItem value="MANUTENCAO_PREVENTIVA">Manutenção Preventiva</SelectItem>
               <SelectItem value="MANUTENCAO_CORRETIVA">Manutenção Corretiva</SelectItem>
             </SelectContent>
@@ -756,7 +753,7 @@ const props = defineProps<{
 }>()
 
 const isEditMode = computed(() => !!props.initialData)
-const maxStep = computed(() => isEditMode.value ? 3 : 5)
+const maxStep = computed(() => 5)
 
 const emit = defineEmits(['fechar', 'success'])
 
@@ -933,6 +930,16 @@ const popularFormEdicao = async (data: OrdemServicoResponseDTO) => {
     } catch { softwareInstalado.value = null }
     finally { loadingSoftware.value = false }
   }
+
+  try {
+    const itensExistentes = await ordemServicoService.listarChecklistAtivos(data.codigo)
+    checklistItems.value = itensExistentes.map(i => ({
+      codigoAtivo: i.codigoAtivo,
+      descricaoAtivo: i.descricaoAtivo ?? '',
+      descricaoProduto: i.descricaoProduto,
+      numeroSerie: i.numeroSerie,
+    }))
+  } catch { checklistItems.value = [] }
 }
 
 function onClienteChange(val: string) {
@@ -1127,11 +1134,23 @@ const onSubmit = form.handleSubmit(async (values) => {
     }
 
     if (isEditMode.value && props.initialData) {
+      const statusAtual = props.initialData.status
+      const novoStatus = statusAtual === 'ABERTA' ? 'AGENDADO' : statusAtual
+
       await ordemServicoService.atualizar(props.initialData.codigo, {
         ...payload,
-        status: props.initialData.status,
+        status: novoStatus,
         dataAbertura: props.initialData.dataAbertura,
       })
+
+      await ordemServicoService.substituirChecklistAtivos(
+        props.initialData.codigo,
+        checklistItems.value.map(item => ({
+          codigoAtivo: item.codigoAtivo,
+          descricaoAtivo: item.descricaoAtivo || undefined,
+          codigoFuncionario: Number(values.codigoFuncionario) || undefined,
+        }))
+      )
     } else {
       const ordemCriada = await ordemServicoService.criar({
         ...payload,

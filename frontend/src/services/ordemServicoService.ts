@@ -163,6 +163,12 @@ export const ordemServicoService = {
       method: 'DELETE',
     }),
 
+  substituirChecklistAtivos: (id: number, items: Array<{ codigoAtivo: number; codigoFuncionario?: number; descricaoAtivo?: string }>) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO[]>(`/ordens-servico/${id}/checklist-ativos`, {
+      method: 'PUT',
+      body: JSON.stringify(items),
+    }),
+
   tecnicosOrdens: () =>
     apiFetch<TecnicosOrdensResponseDTO[]>('/ordens-servico/tecnicos-ordens'),
 

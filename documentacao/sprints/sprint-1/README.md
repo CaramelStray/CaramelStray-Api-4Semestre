@@ -39,6 +39,7 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 | 4 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
 | 5 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 30 | 1 |
 | 6 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 30 | 1 |
+| 7 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 8 | 1 |
 
 ## 🎓 Equipe <a id="equipe"></a>
 

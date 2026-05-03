@@ -3,7 +3,6 @@
 ## 📑 Índice
 - [O que é o Tracker](#o-que-é-o-tracker)
 - [Módulo de Clientes](#módulo-de-clientes)
-  - [Indicadores e Funcionalidades](#indicadores-e-funcionalidades)
   - [Cadastro de Novo Cliente](#cadastro-de-novo-cliente)
   - [Contatos da Empresa](#contatos-da-empresa)
 - [Módulo de Certificações](#módulo-de-certificações)
@@ -19,8 +18,17 @@
   - [Máquinas Base](#máquinas-base)
   - [Softwares](#softwares-opcional)
 - [Cadastro de Ordem de Serviço](#cadastro-de-ordem-de-serviço)
-- [Seleção de Máquina (Ordem de Serviço)](#seleção-de-máquina-ordem-de-serviço)
-- [Seleção de Técnico (Ordem de Serviço)](#seleção-de-técnico-ordem-de-serviço)
+  - [Seleção de Máquina](#seleção-de-máquina-ordem-de-serviço)
+  - [Seleção de Técnico](#seleção-de-técnico-ordem-de-serviço)
+- [Módulo de Gestão de Ordens](#módulo-de-gestão-de-ordens)
+  - [Visualização Detalhada da Ordem de Serviço](#visualização-detalhada-da-ordem-de-serviço)
+- [Preparação de Viagem – Resumo](#preparação-de-viagem--resumo)
+  - [Detalhes da Viagem](#detalhes-da-viagem-preparação)
+- [Histórico de Manutenções](#histórico-de-manutenções)
+- [Módulo de Ativos](#módulo-de-ativos)
+  - [Cadastro e Edição de Ativos](#cadastro-e-edição-de-ativos)
+- [Módulo de Calendário / Mapa Operacional](#módulo-de-calendário--mapa-operacional)
+- [Módulo Minhas Ordens / Preparação de Viagem](#módulo-minhas-ordens--preparação-de-viagem)
 
 ---
 
@@ -47,17 +55,17 @@ Este módulo permite a gestão centralizada das empresas parceiras e o acompanha
 
 ### Indicadores e Funcionalidades
 
-#### 📊 Indicadores (Dashboard)
+#### Indicadores (Dashboard)
 - **Total de Clientes**: quantidade total cadastrada
 - **Contratos Ativos/Inativos**: status operacional
 - **Alertas Críticos**: pendências ou atrasos relevantes
 
-#### 🔍 Pesquisa e Ações
+#### Pesquisa e Ações
 - Busca por nome da empresa
 - Exportação de relatórios
 - Botão **Novo Cliente** para cadastro
 
-#### 📋 Listagem
+#### Listagem
 - Nome da empresa
 - Localização e abrangência (regional/nacional/internacional)
 - Status (Ativo/Inativo)
@@ -303,3 +311,294 @@ Nesta etapa, é definido o equipamento que será atendido na ordem de serviço.
 
 ![Maquinas Serviço](../assets/ordem_tec.png)
 
+---
+
+# Módulo de Gestão de Ordens
+
+Este módulo permite acompanhar, pesquisar e gerenciar todas as ordens de serviço cadastradas no sistema Tracker.
+
+![Gestão de Ordens](../assets/gestao_ordem.png)
+
+---
+# Visualização Detalhada da Ordem de Serviço
+Esta tela permite consultar todas as informações de uma ordem de serviço, incluindo progresso, cliente, técnico, recursos e checklists.
+
+![ordem detalhada](../assets/ordem_detalhada.png)
+
+---
+
+## Cabeçalho da Ordem
+Exibe número, status, criticidade, cliente, técnico, data de abertura e duração total.
+
+### Ações
+- **Voltar**: retorna para a listagem de ordens
+
+---
+
+## Linha do Tempo Operacional
+Apresenta as etapas cronológicas da ordem: Abertura, Agendamento, Início da Execução e Conclusão.
+
+---
+
+## Dados da Ordem
+Exibe status, criticidade e duração da execução.
+
+---
+
+## Observações
+Área destinada a registros complementares, como descrição do problema, tipo de manutenção e observações técnicas.
+
+---
+
+## Cliente
+Exibe nome da empresa, contato principal e localização.
+
+### Ações
+- **Ver cliente**: acessa o cadastro completo
+
+---
+
+## Técnico Responsável
+Exibe nome, cargo e região do profissional associado à ordem.
+
+### Ações
+- **Ver técnico**: acessa o perfil detalhado
+
+---
+
+## Recursos Vinculados
+Lista contrato, equipamento, software e status operacional dos recursos associados à ordem.
+
+---
+
+## Checklist de Ativos
+Lista os itens físicos utilizados no atendimento, com nome, tipo, marca/modelo, número de série, lote, status de uso e situação de devolução.
+
+---
+
+## Checklist de Manutenção
+Registra as tarefas técnicas executadas. Caso não haja tarefas, o sistema informa ausência de atividades.
+
+---
+
+# Preparação de Viagem – Resumo
+
+Tela para visualizar, acompanhar e acessar detalhes das viagens.
+
+![preparação de viagem](../assets/preparacao_viagem.png)
+
+## Resumo
+- Total de viagens
+- Abertas
+- Em andamento
+- Finalizadas
+
+---
+
+## Busca
+Filtrar por:
+- Código, cliente, técnico, rota ou status
+
+---
+
+## Lista de Viagens
+- Código
+- Cliente
+- Rota
+- Saída prevista
+- Distância
+- Status
+- Ação (detalhes)
+
+---
+
+## Detalhes da Viagem
+
+### Informações Gerais
+- Cliente, rota, status
+- Finalizar preparação
+
+### Deslocamento
+- Distância, tempo, responsável
+- Saída e retorno
+
+### Ordem de Serviço
+- Número, equipamentos, tipo
+
+### Paradas
+- Quantidade e locais
+
+### Equipamentos
+- Itens utilizados
+
+### Rota
+- Mapa (futuro)
+
+### Observações
+- Informações adicionais
+
+---
+
+## Ações
+- Visualizar detalhes
+- Finalizar preparação
+
+---
+
+# Detalhes da Viagem (Preparação)
+
+Esta tela apresenta **todas as informações detalhadas** de uma viagem selecionada, permitindo acompanhamento completo da preparação, deslocamento e execução da ordem de serviço.
+
+![detalhe preparação de viagem](../assets/preparacao_viagem_detalhe.png)
+
+---
+
+# Histórico de Manutenções 
+
+Tela para acompanhar o histórico e status das manutenções.
+
+![historico manutenção](../assets/historico_manutencao.png)
+
+---
+
+## Resumo
+- Total de manutenções
+- Vencidas
+- Próximas do vencimento
+- Concluídas
+
+---
+
+## Busca
+Filtrar por:
+- Código, status ou criticidade
+
+---
+
+## Ação Global
+- **Gerar PDF** do relatório
+
+---
+
+## Tabelas
+
+###  Manutenções Vencidas
+- Lista de manutenções com prazo expirado
+- Mensagem exibida se não houver registros
+
+### Próximas do Vencimento
+- Código
+- Tipo de manutenção
+- Criticidade (Alta, Média, etc.)
+- Status (Aberta, Em execução, Finalizada)
+- Data de vencimento
+- Observações
+- Ação: gerar PDF
+
+---
+
+## Ações
+- Gerar PDF individual
+- Gerar relatório geral
+
+---
+
+## Módulo de Ativos
+Este módulo permite gerenciar o inventário completo de ativos utilizados nas operações técnicas, incluindo ferramentas, equipamentos, dispositivos e responsáveis vinculados.
+
+![Módulo de Ativos](../assets/visu_ativos.png)
+
+### Indicadores e Funcionalidades
+#### Indicadores (Dashboard)
+- **Total de Ativos**: quantidade total de itens cadastrados
+- **Disponíveis**: ativos prontos para uso imediato
+- **Em Manutenção**: itens temporariamente indisponíveis
+- **Em Uso**: ativos vinculados a técnicos ou ordens de serviço
+
+#### Pesquisa e Ações
+- Busca por nome, identificação, técnico responsável, número de série ou lote
+- Filtros por status: Todos, Disponível, Em Manutenção, Em Uso
+- Botão **Novo Ativo** para cadastro
+
+#### Listagem
+- Nome e modelo do produto
+- Identificação operacional
+- Número de série e lote
+- Status (Disponível, Em Manutenção, Em Uso)
+- Técnico responsável (quando aplicável)
+- Ações: editar ou atualizar cadastro
+
+---
+
+## Cadastro e Edição de Ativos
+Estas telas permitem registrar novos ativos no sistema e atualizar informações de itens já cadastrados no inventário operacional.
+
+![Cadastro de Ativo](../assets/cad_ativo.png)
+
+![Edição de Ativo](../assets/edit_ativo.png)
+
+### Campos
+- **Tipo de Ativo**: seleção do modelo ou categoria (ex: multímetro, notebook, ferramentas)
+- **Descrição / Identificação**: nome operacional ou descrição interna
+- **Número de Série**: código único de rastreamento patrimonial
+- **Lote**: identificação de lote ou grupo de aquisição
+- **Status**: situação operacional (Disponível, Em Manutenção, Em Uso)
+
+---
+
+## Módulo de Calendário / Mapa Operacional
+Esta tela permite visualizar cronologicamente todas as ordens de serviço agendadas, facilitando o planejamento operacional e o acompanhamento de atendimentos futuros.
+
+![Calendário de Ordens](../assets/calendario_tec.png)
+
+### Indicadores e Funcionalidades
+#### Calendário (Visão Mensal)
+- **Mês e ano atual**: navegação entre meses com botão **Hoje** para retorno rápido
+- **Ordens por dia**: volume de atendimentos programados por data
+- **Criticidade**: classificação visual por prioridade (Crítica, Alta, Média, Baixa)
+
+#### Gestão de Agendamentos
+- Consulta rápida de volume operacional
+- Distribuição e organização de atendimentos por data
+- Planejamento de equipes e logística
+
+---
+
+## Módulo Minhas Ordens / Preparação de Viagem
+Este módulo permite ao técnico visualizar todas as ordens atribuídas a ele e preparar os recursos e tarefas necessários antes da execução.
+
+![Minhas Ordens](../assets/minhas_ordens_tec.png)
+
+![Preparação de Viagem](../assets/preparacao_tec.png)
+
+### Minhas Ordens
+#### Indicadores (Dashboard)
+- **Minhas Ordens**: total de ordens atribuídas
+- **Agendadas**: ordens futuras
+- **Em Execução**: atendimentos em andamento
+- **Concluídas**: ordens finalizadas
+
+#### Pesquisa e Ações
+- Busca por código, status, criticidade ou data
+
+#### Listagem
+- Número da ordem, cliente, criticidade, status, data de abertura e data de agendamento
+- Ações: visualizar ordem
+
+---
+
+### Preparação de Viagem
+Ao selecionar uma ordem, o técnico acessa a visão operacional completa para execução.
+
+#### Dados da Ordem
+- Número, status, criticidade, data de agendamento, tipo de manutenção e tipo de deslocamento
+
+#### Cliente e Máquina
+- Nome, contato, telefone e localização do cliente
+- Equipamento vinculado, número de série, última e próxima manutenção
+
+#### Execução
+- **Observações**: detalhes adicionais da manutenção
+- **Ativos a Levar**: lista de equipamentos necessários para o atendimento
+- **Checklist de Manutenção**: tarefas técnicas obrigatórias com status (Não feito / Concluído)
+- **Progresso**: acompanhamento percentual da preparação e execução

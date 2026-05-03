@@ -13,7 +13,6 @@
 <p align="center">
   | <a href ="#desafio"> Desafio</a>  |
       <a href ="#dod"> DOD e DOR</a> |
-      <a href ="#dod"> Sprints Planejadas</a> |
   <a href ="#sprints"> Sprints Planejadas</a>  |
   <a href ="#equipe"> Equipe</a>  |
 </p>
@@ -60,16 +59,16 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 
 ---
 
-## 📋 Backlog do Produto <a id="backlog"></a>
+## 📋 Sprints Planejadas <a id="sprints"></a>
 
-# Backlog do Produto — Sistema de Gestão de Manutenções
+# 🗓️ Sprints Planejadas — Sistema de Gestão de Manutenções
 
 **Parceiro:** Altave  
 **Curso:** 4º Banco de Dados  
 **API:** 2026-1  
 **Fatec SJC**
 
-# 🗓️ Sprints Planejadas
+
 
 ## 🚀 Sprint 1 – Planejada
 

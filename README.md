@@ -103,7 +103,7 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 
 # Burn Down <a id="down"></a>
 
-[📄 Burn Down](.documentacao/burn_down.md)
+[📄 Burn Down](./documentacao/burn_down.md)
 
 
 # 📚 Manual de usuário <a id="manual"></a>

@@ -1,0 +1,21 @@
+﻿Chave da item,Resumo,Responsável,Status,Criado,Atualizado(a)
+SCRUM-214,[jira] inserir peso a todas as tasks dessa sprint,Patricia Viegas,Concluído,02/mai/26 7:12 PM,02/mai/26 8:11 PM
+SCRUM-212,[DOC] atualizar o backlog sprint2 e sprint 1 add historia cad ativo e maquina,Patricia Viegas,Concluído,02/mai/26 7:10 PM,02/mai/26 11:02 PM
+SCRUM-211,[BACK] Crud de ativos,Pedro Henrique Ribeiro,Concluído,02/mai/26 6:55 PM,02/mai/26 8:02 PM
+SCRUM-210,Cadastro de ativos,Patricia Viegas,Concluído,02/mai/26 5:33 PM,02/mai/26 8:08 PM
+SCRUM-209,[FRONT] Tela de ativos,Pedro Henrique Ribeiro,Concluído,30/abr/26 4:33 PM,02/mai/26 8:02 PM
+SCRUM-207,[BACK] implementar CRUD checklist manutencao,Thor Lyndgaard,Concluído,29/abr/26 11:14 PM,02/mai/26 10:32 AM
+SCRUM-206,[BACK] Endpoint para listar as ordens do técnico,Pedro Henrique Ribeiro,Concluído,29/abr/26 12:08 PM,30/abr/26 12:24 PM
+SCRUM-205,[BACK] Adicionar endpoints e validações necessárias para a tela de preparação de viagens,Thomas Gustavo Heinrich,Concluído,28/abr/26 11:35 PM,02/mai/26 7:42 PM
+SCRUM-203,[FRONT] Criar tela de visualização das tarefas para os técnicos,Pedro Henrique Ribeiro,Realizando,28/abr/26 10:46 PM,03/mai/26 12:31 AM
+SCRUM-202,[front/back] ligar o front de relatório com o back,Patricia Viegas,Concluído,28/abr/26 10:01 PM,02/mai/26 7:46 PM
+SCRUM-201,[UX] Desenvolver o protótipo do checklist de manutenção,Patricia Viegas,Concluído,26/abr/26 9:37 PM,02/mai/26 7:59 PM
+SCRUM-199,[FRONT] Implementar o controle de acesso do técnico,Pedro Henrique Ribeiro,Concluído,26/abr/26 9:24 PM,02/mai/26 7:32 PM
+SCRUM-198,[FRONT] Criar a tela de listar as ordens para o técnico,Guilherme Bezerra Junqueira,Concluído,26/abr/26 9:23 PM,02/mai/26 7:29 PM
+SCRUM-197,[BD]Alimentar o banco de dados todo para facilitar os testes,William Honda,Concluído,26/abr/26 8:40 PM,02/mai/26 8:01 PM
+SCRUM-196,[UX] Desenvolver o protótipo da ordem em execução,Patricia Viegas,Concluído,26/abr/26 6:41 PM,02/mai/26 7:29 PM
+SCRUM-195,[UX] Desenvolver o protótipo do planejamento de viagens,Patricia Viegas,Concluído,26/abr/26 6:40 PM,02/mai/26 7:42 PM
+SCRUM-194,[UX] Desenvolver o protótipo do histórico de manutenções,Patricia Viegas,Concluído,26/abr/26 6:39 PM,02/mai/26 7:45 PM
+SCRUM-193,[Back] Possibilitar a visualização dos dados da ordem que não envolvam check-list,Thomas Gustavo Heinrich,Concluído,26/abr/26 5:18 PM,02/mai/26 7:32 PM
+SCRUM-192,[BACK] Implementar a lógica de inclusão de check-list dos ativos trocados e arrumados na ordem de serviço,Daniel Lima,Concluído,26/abr/26 5:10 PM,02/mai/26 8:00 PM
+SCRUM-191,[BACK] Implementar a inclusão de check-list de manutenção da maquina na execução da ordem,Thor Lyndgaard,Concluído,26/abr/26 5:05 PM,02/mai/26 7:30 PM

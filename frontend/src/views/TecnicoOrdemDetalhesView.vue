@@ -413,12 +413,23 @@ onMounted(async () => {
               <div
                 v-for="item in checklistAtivos"
                 :key="item.codigo"
-                class="flex items-center gap-3 px-4 py-3"
-                :class="item.levado ? 'opacity-60' : ''"
+                class="flex items-center gap-3 px-4 py-3 transition-colors"
+                :class="[
+                  !item.levado && !ordemBloqueada ? 'cursor-pointer hover:bg-muted/10' : 'cursor-default',
+                ]"
+                @click="marcarLevado(item)"
               >
-                <CheckCircle2 v-if="item.levado" class="size-5 text-emerald-400 shrink-0" />
-                <Circle       v-else              class="size-5 text-muted-foreground/40 shrink-0" />
-                <div class="flex-1 min-w-0">
+                <div class="shrink-0 flex items-center justify-center pointer-events-none">
+                  <Loader2 v-if="salvandoLevar[item.codigo]" class="size-4 animate-spin text-muted-foreground" />
+                  <input
+                    v-else
+                    type="checkbox"
+                    :checked="item.levado"
+                    :disabled="item.levado || ordemBloqueada"
+                    class="size-4 accent-blue-500"
+                  />
+                </div>
+                <div class="flex-1 min-w-0 pointer-events-none">
                   <p :class="['text-sm font-medium truncate', item.levado ? 'text-muted-foreground line-through' : 'text-foreground']">
                     {{ item.descricaoProduto ?? item.descricaoAtivo ?? `Ativo #${item.codigo}` }}
                   </p>
@@ -428,17 +439,8 @@ onMounted(async () => {
                     <span v-if="item.numeroSerie" class="font-mono"> &middot; S/N {{ item.numeroSerie }}</span>
                   </p>
                 </div>
-                <button
-                  v-if="!item.levado"
-                  :disabled="!!salvandoLevar[item.codigo] || ordemBloqueada"
-                  class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors bg-blue-500/15 border-blue-500/30 text-blue-400 hover:bg-blue-500/25 disabled:opacity-40 disabled:cursor-not-allowed"
-                  @click="marcarLevado(item)"
-                >
-                  <Loader2      v-if="salvandoLevar[item.codigo]" class="size-3 animate-spin" />
-                  <PackageCheck v-else                            class="size-3.5" />
-                  Levar
-                </button>
-                <span v-else class="shrink-0 text-xs font-semibold text-emerald-400">Levado ✓</span>
+                <span v-if="item.levado" class="shrink-0 text-xs font-semibold text-blue-400 pointer-events-none">levando</span>
+                <span v-else class="shrink-0 text-xs font-semibold text-amber-400 pointer-events-none">falta levar</span>
               </div>
             </div>
           </div>
@@ -587,12 +589,23 @@ onMounted(async () => {
               <div
                 v-for="item in ativosLevados"
                 :key="item.codigo"
-                class="flex items-center gap-3 px-4 py-3"
-                :class="item.devolvido ? 'opacity-60' : ''"
+                class="flex items-center gap-3 px-4 py-3 transition-colors"
+                :class="[
+                  !item.devolvido && !ordemBloqueada ? 'cursor-pointer hover:bg-muted/10' : 'cursor-default',
+                ]"
+                @click="marcarDevolvido(item)"
               >
-                <CheckCircle2 v-if="item.devolvido" class="size-5 text-emerald-400 shrink-0" />
-                <Circle       v-else                class="size-5 text-muted-foreground/40 shrink-0" />
-                <div class="flex-1 min-w-0">
+                <div class="shrink-0 flex items-center justify-center pointer-events-none">
+                  <Loader2 v-if="salvandoDevolver[item.codigo]" class="size-4 animate-spin text-muted-foreground" />
+                  <input
+                    v-else
+                    type="checkbox"
+                    :checked="item.devolvido"
+                    :disabled="item.devolvido || ordemBloqueada"
+                    class="size-4 accent-amber-500"
+                  />
+                </div>
+                <div class="flex-1 min-w-0 pointer-events-none">
                   <p :class="['text-sm font-medium truncate', item.devolvido ? 'text-muted-foreground line-through' : 'text-foreground']">
                     {{ item.descricaoProduto ?? item.descricaoAtivo ?? `Ativo #${item.codigo}` }}
                   </p>
@@ -602,17 +615,8 @@ onMounted(async () => {
                     <span v-if="item.numeroSerie" class="font-mono"> &middot; S/N {{ item.numeroSerie }}</span>
                   </p>
                 </div>
-                <button
-                  v-if="!item.devolvido"
-                  :disabled="!!salvandoDevolver[item.codigo] || ordemBloqueada"
-                  class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors bg-amber-500/15 border-amber-500/30 text-amber-400 hover:bg-amber-500/25 disabled:opacity-40 disabled:cursor-not-allowed"
-                  @click="marcarDevolvido(item)"
-                >
-                  <Loader2   v-if="salvandoDevolver[item.codigo]" class="size-3 animate-spin" />
-                  <RotateCcw v-else                               class="size-3.5" />
-                  Devolver
-                </button>
-                <span v-else class="shrink-0 text-xs font-semibold text-emerald-400">Devolvido ✓</span>
+                <span v-if="item.devolvido" class="shrink-0 text-xs font-semibold text-emerald-400 pointer-events-none">devolvido</span>
+                <span v-else class="shrink-0 text-xs font-semibold text-amber-400 pointer-events-none">falta devolver</span>
               </div>
             </div>
           </div>

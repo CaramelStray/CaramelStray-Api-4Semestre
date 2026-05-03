@@ -14,6 +14,7 @@
   <a href ="#sprint"> Cronograma de Sprints</a>  | <a href ="#sprintdor">Product backlog -> DOR e DOD</a> |
   <a href ="#tecnologias">Tecnologias</a> |  
   <a href ="#branchs">Estrutura de Branchs e Commits</a>  |
+       <a href ="#down">Burn Down</a> |  
   <a href ="#equipe"> Equipe</a> | <a href ="#manual"> Manual do usuário</a>
 </p>
 
@@ -99,6 +100,11 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 # 🪵 Estrutura de branchs e Commits <a id="branchs"></a>
 
 [📄 Estrutura de branchs e commits](./documentacao/estrutura_de_branch.md)
+
+# Burn Down <a id="down"></a>
+
+[📄 Burn Down](.documentacao/burn_down.md)
+
 
 # 📚 Manual de usuário <a id="manual"></a>
 [Manual do usuário](./documentacao/manual_usuario.md)

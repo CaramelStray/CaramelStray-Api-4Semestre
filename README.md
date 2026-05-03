@@ -101,7 +101,7 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 
 [📄 Estrutura de branchs e commits](./documentacao/estrutura_de_branch.md)
 
-# Burn Down <a id="down"></a>
+# 📉 Burn Down <a id="down"></a>
 
 [📄 Burn Down](./documentacao/burn_down.md)
 

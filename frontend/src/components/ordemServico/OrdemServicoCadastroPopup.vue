@@ -113,7 +113,7 @@
             @update:model-value="(val: string) => handleChange(val)"
           >
             <FormControl>
-              <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
+              <SelectTrigger class="w-full bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
                 <SelectValue placeholder="Selecione o tipo de ordem..." />
               </SelectTrigger>
             </FormControl>
@@ -314,8 +314,12 @@
     <!-- STEP 4: Checklist de Ativos (creation only) -->
     <div v-show="step === 4" class="space-y-4">
       <p class="text-sm text-muted-foreground">
-        Selecione os ativos que serão levados nesta ordem de serviço. Este passo é opcional — você pode abrir a ordem sem ativos.
+        Selecione pelo menos um ativo que será levado nesta ordem de serviço.
       </p>
+      <div v-if="checklistAtivosError" class="flex items-center gap-2 mt-1 text-sm font-medium bg-red-500/10 text-red-500 px-3 py-2 rounded-md border border-red-500/20">
+        <AlertTriangle class="w-4 h-4 shrink-0" />
+        <p>{{ checklistAtivosError }}</p>
+      </div>
 
       <div v-if="loadingAtivos" class="flex items-center gap-3 text-sm text-muted-foreground p-4 border border-border rounded-lg bg-muted/10">
         <Loader2 class="w-4 h-4 animate-spin text-blue-400" />
@@ -662,7 +666,7 @@ import { DatePickerInput } from '@/components/ui/date-picker'
 import {
   ChevronRight, FileText, Server, UserCheck, ArrowRight,
   Loader2, PackageCheck, PackageX, UserX, CheckCircle2,
-  ListChecks, Plus, Trash2, Search, X, Wrench,
+  ListChecks, Plus, Trash2, Search, X, Wrench, AlertTriangle,
 } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
@@ -707,6 +711,7 @@ const loading = ref(false)
 const loadingSoftware = ref(false)
 const loadingTecnicos = ref(false)
 const loadingAtivos = ref(false)
+const checklistAtivosError = ref('')
 
 const clientes = ref<any[]>([])
 const tecnicosDisponiveis = ref<TecnicoResponseDTO[]>([])
@@ -981,12 +986,29 @@ const STEP_FIELDS: Record<number, string[]> = {
 }
 
 const nextStep = async () => {
+  // Step 4: validação customizada (mínimo 1 ativo)
+  if (step.value === 4) {
+    if (checklistItems.value.length === 0) {
+      checklistAtivosError.value = 'Adicione pelo menos um ativo ao checklist antes de prosseguir.'
+      return
+    }
+    checklistAtivosError.value = ''
+    step.value++
+    return
+  }
+
   const currentFields = STEP_FIELDS[step.value] ?? []
   const results = await Promise.all(
     currentFields.map(field => form.validateField(field as any))
   )
   const hasErrors = results.some(r => !r.valid)
-  if (!hasErrors) step.value++
+  if (!hasErrors) {
+    step.value++
+    // Limpar erros do novo step para não exibir pré-emptivamente
+    await nextTick()
+    const incomingFields = STEP_FIELDS[step.value] ?? []
+    incomingFields.forEach(field => form.setFieldError(field as any, undefined))
+  }
 }
 
 function getInitials(nome: string): string {
@@ -1011,6 +1033,7 @@ function adicionarItem() {
     descricaoProduto: ativo?.descricaoProduto,
     numeroSerie: ativo?.numeroSerie,
   })
+  checklistAtivosError.value = ''
   cancelarAddItem()
 }
 

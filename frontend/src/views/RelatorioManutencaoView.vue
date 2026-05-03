@@ -1,163 +1,12 @@
-<template>
-  <main class="page">
-    <header class="page-header">
-      <div class="header-left">
-        <span class="divider"></span>
-        <h1>Histórico de Manutenções</h1>
-      </div>
-    </header>
-
-    <section class="cards">
-      <div class="card">
-        <div class="card-top">
-          <span>TOTAL DE MANUTENÇÕES</span>
-          <span class="icon blue">▣</span>
-        </div>
-        <strong>{{ manutencoes.length }}</strong>
-        <small>Cadastradas no relatório</small>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <span>VENCIDAS</span>
-          <span class="icon red">⚠</span>
-        </div>
-        <strong>{{ vencidas.length }}</strong>
-        <small>Prazo expirado</small>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <span>PRÓXIMAS DO VENCIMENTO</span>
-          <span class="icon yellow">◷</span>
-        </div>
-        <strong>{{ proximas.length }}</strong>
-        <small>Dentro dos próximos 30 dias</small>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <span>CONCLUÍDAS</span>
-          <span class="icon purple">✓</span>
-        </div>
-        <strong>{{ concluidas.length }}</strong>
-        <small>Finalizadas</small>
-      </div>
-    </section>
-
-    <div v-if="loading" class="feedback">Carregando...</div>
-    <div v-if="erro" class="feedback erro">{{ erro }}</div>
-
-    <section class="toolbar">
-      <div class="search-box">
-        <span>⌕</span>
-        <input
-          v-model="busca"
-          type="text"
-          placeholder="Buscar por código, status ou criticidade..."
-        />
-      </div>
-
-      <button class="pdf-button" @click="gerarRelatorioGeral">
-        <span>＋</span>
-        GERAR PDF
-      </button>
-    </section>
-
-    <section class="table-card">
-      <div class="table-title">Manutenções Vencidas</div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>CÓDIGO</th>
-            <th>TIPO MANUTENÇÃO</th>
-            <th>CRITICIDADE</th>
-            <th>STATUS</th>
-            <th>VENCIMENTO</th>
-            <th>OBSERVAÇÃO</th>
-            <th>AÇÕES</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr v-for="item in vencidasFiltradas" :key="item.codigo">
-            <td>#{{ item.codigo }}</td>
-            <td>{{ item.codigoTipoManutencao ?? '—' }}</td>
-            <td>
-              <span :class="['badge', classeCriticidade(item.criticidade)]">
-                {{ item.criticidade }}
-              </span>
-            </td>
-            <td>
-              <span class="status-dot"></span>
-              {{ item.status }}
-            </td>
-            <td>{{ formatarData(item.vencimento) }}</td>
-            <td>{{ item.observacaoGeral ?? '—' }}</td>
-            <td>
-              <button class="btn-pdf" @click="gerarPdfItem(item)">
-                📄 PDF
-              </button>
-            </td>
-          </tr>
-
-          <tr v-if="vencidasFiltradas.length === 0">
-            <td colspan="6" class="empty">Nenhuma manutenção vencida encontrada.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="table-card">
-      <div class="table-title">Próximas do Vencimento - 30 dias</div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>CÓDIGO</th>
-            <th>TIPO MANUTENÇÃO</th>
-            <th>CRITICIDADE</th>
-            <th>STATUS</th>
-            <th>VENCIMENTO</th>
-            <th>OBSERVAÇÃO</th>
-            <th>AÇÕES</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr v-for="item in proximasFiltradas" :key="item.codigo">
-            <td>#{{ item.codigo }}</td>
-            <td>{{ item.codigoTipoManutencao ?? '—' }}</td>
-            <td>
-              <span :class="['badge', classeCriticidade(item.criticidade)]">
-                {{ item.criticidade }}
-              </span>
-            </td>
-            <td>
-              <span class="status-dot"></span>
-              {{ item.status }}
-            </td>
-            <td>{{ formatarData(item.vencimento) }}</td>
-            <td>{{ item.observacaoGeral ?? '—' }}</td>
-            <td>
-              <button class="btn-pdf" @click="gerarPdfItem(item)">
-                📄 PDF
-              </button>
-            </td>
-          </tr>
-
-          <tr v-if="proximasFiltradas.length === 0">
-            <td colspan="6" class="empty">Nenhuma manutenção próxima encontrada.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-  </main>
-</template>
-
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table'
+import { ClipboardList, AlertTriangle, Clock, CheckCircle2, Search, FileDown } from 'lucide-vue-next'
 import { manutencaoService, type ManutencaoRelatorioDTO } from '@/services/manutencaoService'
 
 const busca = ref('')
@@ -181,11 +30,11 @@ const limite = new Date()
 limite.setDate(hoje.getDate() + 30)
 
 const vencidas = computed(() =>
-  manutencoes.value.filter(item => item.vencimento && new Date(item.vencimento) < hoje)
+  manutencoes.value.filter((item: ManutencaoRelatorioDTO) => item.vencimento && new Date(item.vencimento) < hoje)
 )
 
 const proximas = computed(() =>
-  manutencoes.value.filter(item => {
+  manutencoes.value.filter((item: ManutencaoRelatorioDTO) => {
     if (!item.vencimento) return false
     const data = new Date(item.vencimento)
     return data >= hoje && data <= limite
@@ -193,7 +42,7 @@ const proximas = computed(() =>
 )
 
 const concluidas = computed(() =>
-  manutencoes.value.filter(item => item.status === 'CONCLUIDA')
+  manutencoes.value.filter((item: ManutencaoRelatorioDTO) => item.status === 'CONCLUIDA')
 )
 
 const vencidasFiltradas = computed(() => filtrar(vencidas.value))
@@ -213,19 +62,33 @@ function formatarData(data: string | null) {
   return new Date(data).toLocaleDateString('pt-BR')
 }
 
-function classeCriticidade(criticidade: string) {
-  if (criticidade === 'ALTA') return 'danger'
-  if (criticidade === 'MEDIA') return 'warning'
-  return 'success'
+function formatCriticidade(c: string) {
+  switch (c) {
+    case 'CRITICA': return { label: 'Crítica', class: 'bg-red-500/10 text-red-500 border-red-500/30' }
+    case 'ALTA':   return { label: 'Alta',    class: 'bg-orange-500/10 text-orange-500 border-orange-500/30' }
+    case 'MEDIA':  return { label: 'Média',   class: 'bg-amber-500/10 text-amber-500 border-amber-500/30' }
+    case 'BAIXA':  return { label: 'Baixa',   class: 'bg-blue-500/10 text-blue-500 border-blue-500/30' }
+    default:       return { label: c || '—',  class: 'bg-muted/20 text-muted-foreground border-border' }
+  }
+}
+
+function formatStatus(s: string) {
+  switch (s) {
+    case 'AGUARDANDO':   return { label: 'Aguardando',   class: 'bg-amber-500/15 text-amber-500 border-amber-500/20' }
+    case 'ABERTA':       return { label: 'Aberta',       class: 'bg-amber-500/15 text-amber-500 border-amber-500/20' }
+    case 'AGENDADO':     return { label: 'Agendado',     class: 'bg-blue-500/15 text-blue-500 border-blue-500/20' }
+    case 'EM_EXECUCAO':  return { label: 'Em Execução',  class: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/20' }
+    case 'CONCLUIDA':
+    case 'FINALIZADA':   return { label: 'Finalizada',   class: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' }
+    case 'CANCELADA':    return { label: 'Cancelada',    class: 'bg-red-500/15 text-red-500 border-red-500/20' }
+    default:             return { label: s || '—',       class: 'bg-muted/20 text-muted-foreground border-border' }
+  }
 }
 
 function gerarPdfItem(item: ManutencaoRelatorioDTO) {
   const token = localStorage.getItem('token')
   const url = `http://localhost:8080/maquinas-historicos-manutencao/relatorio/pdf?codigoMaquinaContrato=${item.codigoMaquinaContrato ?? ''}`
-
-  fetch(url, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
+  fetch(url, { headers: { Authorization: `Bearer ${token}` } })
     .then(res => res.blob())
     .then(blob => {
       const link = document.createElement('a')
@@ -238,9 +101,8 @@ function gerarPdfItem(item: ManutencaoRelatorioDTO) {
 
 function gerarRelatorioGeral() {
   const token = localStorage.getItem('token')
-
   fetch('http://localhost:8080/maquinas-historicos-manutencao/relatorio/pdf', {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   })
     .then(res => {
       if (!res.ok) throw new Error('Erro ao gerar PDF')
@@ -254,220 +116,187 @@ function gerarRelatorioGeral() {
     })
     .catch(() => alert('Erro ao gerar relatório PDF'))
 }
+
+const stats = computed(() => [
+  {
+    label: 'Total de Manutenções',
+    value: manutencoes.value.length,
+    sub: 'Cadastradas no relatório',
+    icon: ClipboardList,
+    color: 'text-blue-400',
+  },
+  {
+    label: 'Vencidas',
+    value: vencidas.value.length,
+    sub: 'Prazo expirado',
+    icon: AlertTriangle,
+    color: 'text-red-400',
+  },
+  {
+    label: 'Próximas do Vencimento',
+    value: proximas.value.length,
+    sub: 'Dentro dos próximos 30 dias',
+    icon: Clock,
+    color: 'text-amber-400',
+  },
+  {
+    label: 'Concluídas',
+    value: concluidas.value.length,
+    sub: 'Finalizadas',
+    icon: CheckCircle2,
+    color: 'text-purple-400',
+  },
+])
 </script>
 
-<style scoped>
-.page {
-  min-height: 100vh;
-  background: #060b14;
-  color: #e5eefc;
-  padding: 32px;
-}
+<template>
+  <div class="p-6 space-y-6">
+    <!-- Stats cards -->
+    <div :class="['grid gap-4 xl:grid-cols-4', stats.length > 1 ? 'grid-cols-2' : 'grid-cols-1']">
+      <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
+        <CardHeader class="flex flex-row items-center justify-between pb-2">
+          <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+            {{ stat.label }}
+          </CardTitle>
+          <component :is="stat.icon" class="w-4 h-4" :class="stat.color" />
+        </CardHeader>
+        <CardContent>
+          <div class="text-3xl font-bold text-foreground">{{ stat.value }}</div>
+          <p class="text-[10px] text-muted-foreground mt-1">{{ stat.sub }}</p>
+        </CardContent>
+      </Card>
+    </div>
 
-.page-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 48px;
-}
+    <!-- Loading / error -->
+    <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
+    <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
+    <!-- Toolbar -->
+    <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between w-full">
+      <div class="relative flex-1">
+        <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+        <Input
+          v-model="busca"
+          placeholder="Buscar por código, status ou criticidade..."
+          class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary"
+        />
+      </div>
+      <Button
+        size="lg"
+        @click="gerarRelatorioGeral"
+        class="h-12 font-bold uppercase text-[11px] px-6 bg-blue-600 hover:opacity-90 text-white border-none shadow-md shrink-0"
+      >
+        <FileDown class="w-4 h-4 mr-2" />
+        Gerar PDF
+      </Button>
+    </div>
 
-.divider {
-  width: 1px;
-  height: 28px;
-  background: #22314a;
-}
+    <!-- Manutenções Vencidas -->
+    <div class="rounded-md border border-border bg-sidebar overflow-hidden">
+      <div class="p-4 border-b border-border bg-muted/5 flex items-center gap-2">
+        <AlertTriangle class="w-4 h-4 text-red-400" />
+        <h2 class="text-sm font-normal tracking-tight text-muted-foreground">Manutenções Vencidas</h2>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow class="hover:bg-transparent border-border text-xs uppercase font-bold text-muted-foreground">
+            <TableHead class="pl-6 h-12">Código</TableHead>
+            <TableHead class="h-12">Tipo Manutenção</TableHead>
+            <TableHead class="h-12">Criticidade</TableHead>
+            <TableHead class="h-12">Status</TableHead>
+            <TableHead class="h-12">Vencimento</TableHead>
+            <TableHead class="h-12">Observação</TableHead>
+            <TableHead class="h-12 text-right pr-6">Ações</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow
+            v-for="item in vencidasFiltradas"
+            :key="item.codigo"
+            class="border-border hover:bg-muted/30 transition-colors even:bg-muted/50"
+          >
+            <TableCell class="pl-6 py-3 font-medium text-foreground">#{{ item.codigo }}</TableCell>
+            <TableCell class="text-sm text-muted-foreground">{{ item.codigoTipoManutencao ?? '—' }}</TableCell>
+            <TableCell>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatCriticidade(item.criticidade).class">
+                {{ formatCriticidade(item.criticidade).label }}
+              </span>
+            </TableCell>
+            <TableCell>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatStatus(item.status).class">
+                {{ formatStatus(item.status).label }}
+              </span>
+            </TableCell>
+            <TableCell class="text-sm text-muted-foreground">{{ formatarData(item.vencimento) }}</TableCell>
+            <TableCell class="text-sm text-muted-foreground">{{ item.observacaoGeral ?? '—' }}</TableCell>
+            <TableCell class="text-right pr-6">
+              <Button variant="outline" size="sm" class="gap-1.5 border-border" @click="gerarPdfItem(item)">
+                <FileDown class="w-3.5 h-3.5" />
+                PDF
+              </Button>
+            </TableCell>
+          </TableRow>
+          <TableRow v-if="vencidasFiltradas.length === 0">
+            <TableCell colspan="7" class="text-center text-muted-foreground py-10">
+              Nenhuma manutenção vencida encontrada.
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
 
-h1 {
-  font-size: 16px;
-  font-weight: 700;
-  margin: 0;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-  margin-bottom: 26px;
-}
-
-.card {
-  background: #0d1320;
-  border: 1px solid #243755;
-  border-radius: 10px;
-  padding: 28px;
-  min-height: 120px;
-}
-
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #8fb0dc;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.7px;
-  margin-bottom: 34px;
-}
-
-.card strong {
-  display: block;
-  font-size: 32px;
-  color: #ffffff;
-  margin-bottom: 8px;
-}
-
-.card small {
-  color: #8fb0dc;
-  font-size: 12px;
-}
-
-.icon.blue { color: #3b82f6; }
-.icon.red { color: #ef4444; }
-.icon.yellow { color: #fbbf24; }
-.icon.purple { color: #a855f7; }
-
-.toolbar {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.search-box {
-  flex: 1;
-  height: 54px;
-  background: #0d1320;
-  border: 1px solid #243755;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  padding: 0 18px;
-  gap: 12px;
-  color: #8fb0dc;
-}
-
-.search-box input {
-  width: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #dbeafe;
-  font-size: 15px;
-}
-
-.search-box input::placeholder {
-  color: #8fb0dc;
-}
-
-.pdf-button {
-  height: 54px;
-  padding: 0 28px;
-  border: none;
-  border-radius: 6px;
-  background: #2563eb;
-  color: white;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.table-card {
-  border: 1px solid #243755;
-  background: #0d1320;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 26px;
-}
-
-.table-title {
-  padding: 20px;
-  color: #9bb7df;
-  border-bottom: 1px solid #243755;
-  font-size: 14px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-thead {
-  border-bottom: 1px solid #243755;
-}
-
-th {
-  text-align: left;
-  padding: 18px 26px;
-  font-size: 12px;
-  color: #ffffff;
-  font-weight: 800;
-}
-
-td {
-  padding: 20px 26px;
-  color: #9bb7df;
-  font-size: 14px;
-  border-bottom: 1px solid #162235;
-}
-
-tbody tr:hover {
-  background: #101a2b;
-}
-
-.badge {
-  font-weight: 800;
-  font-size: 12px;
-}
-
-.badge.danger { color: #ef4444; }
-.badge.warning { color: #fbbf24; }
-.badge.success { color: #22c55e; }
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  background: #3b82f6;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 8px;
-}
-
-.empty {
-  text-align: center;
-  color: #8fb0dc;
-  padding: 42px;
-}
-
-.feedback {
-  text-align: center;
-  padding: 20px;
-  color: #8fb0dc;
-}
-
-.feedback.erro {
-  color: #ef4444;
-}
-.btn-pdf {
-  background: transparent;
-  border: 1px solid #243755;
-  color: #8fb0dc;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-pdf:hover {
-  background: #1e3a5f;
-  color: #dbeafe;
-  border-color: #3b82f6;
-}
-</style>
+    <!-- Próximas do vencimento -->
+    <div class="rounded-md border border-border bg-sidebar overflow-hidden">
+      <div class="p-4 border-b border-border bg-muted/5 flex items-center gap-2">
+        <Clock class="w-4 h-4 text-amber-400" />
+        <h2 class="text-sm font-normal tracking-tight text-muted-foreground">Próximas do Vencimento — 30 dias</h2>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow class="hover:bg-transparent border-border text-xs uppercase font-bold text-muted-foreground">
+            <TableHead class="pl-6 h-12">Código</TableHead>
+            <TableHead class="h-12">Tipo Manutenção</TableHead>
+            <TableHead class="h-12">Criticidade</TableHead>
+            <TableHead class="h-12">Status</TableHead>
+            <TableHead class="h-12">Vencimento</TableHead>
+            <TableHead class="h-12">Observação</TableHead>
+            <TableHead class="h-12 text-right pr-6">Ações</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow
+            v-for="item in proximasFiltradas"
+            :key="item.codigo"
+            class="border-border hover:bg-muted/30 transition-colors even:bg-muted/50"
+          >
+            <TableCell class="pl-6 py-3 font-medium text-foreground">#{{ item.codigo }}</TableCell>
+            <TableCell class="text-sm text-muted-foreground">{{ item.codigoTipoManutencao ?? '—' }}</TableCell>
+            <TableCell>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatCriticidade(item.criticidade).class">
+                {{ formatCriticidade(item.criticidade).label }}
+              </span>
+            </TableCell>
+            <TableCell>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatStatus(item.status).class">
+                {{ formatStatus(item.status).label }}
+              </span>
+            </TableCell>
+            <TableCell class="text-sm text-muted-foreground">{{ formatarData(item.vencimento) }}</TableCell>
+            <TableCell class="text-sm text-muted-foreground">{{ item.observacaoGeral ?? '—' }}</TableCell>
+            <TableCell class="text-right pr-6">
+              <Button variant="outline" size="sm" class="gap-1.5 border-border" @click="gerarPdfItem(item)">
+                <FileDown class="w-3.5 h-3.5" />
+                PDF
+              </Button>
+            </TableCell>
+          </TableRow>
+          <TableRow v-if="proximasFiltradas.length === 0">
+            <TableCell colspan="7" class="text-center text-muted-foreground py-10">
+              Nenhuma manutenção próxima encontrada.
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
+  </div>
+</template>

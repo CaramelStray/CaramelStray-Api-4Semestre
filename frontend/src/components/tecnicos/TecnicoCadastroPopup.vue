@@ -469,8 +469,8 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
 
             <FormField :name="`habilidades[${index}].dataValidade`" v-slot="{ value, handleChange }">
               <FormItem>
-                <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-                  Data de Validade <span class="text-red-500 font-bold">*</span>
+                <FormLabel class="text-sm font-medium text-foreground/80">
+                  Data de Validade
                 </FormLabel>
                 <FormControl>
                   <DatePickerInput :model-value="value" @update:model-value="handleChange" />

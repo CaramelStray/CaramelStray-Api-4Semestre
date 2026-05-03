@@ -29,6 +29,7 @@ const basePageTitle = computed(() => {
     '/dashboard': 'Dashboard',
     '/mapa': 'Mapa (GIS)',
     '/manutencao': 'Manutenção',
+    '/relatorio-manutencao': 'Histórico de Manutenções',
     '/viagem-preparacao': 'Preparacao de Viagem',
     '/maquinas': 'Máquinas',
     '/catalogo-maquinas': 'Máquinas',

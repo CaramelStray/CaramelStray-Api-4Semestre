@@ -14,8 +14,10 @@ export const useThemeStore = defineStore('theme', () => {
     const root = window.document.documentElement
     if (isDark.value) {
       root.classList.remove('light')
+      root.classList.add('dark')
     } else {
       root.classList.add('light')
+      root.classList.remove('dark')
     }
   }
 

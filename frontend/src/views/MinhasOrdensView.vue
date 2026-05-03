@@ -143,7 +143,7 @@ onMounted(carregarOrdensDoTecnico)
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div :class="['grid gap-4 xl:grid-cols-4', stats.length > 1 ? 'grid-cols-2' : 'grid-cols-1']">
       <Card
         v-for="stat in stats"
         :key="stat.label"

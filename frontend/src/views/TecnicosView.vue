@@ -197,7 +197,7 @@ const filteredTecnicos = computed(() => {
     <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
     <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div :class="['grid gap-4 xl:grid-cols-4', stats.length > 1 ? 'grid-cols-2' : 'grid-cols-1']">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{{ stat.label }}</CardTitle>
@@ -210,7 +210,7 @@ const filteredTecnicos = computed(() => {
       </Card>
     </div>
 
-    <div class="flex items-center justify-between gap-4 w-full">
+    <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between w-full">
       <div class="relative flex-1">
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
         <Input

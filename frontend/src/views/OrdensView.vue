@@ -49,9 +49,9 @@ const stats = computed(() => [
     color: 'text-green-400',
   },
   {
-    label: 'Concluídas',
-    value: ordens.value.filter(o => o.status === 'CONCLUIDA').length.toString(),
-    sub: 'Finalizadas',
+    label: 'Finalizadas',
+    value: ordens.value.filter(o => o.status === 'CONCLUIDA' || o.status === 'FINALIZADA').length.toString(),
+    sub: 'Ordens fechadas',
     icon: CheckCircle2,
     color: 'text-purple-400',
   },
@@ -61,8 +61,8 @@ const ordensInstalacaoPendentes = computed(() =>
   ordens.value.filter(o => o.tipoOrdem === 'INSTALACAO' && o.status === 'ABERTA')
 )
 
-const filteredOrdens = computed(() =>
-  ordens.value.filter(o => {
+const filteredOrdens = computed(() => {
+  const filtered = ordens.value.filter(o => {
     if (o.tipoOrdem === 'INSTALACAO' && o.status === 'ABERTA') return false
     const nomeCliente = clienteMap.value[o.codigoCliente]?.toLowerCase() ?? ''
     const nomeTecnico = o.codigoFuncionario
@@ -77,22 +77,54 @@ const filteredOrdens = computed(() =>
       nomeTecnico.includes(q)
     )
   })
-)
 
-const statusClass = (status: string) => ({
-  'AGUARDANDO':  'bg-amber-500',
-  'AGENDADO':    'bg-blue-400',
-  'EM_EXECUCAO': 'bg-blue-500',
-  'CONCLUIDA':   'bg-emerald-500',
-  'CANCELADA':   'bg-red-500',
-} as Record<string, string>)[status] ?? 'bg-gray-500'
+  const criticidadeWeight = (c: string) => {
+    switch (c) {
+      case 'CRITICA': return 4
+      case 'ALTA': return 3
+      case 'MEDIA': return 2
+      case 'BAIXA': return 1
+      default: return 0
+    }
+  }
 
-const criticidadeClass = (c: string) => ({
-  'CRITICA': 'text-red-400 font-semibold',
-  'ALTA':    'text-orange-400 font-semibold',
-  'MEDIA':   'text-amber-400',
-  'BAIXA':   'text-blue-400',
-} as Record<string, string>)[c] ?? 'text-muted-foreground'
+  const isFinalizada = (s: string) => s === 'CONCLUIDA' || s === 'FINALIZADA' || s === 'CANCELADA'
+
+  return filtered.sort((a, b) => {
+    const aFin = isFinalizada(a.status) ? 1 : 0
+    const bFin = isFinalizada(b.status) ? 1 : 0
+    
+    if (aFin !== bFin) return aFin - bFin
+
+    const aCrit = criticidadeWeight(a.criticidade)
+    const bCrit = criticidadeWeight(b.criticidade)
+    if (aCrit !== bCrit) return bCrit - aCrit
+
+    return (b.codigo || 0) - (a.codigo || 0)
+  })
+})
+
+const formatStatus = (s: string) => {
+  switch(s) {
+    case 'AGUARDANDO': return { label: 'Aguardando', class: 'bg-amber-500/15 text-amber-500 border-amber-500/20' }
+    case 'AGENDADO': return { label: 'Agendado', class: 'bg-blue-500/15 text-blue-500 border-blue-500/20' }
+    case 'EM_EXECUCAO': return { label: 'Em Execução', class: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/20' }
+    case 'CONCLUIDA':
+    case 'FINALIZADA': return { label: 'Finalizada', class: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' }
+    case 'CANCELADA': return { label: 'Cancelada', class: 'bg-red-500/15 text-red-500 border-red-500/20' }
+    default: return { label: s || '—', class: 'bg-muted/20 text-muted-foreground border-border' }
+  }
+}
+
+const formatCriticidade = (c: string) => {
+  switch(c) {
+    case 'CRITICA': return { label: 'Crítica', class: 'bg-red-500/10 text-red-500 border-red-500/30' }
+    case 'ALTA': return { label: 'Alta', class: 'bg-orange-500/10 text-orange-500 border-orange-500/30' }
+    case 'MEDIA': return { label: 'Média', class: 'bg-amber-500/10 text-amber-500 border-amber-500/30' }
+    case 'BAIXA': return { label: 'Baixa', class: 'bg-blue-500/10 text-blue-500 border-blue-500/30' }
+    default: return { label: c || '—', class: 'bg-muted/20 text-muted-foreground border-border' }
+  }
+}
 
 const formatDate = (d: string) =>
   d ? new Date(d).toLocaleDateString('pt-BR') : '—'
@@ -214,14 +246,13 @@ onMounted(carregarOrdens)
       <Table>
         <TableHeader>
           <TableRow class="hover:bg-transparent border-border text-xs uppercase font-bold text-muted-foreground">
-            <TableHead class="pl-6 h-12"># Ordem</TableHead>
-            <TableHead class="h-12">Cliente</TableHead>
+            <TableHead class="pl-6 h-12">Cliente</TableHead>
             <TableHead class="h-12">Técnico</TableHead>
             <TableHead class="h-12">Criticidade</TableHead>
             <TableHead class="h-12">Status</TableHead>
             <TableHead class="h-12">Abertura</TableHead>
             <TableHead class="h-12">Agendamento</TableHead>
-            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-[54px] h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -233,7 +264,7 @@ onMounted(carregarOrdens)
           >
             <TableCell class="pl-6 py-3">
               <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-mono text-sm font-medium text-foreground">#{{ o.codigo }}</span>
+                <span class="text-sm text-foreground font-medium">{{ clienteMap[o.codigoCliente] ?? '—' }}</span>
                 <span
                   v-if="o.tipoOrdem === 'INSTALACAO'"
                   class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-500/15 border border-blue-500/30 text-blue-700 dark:text-blue-400"
@@ -255,21 +286,18 @@ onMounted(carregarOrdens)
               </div>
             </TableCell>
             <TableCell class="text-sm text-muted-foreground">
-              {{ clienteMap[o.codigoCliente] ?? '—' }}
-            </TableCell>
-            <TableCell class="text-sm text-muted-foreground">
               {{ o.codigoFuncionario ? (tecnicoMap[o.codigoFuncionario] ?? '—') : '—' }}
             </TableCell>
             <TableCell>
-              <span class="text-sm" :class="criticidadeClass(o.criticidade)">
-                {{ o.criticidade ?? '—' }}
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatCriticidade(o.criticidade).class">
+                {{ formatCriticidade(o.criticidade).label }}
               </span>
             </TableCell>
             <TableCell>
-              <div class="flex items-center gap-2">
-                <div class="size-2 rounded-full" :class="statusClass(o.status)" />
-                <span class="text-sm text-foreground">{{ o.status ?? '—' }}</span>
-              </div>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border uppercase tracking-wider" :class="formatStatus(o.status).class">
+                <span class="w-1.5 h-1.5 rounded-full bg-current opacity-80"></span>
+                {{ formatStatus(o.status).label }}
+              </span>
             </TableCell>
             <TableCell class="text-sm text-muted-foreground">
               {{ formatDate(o.dataAbertura) }}

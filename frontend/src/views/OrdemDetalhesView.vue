@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useBreadcrumbs } from '@/composables/useBreadcrumbs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -44,6 +45,8 @@ const checklistMaquina  = ref<MaquinaChecklistManutencaoResponseDTO[]>([])
 const loading           = ref(true)
 const loadingChecklists = ref(false)
 const erro              = ref('')
+
+const { setDynamicBreadcrumb } = useBreadcrumbs()
 
 // ── Configs ───────────────────────────────────────────────────────────────
 const statusConfig: Record<string, { dot: string; badge: string; label: string }> = {
@@ -123,7 +126,10 @@ onMounted(async () => {
 
     await Promise.all([
       clienteService.buscarPorId(o.codigoCliente)
-        .then(r => { cliente.value = r }).catch(() => {}),
+        .then(r => { 
+          cliente.value = r
+          setDynamicBreadcrumb(r.nomeEmpresa)
+        }).catch(() => {}),
 
       o.codigoFuncionario
         ? tecnicoService.buscarPorId(o.codigoFuncionario)
@@ -166,23 +172,15 @@ onMounted(async () => {
     loadingChecklists.value = false
   }
 })
+
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  setDynamicBreadcrumb(null)
+})
 </script>
 
 <template>
   <div class="p-6 space-y-6">
-
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-sm text-muted-foreground">
-      <button
-        class="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
-        @click="router.push('/ordens')"
-      >
-        <ArrowLeft class="size-4" />
-        Ordens de Serviço
-      </button>
-      <ChevronRight class="size-3.5" />
-      <span class="text-foreground font-medium">{{ ordem ? `#${ordem.codigo}` : 'Detalhes' }}</span>
-    </div>
 
     <!-- Loading / Error -->
     <div v-if="loading" class="flex items-center justify-center py-24 text-muted-foreground gap-3">

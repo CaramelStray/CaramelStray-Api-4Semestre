@@ -1,85 +1,23 @@
 <template>
   <!-- Steps Header -->
-  <div class="flex items-center gap-2 mb-6 border-b border-border pb-6 mt-2">
-    <div :class="['flex items-center gap-2 transition-colors', step === 1 ? 'text-blue-400 font-bold' : step > 1 ? 'text-blue-400/60' : 'text-muted-foreground']">
-      <div
-        class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-        :class="step === 1
-          ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-          : step > 1
-            ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60'
-            : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
-      >
-        <CheckCircle2 v-if="step > 1" class="w-4 h-4 text-blue-400/60" />
-        <FileText v-else class="w-4 h-4" />
-      </div>
-      <span class="text-sm hidden sm:inline-block">Identificação</span>
-    </div>
-
-    <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
-
-    <div :class="['flex items-center gap-2 transition-colors', step === 2 ? 'text-blue-400 font-bold' : step > 2 ? 'text-blue-400/60' : 'text-muted-foreground']">
-      <div
-        class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-        :class="step === 2
-          ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-          : step > 2
-            ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60'
-            : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
-      >
-        <CheckCircle2 v-if="step > 2" class="w-4 h-4 text-blue-400/60" />
-        <Server v-else class="w-4 h-4" />
-      </div>
-      <span class="text-sm hidden sm:inline-block">Máquina</span>
-    </div>
-
-    <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
-
-    <div :class="['flex items-center gap-2 transition-colors', step === 3 ? 'text-blue-400 font-bold' : step > 3 ? 'text-blue-400/60' : 'text-muted-foreground']">
-      <div
-        class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-        :class="step === 3
-          ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-          : step > 3
-            ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60'
-            : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
-      >
-        <CheckCircle2 v-if="step > 3" class="w-4 h-4 text-blue-400/60" />
-        <UserCheck v-else class="w-4 h-4" />
-      </div>
-      <span class="text-sm hidden sm:inline-block">Técnico</span>
-    </div>
-
-      <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
-
-      <div :class="['flex items-center gap-2 transition-colors', step === 4 ? 'text-blue-400 font-bold' : step > 4 ? 'text-blue-400/60' : 'text-muted-foreground']">
+  <div class="flex items-center gap-2 mb-6 border-b border-border pb-6 mt-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+    <template v-for="(s, index) in stepsList" :key="s.id">
+      <div :class="['flex items-center gap-2 transition-colors', step === s.id ? 'text-blue-400 font-bold' : step > s.id ? 'text-blue-400/60' : 'text-muted-foreground']">
         <div
           class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-          :class="step === 4
+          :class="step === s.id
             ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-            : step > 4
+            : step > s.id
               ? 'border-blue-500/40 bg-blue-500/10 text-blue-400/60'
               : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
         >
-          <CheckCircle2 v-if="step > 4" class="w-4 h-4 text-blue-400/60" />
-          <ListChecks v-else class="w-4 h-4" />
+          <CheckCircle2 v-if="step > s.id" class="w-4 h-4 text-blue-400/60" />
+          <component :is="s.icon" v-else class="w-4 h-4" />
         </div>
-        <span class="text-sm hidden sm:inline-block">Ativos</span>
+        <span class="text-sm hidden sm:inline-block">{{ s.name }}</span>
       </div>
-
-      <ChevronRight class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
-
-      <div :class="['flex items-center gap-2 transition-colors', step === 5 ? 'text-blue-400 font-bold' : 'text-muted-foreground']">
-        <div
-          class="flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all"
-          :class="step === 5
-            ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-            : 'border-muted-foreground/40 bg-muted/20 text-muted-foreground'"
-        >
-          <Wrench class="w-4 h-4" />
-        </div>
-        <span class="text-sm hidden sm:inline-block">Manutenção</span>
-      </div>
+      <ChevronRight v-if="(index as number) < stepsList.length - 1" class="w-4 h-4 mx-1 text-muted-foreground/30 shrink-0" />
+    </template>
   </div>
 
   <form @submit="onSubmit">
@@ -89,16 +27,16 @@
 
       <!-- Cliente -->
       <FormField v-slot="{ value, handleChange }" name="codigoCliente">
-        <FormItem class="md:col-span-2">
+        <FormItem>
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
             Cliente <span class="text-red-500 font-bold">*</span>
           </FormLabel>
           <Select
             :model-value="value"
-            @update:model-value="val => { handleChange(String(val)); onClienteChange(String(val)) }"
+            @update:model-value="(val: string) => { handleChange(val); onClienteChange(val) }"
           >
             <FormControl>
-              <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
+              <SelectTrigger class="w-full bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
                 <SelectValue placeholder="Selecione um cliente..." />
               </SelectTrigger>
             </FormControl>
@@ -114,17 +52,17 @@
 
       <!-- Contrato -->
       <FormField v-slot="{ value, handleChange }" name="codigoContrato">
-        <FormItem class="md:col-span-2">
+        <FormItem>
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
             Contrato <span class="text-red-500 font-bold">*</span>
           </FormLabel>
           <Select
             :model-value="value"
             :disabled="!selectedClienteId"
-            @update:model-value="val => { handleChange(String(val)); onContratoChange(String(val)) }"
+            @update:model-value="(val: string) => { handleChange(val); onContratoChange(val) }"
           >
             <FormControl>
-              <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors disabled:opacity-50">
+              <SelectTrigger class="w-full bg-muted/20 border-border hover:border-blue-500/50 transition-colors disabled:opacity-50">
                 <SelectValue :placeholder="selectedClienteId ? 'Selecione um contrato...' : 'Selecione um cliente primeiro'" />
               </SelectTrigger>
             </FormControl>
@@ -146,10 +84,10 @@
           </FormLabel>
           <Select
             :model-value="value"
-            @update:model-value="val => handleChange(String(val))"
+            @update:model-value="(val: string) => handleChange(val)"
           >
             <FormControl>
-              <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
+              <SelectTrigger class="w-full bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
                 <SelectValue placeholder="Selecione a criticidade..." />
               </SelectTrigger>
             </FormControl>
@@ -202,7 +140,7 @@
 
       <!-- Data de Agendamento -->
       <FormField v-slot="{ value, handleChange }" name="dataAgendamento">
-        <FormItem class="md:col-span-2">
+        <FormItem>
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
             Data de Agendamento <span class="text-red-500 font-bold">*</span>
           </FormLabel>
@@ -217,7 +155,7 @@
       <FormField v-slot="{ componentField }" name="observacaoGeral">
         <FormItem class="md:col-span-2">
           <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-            Observação Geral <span class="text-red-500 font-bold">*</span>
+            Observação Geral
           </FormLabel>
           <FormControl>
             <Textarea
@@ -248,10 +186,10 @@
             </FormLabel>
             <Select
               :model-value="value"
-              @update:model-value="val => { handleChange(String(val)); onMaquinaChange(String(val)) }"
+              @update:model-value="(val: string) => { handleChange(val); onMaquinaChange(val) }"
             >
               <FormControl>
-                <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
+                <SelectTrigger class="w-full bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
                   <SelectValue placeholder="Selecione uma máquina..." />
                 </SelectTrigger>
               </FormControl>
@@ -758,6 +696,13 @@ const maxStep = computed(() => 5)
 const emit = defineEmits(['fechar', 'success'])
 
 const step = ref(1)
+const stepsList = [
+  { id: 1, name: 'Identificação', icon: FileText },
+  { id: 2, name: 'Máquina', icon: Server },
+  { id: 3, name: 'Técnico', icon: UserCheck },
+  { id: 4, name: 'Ativos', icon: ListChecks },
+  { id: 5, name: 'Manutenção', icon: Wrench },
+]
 const loading = ref(false)
 const loadingSoftware = ref(false)
 const loadingTecnicos = ref(false)
@@ -872,7 +817,7 @@ const formSchema = toTypedSchema(z.object({
   criticidade:           z.string({ required_error: '*' }).min(1, 'Selecione a criticidade'),
   tipoOrdem:             z.string({ required_error: '*' }).min(1, 'Selecione o tipo de ordem'),
   dataAgendamento:       z.string({ required_error: '*' }).min(1, 'Selecione a data de agendamento'),
-  observacaoGeral:       z.string({ required_error: '*' }).min(1, 'Informe a observação geral'),
+  observacaoGeral:       z.string().optional().or(z.literal('')),
   codigoMaquinaContrato: z.string({ required_error: '*' }).min(1, 'Selecione uma máquina'),
   codigoFuncionario:     z.string({ required_error: '*' }).min(1, 'Selecione um técnico'),
 }))
@@ -891,11 +836,12 @@ const form = useForm({
   }
 })
 
+
 onMounted(async () => {
   try {
     clientes.value = await clienteService.listar()
   } catch (error) {
-    console.error('Erro ao carregar clientes:', error)
+    console.error('Erro ao carregar dependências:', error)
   }
 
   if (props.initialData) {
@@ -1030,6 +976,8 @@ const STEP_FIELDS: Record<number, string[]> = {
   1: ['codigoCliente', 'codigoContrato', 'criticidade', 'tipoOrdem', 'dataAgendamento', 'observacaoGeral'],
   2: ['codigoMaquinaContrato'],
   3: ['codigoFuncionario'],
+  4: [],
+  5: [],
 }
 
 const nextStep = async () => {

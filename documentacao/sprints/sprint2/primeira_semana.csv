@@ -1,0 +1,14 @@
+﻿Chave da item,Resumo,Responsável,Status,Criado,Atualizado(a)
+SCRUM-168,[QA]pendencias da sprint1,Pedro Henrique Ribeiro,Concluído,17/abr/26 4:55 PM,02/mai/26 7:34 PM
+SCRUM-167,Pendências da Sprint 1,Giovana Zucareli,Realizando,15/abr/26 4:13 PM,02/mai/26 8:04 PM
+SCRUM-166,[BACK] Implementar testes para o endpoint de histórico de manutenções,Daniel Lima,Concluído,13/abr/26 4:52 PM,02/mai/26 8:00 PM
+SCRUM-165,[BACK] Implementar endpoint para consulta do histórico de manutenções,Thor Lyndgaard,Concluído,13/abr/26 4:52 PM,02/mai/26 7:44 PM
+SCRUM-164,[FRONT]Implementar tela de visualização do histórico de manutenções,Guilherme Bezerra Junqueira,Concluído,13/abr/26 4:48 PM,02/mai/26 7:44 PM
+SCRUM-163,[QA] Validar a regra de negócio da execução das manutenções,Daniel Lima,Concluído,13/abr/26 4:41 PM,02/mai/26 8:00 PM
+SCRUM-162,[QA] Validar regras de negócio para registro de viagens  e testar a tela,Daniel Lima,Concluído,13/abr/26 4:37 PM,02/mai/26 7:42 PM
+SCRUM-161,"[BACK] Realizar entity, dto e repositorys de registro de viagens ",Thomas Gustavo Heinrich,Concluído,13/abr/26 4:36 PM,02/mai/26 7:41 PM
+SCRUM-160,[FRONT]Implementar interface para registro de viagens de manutenção,Thomas Gustavo Heinrich,Concluído,13/abr/26 4:35 PM,02/mai/26 7:41 PM
+SCRUM-159,[BACK] Possibilitar a inclusão de um o check-list de ativos a serem levados na ordem de serviço,William Honda,Concluído,13/abr/26 4:33 PM,02/mai/26 7:58 PM
+SCRUM-157,[BD]Alimentar as tabelas de check-list e de ativos no banco,William Honda,Concluído,13/abr/26 3:43 PM,02/mai/26 7:30 PM
+SCRUM-156,Relatório de manutenções,Giovana Zucareli,Realizando,13/abr/26 3:39 PM,02/mai/26 8:06 PM
+SCRUM-155,Histórico de manutenções,Giovana Zucareli,Realizando,13/abr/26 3:37 PM,02/mai/26 8:06 PM

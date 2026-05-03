@@ -1,14 +1,66 @@
-﻿Chave da item,Resumo,Responsável,Status,Criado,Atualizado(a)
-SCRUM-168,[QA]pendencias da sprint1,Pedro Henrique Ribeiro,Concluído,17/abr/26 4:55 PM,02/mai/26 7:34 PM
-SCRUM-167,Pendências da Sprint 1,Giovana Zucareli,Realizando,15/abr/26 4:13 PM,02/mai/26 8:04 PM
-SCRUM-166,[BACK] Implementar testes para o endpoint de histórico de manutenções,Daniel Lima,Concluído,13/abr/26 4:52 PM,02/mai/26 8:00 PM
-SCRUM-165,[BACK] Implementar endpoint para consulta do histórico de manutenções,Thor Lyndgaard,Concluído,13/abr/26 4:52 PM,02/mai/26 7:44 PM
-SCRUM-164,[FRONT]Implementar tela de visualização do histórico de manutenções,Guilherme Bezerra Junqueira,Concluído,13/abr/26 4:48 PM,02/mai/26 7:44 PM
-SCRUM-163,[QA] Validar a regra de negócio da execução das manutenções,Daniel Lima,Concluído,13/abr/26 4:41 PM,02/mai/26 8:00 PM
-SCRUM-162,[QA] Validar regras de negócio para registro de viagens  e testar a tela,Daniel Lima,Concluído,13/abr/26 4:37 PM,02/mai/26 7:42 PM
-SCRUM-161,"[BACK] Realizar entity, dto e repositorys de registro de viagens ",Thomas Gustavo Heinrich,Concluído,13/abr/26 4:36 PM,02/mai/26 7:41 PM
-SCRUM-160,[FRONT]Implementar interface para registro de viagens de manutenção,Thomas Gustavo Heinrich,Concluído,13/abr/26 4:35 PM,02/mai/26 7:41 PM
-SCRUM-159,[BACK] Possibilitar a inclusão de um o check-list de ativos a serem levados na ordem de serviço,William Honda,Concluído,13/abr/26 4:33 PM,02/mai/26 7:58 PM
-SCRUM-157,[BD]Alimentar as tabelas de check-list e de ativos no banco,William Honda,Concluído,13/abr/26 3:43 PM,02/mai/26 7:30 PM
-SCRUM-156,Relatório de manutenções,Giovana Zucareli,Realizando,13/abr/26 3:39 PM,02/mai/26 8:06 PM
-SCRUM-155,Histórico de manutenções,Giovana Zucareli,Realizando,13/abr/26 3:37 PM,02/mai/26 8:06 PM
+﻿Tipo de item,Chave da item,ID da item,Resumo,Responsável,ID do responsável,Status,Criado,Atualizado(a)
+Subtask,SCRUM-212,11196,[DOC] atualizar o backlog sprint2 e sprint 1 add historia cad ativo e maquina,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,02/mai/26 7:10 PM,02/mai/26 11:02 PM
+Subtask,SCRUM-154,10946,[DOC] incluir as sprints planejadas no readme das sprints,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,10/abr/26 10:10 PM,02/mai/26 10:59 PM
+Subtask,SCRUM-213,11198,[DOC] arrumar o peso das histórias - 2 tabelas,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Aguardando resposta,02/mai/26 7:11 PM,02/mai/26 8:52 PM
+Subtask,SCRUM-151,10940,[DOC] arrumar os links da tabela de sprints,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Aguardando resposta,10/abr/26 9:56 PM,02/mai/26 8:51 PM
+Subtask,SCRUM-153,10944,[DOC] arrumar a coluna sprint do backlog de produto 2 tabelas,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Aguardando resposta,10/abr/26 9:57 PM,02/mai/26 8:46 PM
+Subtask,SCRUM-149,10905,[DOC] Fazer o estratégia de commits,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,10/abr/26 6:26 PM,02/mai/26 8:46 PM
+Subtask,SCRUM-152,10942,[DOC] formatar o dor e dod,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,10/abr/26 9:57 PM,02/mai/26 8:15 PM
+Subtask,SCRUM-214,11200,[jira] inserir peso a todas as tasks dessa sprint,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,02/mai/26 7:12 PM,02/mai/26 8:11 PM
+História,SCRUM-188,11134,Estruturas do Projeto,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Realizando,23/abr/26 8:50 PM,02/mai/26 8:08 PM
+História,SCRUM-210,11192,Cadastro de ativos,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,02/mai/26 5:33 PM,02/mai/26 8:08 PM
+História,SCRUM-137,10759,Checklist da manutenção,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Realizando,08/abr/26 1:41 PM,02/mai/26 8:07 PM
+História,SCRUM-136,10726,Aplicar um checklist de preparação,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Realizando,08/abr/26 12:39 PM,02/mai/26 8:06 PM
+História,SCRUM-156,10980,Relatório de manutenções,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Realizando,13/abr/26 3:39 PM,02/mai/26 8:06 PM
+História,SCRUM-155,10979,Histórico de manutenções,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Realizando,13/abr/26 3:37 PM,02/mai/26 8:06 PM
+História,SCRUM-134,10724,Registrar viagens de manutenção associadas a ordens,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,08/abr/26 12:38 PM,02/mai/26 8:06 PM
+História,SCRUM-132,10722,Registrar execução da manutenção,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Realizando,08/abr/26 12:37 PM,02/mai/26 8:05 PM
+História,SCRUM-143,10829,Documentação,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Realizando,09/abr/26 9:37 PM,02/mai/26 8:05 PM
+História,SCRUM-167,11065,Pendências da Sprint 1,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Realizando,15/abr/26 4:13 PM,02/mai/26 8:04 PM
+Subtask,SCRUM-211,11194,[BACK] Crud de ativos,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,02/mai/26 6:55 PM,02/mai/26 8:02 PM
+Subtask,SCRUM-209,11159,[FRONT] Tela de ativos,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,30/abr/26 4:33 PM,02/mai/26 8:02 PM
+Subtask,SCRUM-197,11144,[BD]Alimentar o banco de dados todo para facilitar os testes,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,26/abr/26 8:40 PM,02/mai/26 8:01 PM
+Subtask,SCRUM-189,11136,[BD] Ajustes no banco de dados,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Realizando,23/abr/26 8:51 PM,02/mai/26 8:01 PM
+Subtask,SCRUM-180,11123,[QA] Implementar testes de usabilidade do checklist,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,18/abr/26 1:46 PM,02/mai/26 8:01 PM
+Subtask,SCRUM-166,11032,[BACK] Implementar testes para o endpoint de histórico de manutenções,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,13/abr/26 4:52 PM,02/mai/26 8:00 PM
+Subtask,SCRUM-163,11026,[QA] Validar a regra de negócio da execução das manutenções,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,13/abr/26 4:41 PM,02/mai/26 8:00 PM
+Subtask,SCRUM-192,11139,[BACK] Implementar a lógica de inclusão de check-list dos ativos trocados e arrumados na ordem de serviço,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,26/abr/26 5:10 PM,02/mai/26 8:00 PM
+Subtask,SCRUM-201,11148,[UX] Desenvolver o protótipo do checklist de manutenção,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,26/abr/26 9:37 PM,02/mai/26 7:59 PM
+Subtask,SCRUM-179,11121,[BACK] Implementar endpoints para visualização dos checklists,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,18/abr/26 1:45 PM,02/mai/26 7:59 PM
+Subtask,SCRUM-173,11109,[QA] Validar checklist com equipe técnica,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Realizando,18/abr/26 1:09 PM,02/mai/26 7:58 PM
+Subtask,SCRUM-159,11018,[BACK] Possibilitar a inclusão de um o check-list de ativos a serem levados na ordem de serviço,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,13/abr/26 4:33 PM,02/mai/26 7:58 PM
+Subtask,SCRUM-175,11113,[UX] Desenvolver o protótipo do checklist de preparação,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,18/abr/26 1:13 PM,02/mai/26 7:58 PM
+Subtask,SCRUM-172,11107,[BACK] Fazer os endpoints para geração de relatórios de manutenções em pdf,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,18/abr/26 1:00 PM,02/mai/26 7:47 PM
+Subtask,SCRUM-171,11105,[BACK] Definir critérios para manutenções vencidas e próximas do vencimento,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,18/abr/26 12:56 PM,02/mai/26 7:47 PM
+Subtask,SCRUM-170,11103,[QA]Testar geração e visualização do relatório de manutenções,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Realizando,18/abr/26 12:55 PM,02/mai/26 7:47 PM
+Subtask,SCRUM-169,11101,[FRONT] Criar interface do relatório de manutenções ou gerar o a interface do pdf,Guilherme Bezerra Junqueira,62ba30ab268cac6e31c3c22f,Concluído,18/abr/26 12:55 PM,02/mai/26 7:46 PM
+Subtask,SCRUM-202,11150,[front/back] ligar o front de relatório com o back,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,28/abr/26 10:01 PM,02/mai/26 7:46 PM
+Subtask,SCRUM-194,11141,[UX] Desenvolver o protótipo do histórico de manutenções,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,26/abr/26 6:39 PM,02/mai/26 7:45 PM
+Subtask,SCRUM-165,11030,[BACK] Implementar endpoint para consulta do histórico de manutenções,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,13/abr/26 4:52 PM,02/mai/26 7:44 PM
+Subtask,SCRUM-164,11028,[FRONT]Implementar tela de visualização do histórico de manutenções,Guilherme Bezerra Junqueira,62ba30ab268cac6e31c3c22f,Concluído,13/abr/26 4:48 PM,02/mai/26 7:44 PM
+Subtask,SCRUM-205,11154,[BACK] Adicionar endpoints e validações necessárias para a tela de preparação de viagens,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,28/abr/26 11:35 PM,02/mai/26 7:42 PM
+Subtask,SCRUM-195,11142,[UX] Desenvolver o protótipo do planejamento de viagens,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,26/abr/26 6:40 PM,02/mai/26 7:42 PM
+Subtask,SCRUM-162,11024,[QA] Validar regras de negócio para registro de viagens  e testar a tela,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,13/abr/26 4:37 PM,02/mai/26 7:42 PM
+Subtask,SCRUM-187,11133,[BD] Adicionar as tabelas referente à viagem,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,23/abr/26 6:31 PM,02/mai/26 7:42 PM
+Subtask,SCRUM-183,11127,[BACK] Realizar o service e controller de registro de viagens,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,21/abr/26 4:14 PM,02/mai/26 7:42 PM
+Subtask,SCRUM-161,11022,"[BACK] Realizar entity, dto e repositorys de registro de viagens ",Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,13/abr/26 4:36 PM,02/mai/26 7:41 PM
+Subtask,SCRUM-160,11020,[FRONT]Implementar interface para registro de viagens de manutenção,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,13/abr/26 4:35 PM,02/mai/26 7:41 PM
+Subtask,SCRUM-148,10903,[DOC] Adicionar meta da sprint 2 ,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,10/abr/26 6:26 PM,02/mai/26 7:38 PM
+Subtask,SCRUM-147,10869,[DOC] Arrumar o backlog do produto,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,10/abr/26 5:39 PM,02/mai/26 7:38 PM
+Subtask,SCRUM-146,10835,[DOC] Arrumar tabela de sprints e de equipe e add link do dod e dor  no readme ,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,09/abr/26 10:06 PM,02/mai/26 7:37 PM
+Subtask,SCRUM-145,10833,[DOC] criar backlog da sprint2,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,09/abr/26 9:42 PM,02/mai/26 7:37 PM
+Subtask,SCRUM-144,10831,[DOC]Adicionar dor e dod nas sprints,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,09/abr/26 9:42 PM,02/mai/26 7:37 PM
+Subtask,SCRUM-185,11130,[BACK] Arrumar GET de Maquina para pegar os softwares,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,23/abr/26 3:41 PM,02/mai/26 7:35 PM
+Subtask,SCRUM-184,11128,"[FRONT] Funcionalidades de editar, excluir e visualizar",Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,22/abr/26 5:05 PM,02/mai/26 7:35 PM
+Subtask,SCRUM-168,11099,[QA]pendencias da sprint1,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,17/abr/26 4:55 PM,02/mai/26 7:34 PM
+Subtask,SCRUM-182,11126,[QA]pendencias sprint 1 - Daniel,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,18/abr/26 3:28 PM,02/mai/26 7:34 PM
+Subtask,SCRUM-186,11132,[FRONT] Implementar Light theme ,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,23/abr/26 4:54 PM,02/mai/26 7:34 PM
+Subtask,SCRUM-158,11016,[FRONT] Criar tela de execução de ordem - Tecnico,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Aguardando resposta,13/abr/26 4:32 PM,02/mai/26 7:33 PM
+Subtask,SCRUM-199,11146,[FRONT] Implementar o controle de acesso do técnico,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,26/abr/26 9:24 PM,02/mai/26 7:32 PM
+Subtask,SCRUM-193,11140,[Back] Possibilitar a visualização dos dados da ordem que não envolvam check-list,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,26/abr/26 5:18 PM,02/mai/26 7:32 PM
+Subtask,SCRUM-191,11138,[BACK] Implementar a inclusão de check-list de manutenção da maquina na execução da ordem,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,26/abr/26 5:05 PM,02/mai/26 7:30 PM
+Subtask,SCRUM-157,10982,[BD]Alimentar as tabelas de check-list e de ativos no banco,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,13/abr/26 3:43 PM,02/mai/26 7:30 PM
+Subtask,SCRUM-196,11143,[UX] Desenvolver o protótipo da ordem em execução,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,26/abr/26 6:41 PM,02/mai/26 7:29 PM
+Subtask,SCRUM-198,11145,[FRONT] Criar a tela de listar as ordens para o técnico,Guilherme Bezerra Junqueira,62ba30ab268cac6e31c3c22f,Concluído,26/abr/26 9:23 PM,02/mai/26 7:29 PM
+Subtask,SCRUM-207,11157,[BACK] implementar CRUD checklist manutencao,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,29/abr/26 11:14 PM,02/mai/26 10:32 AM
+Subtask,SCRUM-206,11155,[BACK] Endpoint para listar as ordens do técnico,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,29/abr/26 12:08 PM,30/abr/26 12:24 PM

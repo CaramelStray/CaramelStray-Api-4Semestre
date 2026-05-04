@@ -240,7 +240,7 @@ const filteredTecnicos = computed(() => {
             <TableHead class="pl-6 h-12">Técnico</TableHead>
             <TableHead class="h-12">Especialidade</TableHead>
             <TableHead class="h-12">Certificações</TableHead>
-            <TableHead class="h-12">Status</TableHead>
+            <TableHead class="h-12">Estado</TableHead>
             <TableHead class="h-12">Disponibilidade</TableHead>
             <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>

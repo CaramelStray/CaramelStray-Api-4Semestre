@@ -120,6 +120,7 @@
             <SelectContent class="z-[200]">
               <SelectItem value="MANUTENCAO_PREVENTIVA">Manutenção Preventiva</SelectItem>
               <SelectItem value="MANUTENCAO_CORRETIVA">Manutenção Corretiva</SelectItem>
+              <SelectItem value="INSTALACAO">Instalação</SelectItem>
             </SelectContent>
           </Select>
           <FormMessage />

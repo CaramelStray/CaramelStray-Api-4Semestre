@@ -295,9 +295,6 @@ onBeforeUnmount(() => {
 
               <TableCell class="text-right pr-6">
                 <div class="flex items-center justify-end gap-1">
-                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
-                    <Eye class="size-4.5" />
-                  </Button>
                   <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(s)">
                     <Pencil class="size-4.5" />
                   </Button>

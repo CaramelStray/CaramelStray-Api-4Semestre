@@ -8,6 +8,8 @@ public interface MaquinaChecklistManutencaoRepository extends JpaRepository<Maqu
 
     List<MaquinaChecklistManutencao> findByHistoricoManutencaoCodigoOrderByCodigoAsc(Integer codigoHistoricoManutencao);
 
+    List<MaquinaChecklistManutencao> findByHistoricoManutencaoOrdemServicoCodigoOrderByCodigoAsc(Integer codigoOrdemServico);
+
     boolean existsByHistoricoManutencaoCodigoAndTarefaId(
             Integer codigoHistoricoManutencao,
             Integer codigoTarefa);

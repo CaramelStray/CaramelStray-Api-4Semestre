@@ -7,8 +7,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_srv_maquina_historico_manutencao")
@@ -27,9 +30,16 @@ public class MaquinaHistoricoManutencao {
     @JoinColumn(name = "codigo_software_instalado")
     private MaquinaSoftwareInstalado softwareInstalado;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "codigo_tipo_manutencao", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "codigo_tipo_manutencao")
     private TipoManutencao tipoManutencao;
+
+    @ManyToOne
+    @JoinColumn(name = "codigo_ordem_servico")
+    private OrdemServico ordemServico;
+
+    @OneToMany(mappedBy = "historicoManutencao")
+    private List<MaquinaChecklistManutencao> checklistItems = new ArrayList<>();
 
     @Column(name = "status", length = 100)
     private String status;
@@ -138,5 +148,21 @@ public class MaquinaHistoricoManutencao {
 
     public void setObservacaoGeral(String observacaoGeral) {
         this.observacaoGeral = observacaoGeral;
+    }
+
+    public OrdemServico getOrdemServico() {
+        return ordemServico;
+    }
+
+    public void setOrdemServico(OrdemServico ordemServico) {
+        this.ordemServico = ordemServico;
+    }
+
+    public List<MaquinaChecklistManutencao> getChecklistItems() {
+        return checklistItems;
+    }
+
+    public void setChecklistItems(List<MaquinaChecklistManutencao> checklistItems) {
+        this.checklistItems = checklistItems;
     }
 }

@@ -1,6 +1,6 @@
 import { apiFetch } from './api'
 
-export interface MinhasOrdensResponseDTO {
+export interface TecnicosOrdensResponseDTO {
   codigo: number
   nomeCliente: string
   status: string
@@ -9,11 +9,22 @@ export interface MinhasOrdensResponseDTO {
   dataAgendamento?: string
 }
 
-export interface MinhaOrdemDetalhesResponseDTO {
+export interface MaquinaChecklistManutencaoResponseDTO {
+  codigo: number
+  codigoHistoricoManutencao?: number
+  codigoTarefa?: number
+  descricaoTarefa?: string
+  categoriaTarefa?: string
+  realizado?: boolean | null
+  observacaoTarefa?: string
+}
+
+export interface TecnicoOrdemDetalhesResponseDTO {
   // Ordem
   codigo: number
   status: string
   criticidade: string
+  tipoOrdem?: string
   dataAbertura?: string
   dataAgendamento?: string
   dataInicioExecucao?: string
@@ -39,7 +50,7 @@ export interface MinhaOrdemDetalhesResponseDTO {
   numeroSerieMaquina?: string
   trabalhoEmAltura?: boolean
   manutencaoFeitaMaquina?: string
-  // Checklist
+  // Checklist ativos
   checklistAtivos?: {
     codigo: number
     descricaoAtivo?: string
@@ -51,6 +62,8 @@ export interface MinhaOrdemDetalhesResponseDTO {
     devolvido?: boolean
     observacao?: string
   }[]
+  // Checklist máquina
+  checklistMaquina?: MaquinaChecklistManutencaoResponseDTO[]
 }
 
 export interface OrdemServicoResponseDTO {
@@ -62,6 +75,8 @@ export interface OrdemServicoResponseDTO {
   codigoMaquinaContrato: number
   status: string
   criticidade: string
+  tipoOrdem?: string
+  codigoHistoricoManutencao?: number
   dataAbertura: string
   dataAgendamento?: string
   dataInicioExecucao?: string
@@ -95,6 +110,7 @@ export interface OrdemServicoCreateDTO {
   codigoMaquinaContrato: number
   status?: string
   criticidade?: string
+  tipoOrdem?: string
   dataAbertura?: string
   dataAgendamento?: string
   dataInicioExecucao?: string
@@ -111,6 +127,9 @@ export const ordemServicoService = {
 
   listarChecklistAtivos: (id: number) =>
     apiFetch<OrdemServicoChecklistAtivoResponseDTO[]>(`/ordens-servico/${id}/checklist-ativos`),
+
+  listarChecklistMaquina: (id: number) =>
+    apiFetch<MaquinaChecklistManutencaoResponseDTO[]>(`/ordens-servico/${id}/checklist-maquina`),
 
   buscarPorCliente: (codigoCliente: number) =>
     apiFetch<OrdemServicoResponseDTO[]>(`/ordens-servico/cliente/${codigoCliente}`),
@@ -144,9 +163,63 @@ export const ordemServicoService = {
       method: 'DELETE',
     }),
 
-  minhasOrdens: () =>
-    apiFetch<MinhasOrdensResponseDTO[]>('/ordens-servico/minhas-ordens'),
+  substituirChecklistAtivos: (id: number, items: Array<{ codigoAtivo: number; codigoFuncionario?: number; descricaoAtivo?: string }>) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO[]>(`/ordens-servico/${id}/checklist-ativos`, {
+      method: 'PUT',
+      body: JSON.stringify(items),
+    }),
 
-  minhaOrdemPorId: (id: number) =>
-    apiFetch<MinhaOrdemDetalhesResponseDTO>(`/ordens-servico/minhas-ordens/${id}`),
+  tecnicosOrdens: () =>
+    apiFetch<TecnicosOrdensResponseDTO[]>('/ordens-servico/tecnicos-ordens'),
+
+  tecnicoOrdemPorId: (id: number) =>
+    apiFetch<TecnicoOrdemDetalhesResponseDTO>(`/ordens-servico/tecnico-ordens/${id}`),
+
+  adicionarChecklistAtivo: (id: number, dto: { codigoAtivo: number; codigoFuncionario?: number; descricaoAtivo?: string }) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO>(`/ordens-servico/${id}/checklist-ativos`, {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    }),
+
+  marcarAtivoLevado: (codigoOrdem: number, codigoItem: number) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO>(`/ordens-servico/minhas-ordens/${codigoOrdem}/checklist-ativos/${codigoItem}/levar`, {
+      method: 'PATCH',
+    }),
+
+  desmarcarAtivoLevado: (codigoOrdem: number, codigoItem: number) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO>(`/ordens-servico/minhas-ordens/${codigoOrdem}/checklist-ativos/${codigoItem}/deslevar`, {
+      method: 'PATCH',
+    }),
+
+  marcarAtivoDevolvido: (codigoOrdem: number, codigoItem: number) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO>(`/ordens-servico/minhas-ordens/${codigoOrdem}/checklist-ativos/${codigoItem}/devolver`, {
+      method: 'PATCH',
+    }),
+
+  desmarcarAtivoDevolvido: (codigoOrdem: number, codigoItem: number) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO>(`/ordens-servico/minhas-ordens/${codigoOrdem}/checklist-ativos/${codigoItem}/desdevolver`, {
+      method: 'PATCH',
+    }),
+
+  atualizarStatus: (codigoOrdem: number, status: string) =>
+    apiFetch<OrdemServicoResponseDTO>(`/ordens-servico/minhas-ordens/${codigoOrdem}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    }),
+
+  adicionarChecklistMaquinaItem: (codigoHistoricoManutencao: number, codigoTarefa: number) =>
+    apiFetch<MaquinaChecklistManutencaoResponseDTO>(
+      `/maquinas-historicos-manutencao/${codigoHistoricoManutencao}/checklist`,
+      { method: 'POST', body: JSON.stringify({ codigoTarefa }) },
+    ),
+
+  atualizarChecklistMaquinaItem: (
+    codigoHistoricoManutencao: number,
+    codigoChecklist: number,
+    dto: { realizado: boolean; observacaoTarefa?: string },
+  ) =>
+    apiFetch<MaquinaChecklistManutencaoResponseDTO>(
+      `/maquinas-historicos-manutencao/${codigoHistoricoManutencao}/checklist/${codigoChecklist}`,
+      { method: 'PUT', body: JSON.stringify(dto) },
+    ),
 }

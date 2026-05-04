@@ -7,7 +7,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  Package, Plus, Search, X, CheckCircle2, Pencil,
+  Package, Plus, Search, X, CheckCircle2, Pencil, Download,
 } from 'lucide-vue-next'
 
 import { ativoService, type AtivoResponseDTO, type CatalogoAtivoDTO } from '@/services/ativoService'
@@ -141,16 +141,7 @@ const onEdicaoSucesso = async (a: AtivoResponseDTO) => {
       </div>
     </Transition>
 
-    <!-- Header -->
-    <div class="flex items-center gap-3">
-      <div class="flex items-center justify-center w-10 h-10 rounded-full border border-blue-500 bg-blue-500/20 text-blue-400">
-        <Package class="w-5 h-5" />
-      </div>
-      <div>
-        <h1 class="text-2xl font-bold tracking-tight">Ativos</h1>
-        <p class="text-sm text-muted-foreground">Inventário de ativos e responsáveis</p>
-      </div>
-    </div>
+
 
     <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
     <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
@@ -168,24 +159,29 @@ const onEdicaoSucesso = async (a: AtivoResponseDTO) => {
       </Card>
     </div>
 
-    <!-- Search + Button -->
-    <div class="flex items-center gap-4 w-full">
-      <div class="relative flex-1">
+    <!-- Search + Buttons -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center w-full">
+      <div class="grid grid-cols-2 gap-4 w-full sm:w-auto sm:flex sm:gap-4 sm:shrink-0 sm:order-2">
+        <Button variant="outline" size="lg" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 border-border hover:bg-muted/20">
+          <Download class="w-4 h-4 mr-2 shrink-0" /> Exportar Relatório
+        </Button>
+        <Button size="lg" @click="isCadastroOpen = true" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 bg-[#2563eb] hover:opacity-90 text-white border-none shadow-md">
+          <Plus class="w-4 h-4 mr-2 shrink-0" /> Novo Ativo
+        </Button>
+      </div>
+      <div class="relative w-full sm:flex-1 sm:order-1">
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
         <Input v-model="searchQuery" placeholder="Buscar ativo, técnico, nº série..." class="pl-11 bg-sidebar h-12 text-sm border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary" />
       </div>
-      <Button size="lg" @click="isCadastroOpen = true" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] hover:opacity-90 text-white border-none shadow-md shrink-0">
-        <Plus class="w-4 h-4 mr-2" /> Novo Ativo
-      </Button>
     </div>
 
     <!-- Tabs por status -->
-    <div class="flex gap-1 border-b border-border">
+    <div class="flex gap-1 border-b border-border overflow-x-auto scrollbar-none">
       <button
         v-for="tab in tabs"
         :key="tab.key"
         @click="activeTab = tab.key"
-        class="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider border-b-2 transition-colors"
+        class="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap shrink-0"
         :class="activeTab === tab.key
           ? 'border-blue-500 text-blue-400'
           : 'border-transparent text-muted-foreground hover:text-foreground'"

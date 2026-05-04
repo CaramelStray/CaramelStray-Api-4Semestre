@@ -1,6 +1,7 @@
 package com.example.tracker.service;
 
-import com.example.tracker.dto.ordemservico.TecnicoOrdensResponseDTO;
+import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
@@ -11,7 +12,7 @@ public interface OrdemServicoService {
 
     List<OrdemServico> listarTodos();
 
-    List<TecnicoOrdensResponseDTO> buscarTecnicoOrdens(String emailUsuario);
+    List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario);
 
     OrdemServico buscarTecnicoOrdem(Integer id, String emailUsuario);
 
@@ -37,5 +38,9 @@ public interface OrdemServicoService {
 
     OrdemServico atualizar(Integer id, OrdemServicoCreateDTO dto);
 
+    OrdemServico atualizarStatusTecnico(Integer id, String novoStatus, String emailUsuario);
+
     void deletar(Integer id);
+
+    List<MaquinaChecklistManutencaoResponseDTO> listarChecklistMaquina(Integer id);
 }

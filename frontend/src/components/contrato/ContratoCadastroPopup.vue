@@ -258,12 +258,40 @@
           </div>
         </div>
       </form>
+
+      <!-- Confirmação de ordens de instalação criadas -->
+      <div v-if="mostrandoConfirmacao" class="fixed inset-0 z-[200] bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center gap-6 p-8">
+        <div class="flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/15 border border-amber-500/30">
+          <AlertTriangle class="w-8 h-8 text-amber-400" />
+        </div>
+        <div class="text-center space-y-2">
+          <h3 class="text-xl font-bold text-foreground">Contrato criado com sucesso!</h3>
+          <p class="text-sm text-muted-foreground max-w-sm">
+            {{ ordensCriadasInstalacao.length === 1
+              ? `Uma ordem de instalação foi criada (Ordem #${ordensCriadasInstalacao[0]}) com status ABERTA.`
+              : `${ordensCriadasInstalacao.length} ordens de instalação foram criadas com status ABERTA.`
+            }}
+          </p>
+          <p class="text-sm font-medium text-amber-400">
+            Ela precisa ser preenchida antes de ser agendada.
+          </p>
+        </div>
+        <div class="flex gap-3">
+          <Button variant="outline" class="border-border hover:bg-muted/30" @click="finalizarEFechar">
+            Fechar
+          </Button>
+          <Button class="bg-amber-600 hover:bg-amber-500 text-white px-6" @click="finalizarEIrParaOrdens">
+            Preencher Ordem
+          </Button>
+        </div>
+      </div>
     </DialogContent>
   </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed, nextTick, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useForm, useFieldArray } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -277,10 +305,11 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePickerInput } from '@/components/ui/date-picker'
-import { ChevronRight, FileText, Server, Layers, Plus, Trash2, ArrowRight } from 'lucide-vue-next'
+import { ChevronRight, FileText, Server, Layers, Plus, Trash2, ArrowRight, AlertTriangle } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
+import { ordemServicoService } from '@/services/ordemServicoService'
 import { catalogoMaquinaService } from '@/services/catalogoMaquinaService'
 import { maquinaContratoService } from '@/services/maquinaContratoService'
 import { catalogoSoftwareService } from '@/services/catalogoSoftwareService.ts'
@@ -295,12 +324,30 @@ const emit = defineEmits<{
   success: [contrato: ContratoResponseDTO]
 }>()
 
+const router = useRouter()
 const isEditMode = computed(() => !!props.initialData)
 
 const step = ref(1)
 const loading = ref(false)
 const erroValidacao = ref('')
 const conexaoInternet = ref(false)
+
+const mostrandoConfirmacao = ref(false)
+const ordensCriadasInstalacao = ref<number[]>([])
+let contratoSalvoRef: ContratoResponseDTO | null = null
+
+function finalizarEFechar() {
+  mostrandoConfirmacao.value = false
+  closeDialog(false)
+  if (contratoSalvoRef) emit('success', contratoSalvoRef)
+}
+
+function finalizarEIrParaOrdens() {
+  mostrandoConfirmacao.value = false
+  closeDialog(false)
+  if (contratoSalvoRef) emit('success', contratoSalvoRef)
+  router.push('/ordens')
+}
 
 // IDs das máquinas/softwares existentes em modo edição (índice paralelo ao fieldArray)
 const maquinasCodigos = ref<Array<number | null>>([])
@@ -323,15 +370,15 @@ onMounted(async () => {
 const formSchema = toTypedSchema(z.object({
   codigoCliente: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   status: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  dataInicio: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  dataFim: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  dataInicio: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').refine((v: string) => v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Data inválida'),
+  dataFim: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').refine((v: string) => v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Data inválida'),
   periodoManutencaoPreventiva: z.coerce.number({ required_error: 'Campo obrigatório' }).min(1, 'Informe um período válido'),
   descricao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
 
   maquinas: z.array(z.object({
     codigoMaquina: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
     numeroSerie: z.string().optional().default(''),
-    dataInstalacao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+    dataInstalacao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').refine((v: string) => v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Data inválida'),
   })).min(1, 'Adicione pelo menos uma máquina'),
 
   softwares: z.array(z.object({
@@ -613,6 +660,27 @@ const onSubmit = form.handleSubmit(async (values) => {
           } as any)
         }))
       }
+
+      const ordensIds: number[] = []
+      for (const maqId of maquinasGeradasIds) {
+        try {
+          const ordemCriada = await ordemServicoService.criar({
+            codigoCliente: Number(values.codigoCliente),
+            codigoContrato: contratoId,
+            codigoMaquinaContrato: maqId,
+            tipoOrdem: 'INSTALACAO',
+            status: 'ABERTA',
+          } as any)
+          if (ordemCriada?.codigo) ordensIds.push(ordemCriada.codigo)
+        } catch (e) {
+          console.error('Erro ao criar ordem de instalação:', e)
+        }
+      }
+
+      contratoSalvoRef = contratoSalvo
+      ordensCriadasInstalacao.value = ordensIds
+      mostrandoConfirmacao.value = true
+      return
     }
 
     closeDialog(false)

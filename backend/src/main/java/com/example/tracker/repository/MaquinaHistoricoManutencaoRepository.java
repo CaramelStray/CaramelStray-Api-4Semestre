@@ -3,6 +3,7 @@ package com.example.tracker.repository;
 import com.example.tracker.entity.MaquinaHistoricoManutencao;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +13,8 @@ public interface MaquinaHistoricoManutencaoRepository extends JpaRepository<Maqu
     List<MaquinaHistoricoManutencao> findByMaquinaContratoCodigo(Integer codigoMaquinaContrato);
 
     List<MaquinaHistoricoManutencao> findBySoftwareInstaladoCodigo(Integer codigoSoftwareInstalado);
+
+    Optional<MaquinaHistoricoManutencao> findByOrdemServicoCodigo(Integer codigoOrdemServico);
 
     @Query("""
             select h

@@ -16,12 +16,14 @@ public class OrdemServicoResponseDTO {
     private Integer codigoMaquinaContrato;
     private String status;
     private String criticidade;
+    private String tipoOrdem;
     private LocalDateTime dataAbertura;
     private LocalDateTime dataAgendamento;
     private LocalDateTime dataInicioExecucao;
     private LocalDateTime dataFimExecucao;
     private String observacaoGeral;
     private Integer quantidadeChecklistAtivos;
+    private Integer codigoHistoricoManutencao;
     private List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos;
     private List<CatalogoMaquinaChecklistPadraoResponseDTO> checklistMaquina;
 
@@ -52,6 +54,7 @@ public class OrdemServicoResponseDTO {
 
     dto.setStatus(os.getStatus());
     dto.setCriticidade(os.getCriticidade());
+    dto.setTipoOrdem(os.getTipoOrdem());
     dto.setDataAbertura(os.getDataAbertura());
     dto.setDataAgendamento(os.getDataAgendamento());
     dto.setDataInicioExecucao(os.getDataInicioExecucao());
@@ -66,6 +69,10 @@ public class OrdemServicoResponseDTO {
 
     dto.setChecklistAtivos(checklistAtivos);
     dto.setQuantidadeChecklistAtivos(checklistAtivos.size());
+
+    if (os.getHistoricoManutencao() != null) {
+        dto.setCodigoHistoricoManutencao(os.getHistoricoManutencao().getCodigo());
+    }
 
     List<CatalogoMaquinaChecklistPadraoResponseDTO> checklistMaquina =
             (os.getMaquinaContrato() == null ||
@@ -148,6 +155,14 @@ public class OrdemServicoResponseDTO {
         this.criticidade = criticidade;
     }
 
+    public String getTipoOrdem() {
+        return tipoOrdem;
+    }
+
+    public void setTipoOrdem(String tipoOrdem) {
+        this.tipoOrdem = tipoOrdem;
+    }
+
     public LocalDateTime getDataAbertura() {
         return dataAbertura;
     }
@@ -194,6 +209,14 @@ public class OrdemServicoResponseDTO {
 
     public void setQuantidadeChecklistAtivos(Integer quantidadeChecklistAtivos) {
         this.quantidadeChecklistAtivos = quantidadeChecklistAtivos;
+    }
+
+    public Integer getCodigoHistoricoManutencao() {
+        return codigoHistoricoManutencao;
+    }
+
+    public void setCodigoHistoricoManutencao(Integer codigoHistoricoManutencao) {
+        this.codigoHistoricoManutencao = codigoHistoricoManutencao;
     }
 
     public List<OrdemServicoChecklistAtivoResponseDTO> getChecklistAtivos() {

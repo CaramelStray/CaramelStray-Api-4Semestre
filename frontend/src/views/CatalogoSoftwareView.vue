@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
     <div v-else-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
     
     <template v-else>
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div :class="['grid gap-4 xl:grid-cols-4', stats.length > 1 ? 'grid-cols-2' : 'grid-cols-1']">
         <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{{ stat.label }}</CardTitle>
@@ -188,23 +188,22 @@ onBeforeUnmount(() => {
         </Card>
       </div>
 
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
-        <div class="relative flex-1 w-full">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center w-full">
+        <div class="grid grid-cols-2 gap-4 w-full sm:w-auto sm:flex sm:gap-4 sm:shrink-0 sm:order-2">
+          <Button variant="outline" size="lg" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 border-border hover:bg-muted/20">
+            <Download class="w-4 h-4 mr-2 shrink-0" /> Exportar Relatório
+          </Button>
+          <Button size="lg" @click="isCadastroOpen = true" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
+            <Plus class="w-4 h-4 mr-2 shrink-0" /> Novo Software
+          </Button>
+        </div>
+        <div class="relative w-full sm:flex-1 sm:order-1">
           <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
           <Input 
             v-model="searchQuery" 
             placeholder="Buscar por nome, tipo ou fornecedor..." 
             class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary" 
           />
-        </div>
-        <div class="flex gap-3 shrink-0 w-full sm:w-auto">
-          <Button variant="outline" size="lg" class="h-12 w-full sm:w-auto font-bold uppercase text-[11px] px-6 border-border hover:bg-muted/20">
-            <Download class="w-4 h-4 mr-2" /> Exportar Relatório
-          </Button>
-          
-          <Button size="lg" @click="isCadastroOpen = true" class="h-12 w-full sm:w-auto font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
-            <Plus class="w-4 h-4 mr-2" /> Novo Software
-          </Button>
         </div>
       </div>
 
@@ -296,9 +295,6 @@ onBeforeUnmount(() => {
 
               <TableCell class="text-right pr-6">
                 <div class="flex items-center justify-end gap-1">
-                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
-                    <Eye class="size-4.5" />
-                  </Button>
                   <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(s)">
                     <Pencil class="size-4.5" />
                   </Button>

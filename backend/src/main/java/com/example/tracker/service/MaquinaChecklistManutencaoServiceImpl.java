@@ -1,11 +1,14 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
 import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoUpdateDTO;
 import com.example.tracker.entity.CatalogoMaquina;
 import com.example.tracker.entity.CatalogoMaquinaChecklistPadrao;
+import com.example.tracker.entity.CatalogoTarefa;
 import com.example.tracker.entity.MaquinaChecklistManutencao;
 import com.example.tracker.entity.MaquinaHistoricoManutencao;
 import com.example.tracker.entity.Tecnico;
+import com.example.tracker.repository.CatalogoTarefaRepository;
 import com.example.tracker.repository.MaquinaChecklistManutencaoRepository;
 import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
 import com.example.tracker.repository.TecnicoRepository;
@@ -31,14 +34,17 @@ public class MaquinaChecklistManutencaoServiceImpl implements MaquinaChecklistMa
     private final MaquinaChecklistManutencaoRepository maquinaChecklistManutencaoRepository;
     private final MaquinaHistoricoManutencaoRepository maquinaHistoricoManutencaoRepository;
     private final TecnicoRepository tecnicoRepository;
+    private final CatalogoTarefaRepository catalogoTarefaRepository;
 
     public MaquinaChecklistManutencaoServiceImpl(
             MaquinaChecklistManutencaoRepository maquinaChecklistManutencaoRepository,
             MaquinaHistoricoManutencaoRepository maquinaHistoricoManutencaoRepository,
-            TecnicoRepository tecnicoRepository) {
+            TecnicoRepository tecnicoRepository,
+            CatalogoTarefaRepository catalogoTarefaRepository) {
         this.maquinaChecklistManutencaoRepository = maquinaChecklistManutencaoRepository;
         this.maquinaHistoricoManutencaoRepository = maquinaHistoricoManutencaoRepository;
         this.tecnicoRepository = tecnicoRepository;
+        this.catalogoTarefaRepository = catalogoTarefaRepository;
     }
 
     @Override
@@ -51,6 +57,39 @@ public class MaquinaChecklistManutencaoServiceImpl implements MaquinaChecklistMa
         validarAcessoAoHistorico(historico);
 
         return maquinaChecklistManutencaoRepository.findByHistoricoManutencaoCodigoOrderByCodigoAsc(codigoHistoricoNaoNulo);
+    }
+
+    @Override
+    @Transactional
+    public MaquinaChecklistManutencao adicionarItem(Integer codigoHistoricoManutencao, Integer codigoTarefa) {
+        Integer codigoHistoricoNaoNulo =
+                requireId(codigoHistoricoManutencao, "Codigo do historico de manutencao e obrigatorio");
+        Integer codigoTarefaNaoNulo = requireId(codigoTarefa, "Codigo da tarefa e obrigatorio");
+
+        MaquinaHistoricoManutencao historico = buscarHistorico(codigoHistoricoNaoNulo);
+        validarAcessoAoHistorico(historico);
+        validarHistoricoEditavel(historico);
+
+        CatalogoTarefa tarefa = catalogoTarefaRepository.findById(codigoTarefaNaoNulo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa nao encontrada"));
+
+        MaquinaChecklistManutencao item = new MaquinaChecklistManutencao();
+        item.setHistoricoManutencao(historico);
+        item.setTarefa(tarefa);
+        item.setRealizado(null);
+        return maquinaChecklistManutencaoRepository.save(item);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MaquinaChecklistManutencaoResponseDTO> listarPorOrdemServico(Integer codigoOrdemServico) {
+        Integer codigoOrdemNaoNulo = requireId(codigoOrdemServico, "Codigo da ordem de servico e obrigatorio");
+
+        return maquinaChecklistManutencaoRepository
+                .findByHistoricoManutencaoOrdemServicoCodigoOrderByCodigoAsc(codigoOrdemNaoNulo)
+                .stream()
+                .map(MaquinaChecklistManutencaoResponseDTO::fromEntity)
+                .toList();
     }
 
     @Override
@@ -173,9 +212,15 @@ public class MaquinaChecklistManutencaoServiceImpl implements MaquinaChecklistMa
                 tecnico.getId());
 
         if (!vinculado) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "O tecnico autenticado nao possui acesso a este historico de manutencao");
+            boolean vinculadoViaOs = historico.getOrdemServico() != null
+                    && historico.getOrdemServico().getFuncionario() != null
+                    && Objects.equals(historico.getOrdemServico().getFuncionario().getId(), tecnico.getId());
+
+            if (!vinculadoViaOs) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "O tecnico autenticado nao possui acesso a este historico de manutencao");
+            }
         }
     }
 

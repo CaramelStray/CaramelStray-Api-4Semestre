@@ -22,6 +22,13 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   })
 
   if (!response.ok) {
+    if (response.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user_email')
+      localStorage.removeItem('user_role')
+      window.location.href = '/login'
+      return undefined as T
+    }
     let data: any = null
     try { data = await response.json() } catch { /* sem corpo */ }
     const error: any = new Error(`Erro ${response.status}: ${response.statusText}`)

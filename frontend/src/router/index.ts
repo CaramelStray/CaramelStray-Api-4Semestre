@@ -25,6 +25,16 @@ const router = createRouter({
       meta: { roles: ['ROLE_TECNICO'] },
     },
     {
+      path: '/minhas-ordens/:id',
+      component: () => import('@/views/TecnicoOrdemDetalhesView.vue'),
+      meta: { roles: ['ROLE_TECNICO'] },
+    },
+    {
+      path: '/calendario',
+      component: () => import('@/views/CalendarioTecnicoView.vue'),
+      meta: { roles: ['ROLE_TECNICO'] },
+    },
+    {
       path: '/clientes',
       component: () => import('@/views/ClientesView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },

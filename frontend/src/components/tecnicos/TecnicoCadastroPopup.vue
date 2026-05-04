@@ -82,7 +82,7 @@ const formSchema = toTypedSchema(z.object({
   habilidades: z.array(z.object({
     habilidadeId: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
     nivel: z.number({ required_error: 'Campo obrigatório', invalid_type_error: 'Informe um número entre 1 e 5' }).min(1, 'Mínimo 1').max(5, 'Máximo 5'),
-    dataValidade: z.string().optional()
+    dataValidade: z.string().refine(v => !v || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Data inválida').optional()
   })).optional().default([])
 }))
 
@@ -469,8 +469,8 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
 
             <FormField :name="`habilidades[${index}].dataValidade`" v-slot="{ value, handleChange }">
               <FormItem>
-                <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-                  Data de Validade <span class="text-red-500 font-bold">*</span>
+                <FormLabel class="text-sm font-medium text-foreground/80">
+                  Data de Validade
                 </FormLabel>
                 <FormControl>
                   <DatePickerInput :model-value="value" @update:model-value="handleChange" />

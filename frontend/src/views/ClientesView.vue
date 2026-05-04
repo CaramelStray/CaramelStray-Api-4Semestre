@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,7 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { 
+import {
   Download, Plus, Users, Cpu, AlertTriangle, TrendingUp,
   Pencil, Eye, Search,
   Info, XCircle, CheckCircle2, X
@@ -22,7 +23,10 @@ import { onMounted } from 'vue'
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
 
+const router = useRouter()
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingCliente = ref<ClienteResponseDTO | null>(null)
 const searchQuery = ref('')
 
 const criticidadeMap = {
@@ -134,6 +138,26 @@ const fecharSucessoCadastro = () => {
   }
 }
 
+const abrirEdicao = async (cliente: ClienteResponseDTO) => {
+  try {
+    const dadosCompletos = await clienteService.buscarPorId(cliente.id)
+    editingCliente.value = dadosCompletos
+  } catch {
+    editingCliente.value = cliente
+  }
+  isEditOpen.value = true
+}
+
+const onEdicaoSucesso = async (cliente: ClienteResponseDTO) => {
+  mostrarSucessoCadastro(`Cliente "${cliente.nomeEmpresa}" atualizado com sucesso.`)
+  loading.value = true
+  try {
+    clientes.value = await clienteService.listar()
+    const resultados = await Promise.all(clientes.value.map(c => contratoService.buscarPorCliente(c.id).catch(() => [])))
+    clientes.value.forEach((c, i) => { contratosPorCliente.value[c.id] = resultados[i] || [] })
+  } catch (e: any) { erro.value = e.message } finally { loading.value = false }
+}
+
 const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
   mostrarSucessoCadastro(`Cliente "${cliente.nomeEmpresa}" cadastrado com sucesso.`)
 
@@ -189,7 +213,7 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
     <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
     <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
     
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div :class="['grid gap-4 xl:grid-cols-4', stats.length > 1 ? 'grid-cols-2' : 'grid-cols-1']">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{{ stat.label }}</CardTitle>
@@ -202,7 +226,7 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
       </Card>
     </div>
 
-    <div class="flex items-center justify-between gap-4 w-full">
+    <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between w-full">
       <div class="relative flex-1">
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
         <Input 
@@ -234,7 +258,7 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
             <TableHead class="h-12">Localização</TableHead>
             <TableHead class="h-12">Alcance</TableHead>
             <TableHead class="h-12">Status</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
         
@@ -292,10 +316,10 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="router.push(`/clientes/${c.id}`)">
                   <Eye class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(c)">
                   <Pencil class="size-5" />
                 </Button>
               </div>
@@ -309,7 +333,7 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
-          
+
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
@@ -320,7 +344,7 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
                 <X class="w-6 h-6" />
               </Button>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <ClienteCadastro
                 @fechar="isCadastroOpen = false"
@@ -330,7 +354,34 @@ const onCadastroSucesso = async (cliente: ClienteResponseDTO) => {
           </div>
         </div>
       </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false"></div>
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[70vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Cliente</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados do cliente selecionado.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isEditOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <ClienteCadastro
+                :initialData="editingCliente"
+                @fechar="isEditOpen = false"
+                @sucesso="onEdicaoSucesso"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
+
 
   </div>
 </template>

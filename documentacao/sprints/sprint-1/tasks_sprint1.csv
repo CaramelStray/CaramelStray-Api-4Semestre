@@ -1,0 +1,64 @@
+﻿Tipo de item,Chave da item,ID da item,Resumo,Responsável,ID do responsável,Status,Criado,Atualizado(a)
+Subtask,SCRUM-122,10640,[BACK] Revisão de relacionamento entre as entidades,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,04/abr/26 6:44 PM,04/abr/26 9:04 PM
+Subtask,SCRUM-120,10637,[BACK] Auxiliar nos endpoints de ordem,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,04/abr/26 3:42 PM,05/abr/26 10:06 PM
+Subtask,SCRUM-119,10635,[BACK] Realizar o CRUD de ordem ,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,04/abr/26 3:41 PM,05/abr/26 10:06 PM
+Subtask,SCRUM-118,10633,[FRONT] Tela para cadastrar novas competencias,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,04/abr/26 2:07 PM,04/abr/26 2:28 PM
+Subtask,SCRUM-117,10632,[FRONT] Tela para visualizar competencias,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,04/abr/26 2:06 PM,04/abr/26 2:28 PM
+Subtask,SCRUM-116,10599,[FRONT] Tela para cadastrar novos técnicos,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,04/abr/26 12:19 AM,04/abr/26 11:02 PM
+Subtask,SCRUM-115,10598,[BACK]Criar entidade para maquina histórico,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,03/abr/26 11:46 PM,04/abr/26 3:40 PM
+Subtask,SCRUM-113,10595,[BACK]criar entidade de tabela relacional entre maquina e software,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,03/abr/26 11:32 PM,04/abr/26 3:42 PM
+Subtask,SCRUM-112,10593,[DOC] Realizar as documentações do projeto no github e jira,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,03/abr/26 11:14 PM,05/abr/26 10:05 PM
+Subtask,SCRUM-111,10591,[BACK] Fazer refactor na tabela de técnico/funcionario,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,03/abr/26 11:05 PM,04/abr/26 12:54 AM
+Subtask,SCRUM-110,10589,[BD] Criar tabela de ordem de serviço no banco,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,03/abr/26 10:32 PM,04/abr/26 6:22 PM
+Subtask,SCRUM-109,10555,[FRONT] Criar a tela de visualização de catálogo de sistemas,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,03/abr/26 8:58 PM,03/abr/26 11:02 PM
+Subtask,SCRUM-106,10517,[BACK] Criar endpoint de maquinas contrato,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,03/abr/26 11:19 AM,04/abr/26 9:04 PM
+Subtask,SCRUM-104,10481,[BACK] correção do back de cliente após mudança do BD,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,03/abr/26 12:41 AM,03/abr/26 12:41 AM
+Subtask,SCRUM-103,10479,[ux] Criar o protótipo da tela de cadastro de maquinas,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,03/abr/26 12:18 AM,04/abr/26 6:20 PM
+Subtask,SCRUM-102,10477,[BACK] Fazer o refactor de habilidades,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,03/abr/26 12:08 AM,03/abr/26 12:29 AM
+Subtask,SCRUM-100,10474,[FRONT] Criar tela de visualização do catálogo de maquinas,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,02/abr/26 10:43 PM,04/abr/26 5:17 PM
+Subtask,SCRUM-99,10472,[FRONT] Criar tela de cadastro catalogo de maquina,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,02/abr/26 10:42 PM,04/abr/26 5:16 PM
+Subtask,SCRUM-98,10470,[BACK] Criar endpoints de maquina,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,02/abr/26 10:41 PM,04/abr/26 3:24 PM
+História,SCRUM-97,10468,Cadastro de máquinas,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,02/abr/26 10:40 PM,04/abr/26 9:04 PM
+Subtask,SCRUM-96,10467,[FRONT] Criar a tela de ordem de serviços - protótipo pronto,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,02/abr/26 10:10 PM,05/abr/26 10:04 PM
+Subtask,SCRUM-94,10432,[BACK] arrumar join do entity,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,02/abr/26 4:24 PM,04/abr/26 7:50 PM
+Subtask,SCRUM-93,10399,[FRONT] Consumir API de técnicos,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,01/abr/26 9:05 PM,04/abr/26 3:06 PM
+Subtask,SCRUM-92,10366,[FRONT] Cadastrar novos clientes,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,30/mar/26 9:10 AM,04/abr/26 12:08 PM
+Subtask,SCRUM-91,10333,[FRONT] Consumir API de Clientes,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,28/mar/26 10:21 AM,04/abr/26 11:36 AM
+Subtask,SCRUM-90,10300,[FRONT] Criar sidebar lateral,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,27/mar/26 8:17 AM,27/mar/26 4:26 PM
+Epic,SCRUM-89,10267,Configuração e Estruturação da Plataforma,,,Concluído,25/mar/26 9:59 PM,08/abr/26 4:00 PM
+Epic,SCRUM-88,10266,Cadastro de Contratos,,,Concluído,25/mar/26 9:55 PM,08/abr/26 4:02 PM
+Epic,SCRUM-87,10265,Cadastro de Técnicos,,,Concluído,25/mar/26 9:55 PM,08/abr/26 4:02 PM
+Epic,SCRUM-86,10264,Cadastro de Clientes e Sistemas,,,Concluído,25/mar/26 9:54 PM,08/abr/26 4:00 PM
+Subtask,SCRUM-84,10261,[FRONT] Implementar formulário catalogo de sistemas,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,25/mar/26 9:49 PM,04/abr/26 8:00 PM
+Subtask,SCRUM-82,10257,[BACK] Criar endpoint GET /sistemas com filtros por cliente e status,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,25/mar/26 9:49 PM,04/abr/26 6:00 PM
+Subtask,SCRUM-80,10253,[BACK] Implementar endpoints de CRUD para cadastro de Sistemas conforme protótipo de UX,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,25/mar/26 9:48 PM,04/abr/26 6:00 PM
+Subtask,SCRUM-79,10251,[UX] Criar wireframe da tela de cadastro e listagem de sistemas,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,25/mar/26 9:48 PM,01/abr/26 9:00 PM
+Subtask,SCRUM-73,10212,[Back] Subir a estrutura do back,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,20/mar/26 12:37 AM,25/mar/26 9:05 PM
+Subtask,SCRUM-72,10210,[BACK] Implementar token de acessos no projeto,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,20/mar/26 12:23 AM,27/mar/26 7:34 AM
+Subtask,SCRUM-71,10208,[UX] Criar o protótipo das telas do projeto,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,20/mar/26 12:18 AM,27/mar/26 4:26 PM
+Subtask,SCRUM-70,10206,[BACK] Estabelecer conexão do back com o banco,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,20/mar/26 12:07 AM,30/mar/26 9:31 AM
+Subtask,SCRUM-69,10204,"[DOCKER] Criar a instância no docker e configurar para usar para o front, back e bd",Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,19/mar/26 11:49 PM,27/mar/26 4:28 PM
+Subtask,SCRUM-67,10200,[BD] Ajudar na criação do script do banco,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,19/mar/26 11:30 PM,30/mar/26 9:31 AM
+Subtask,SCRUM-66,10198,[BD] Criar o script do banco em postgresql com base na modelagem,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,19/mar/26 11:28 PM,27/mar/26 11:31 AM
+Subtask,SCRUM-65,10196,[BD] Arquitetura de Dados de Manutenção - modelagem,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,19/mar/26 11:13 PM,28/mar/26 10:50 AM
+História,SCRUM-64,10194,Estruturação da Plataforma de Gestão de Manutenções,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,19/mar/26 10:47 PM,02/abr/26 8:53 PM
+História,SCRUM-63,10161,Cadastrar sistemas instalados nos clientes,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,18/mar/26 10:17 PM,04/abr/26 8:42 PM
+Subtask,SCRUM-56,10085,[UX] Criar wireframe da tela de criação e visualização de ordem de manutenção,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,13/mar/26 11:02 PM,04/abr/26 6:21 PM
+História,SCRUM-55,10083,Criar ordens de manutenção,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,13/mar/26 11:01 PM,05/abr/26 10:06 PM
+Subtask,SCRUM-54,10082,[FRONT] Criar tela de listagem dos contratos,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,13/mar/26 10:56 PM,28/mar/26 10:43 AM
+Subtask,SCRUM-53,10080,[FRONT] Criar tela de cadastro dos contratos,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,13/mar/26 10:55 PM,05/abr/26 10:05 PM
+Subtask,SCRUM-48,10070,[BACK] Implementar endpoints de CRUD para Gestão de contratos conforme o a tela de cadastro de contratos no protótipo,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,13/mar/26 10:53 PM,05/abr/26 10:17 AM
+Subtask,SCRUM-47,10068,[UX] Criar wireframe da tela de cadastro e listagem de contratos,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,13/mar/26 10:53 PM,01/abr/26 8:57 PM
+História,SCRUM-46,10066,Cadastrar contratos de manutenção vinculados a clientes e sistemas,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,13/mar/26 10:51 PM,05/abr/26 10:05 PM
+Subtask,SCRUM-45,10065,[FRONT] Criar tela de listagem dos técnicos,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,13/mar/26 10:49 PM,28/mar/26 10:43 AM
+Subtask,SCRUM-44,10063,[FRONT] Criar tela de cadastro de técnicos ,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,13/mar/26 10:48 PM,03/abr/26 12:13 AM
+Subtask,SCRUM-41,10057,[BACK] Implementar os endpoint de CRUD da tabela de habilidades,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,13/mar/26 10:46 PM,30/mar/26 10:40 PM
+Subtask,SCRUM-40,10055,[BACK] Implementar endpoints de CRUD para Gestão de técnicos conforme protótipo de UX,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,13/mar/26 10:46 PM,03/abr/26 12:44 AM
+Subtask,SCRUM-39,10053,[UX] Criar wireframe da tela de cadastro e listagem de técnicos,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,13/mar/26 10:45 PM,01/abr/26 9:03 PM
+História,SCRUM-38,10051,Cadastrar técnicos e suas competências,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,13/mar/26 10:43 PM,05/abr/26 4:16 PM
+Subtask,SCRUM-37,10050,[FRONT] Criar tela de visualização dos clientes,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,13/mar/26 10:39 PM,27/mar/26 9:53 PM
+Subtask,SCRUM-36,10048,[FRONT] criar tela de cadastro de cliente,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,13/mar/26 10:39 PM,28/mar/26 10:50 AM
+Subtask,SCRUM-34,10044,[BACK] Criar endpoint GET /clientes com filtros por país e tipo,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,13/mar/26 10:38 PM,02/abr/26 3:36 PM
+Subtask,SCRUM-32,10040,[BACK] Implementar endpoints de CRUD para Gestão de Ativos conforme a tela de clientes,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,13/mar/26 10:38 PM,02/abr/26 3:36 PM
+Subtask,SCRUM-31,10038,[UX] Criar wireframe da tela de cadastro e listagem de clientes,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,13/mar/26 10:38 PM,01/abr/26 8:58 PM
+História,SCRUM-30,10036,Cadastro de clientes e localização,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,13/mar/26 10:35 PM,04/abr/26 5:58 PM

@@ -8,6 +8,7 @@ import com.example.tracker.dto.TecnicoHabilidade.TecnicoHabilidadeResponseDTO;
 public class TecnicoResponseDTO {
 
     private Integer id;
+    private String email;
     private String nome;
     private String cpf;
     private String cargo;
@@ -25,6 +26,14 @@ public class TecnicoResponseDTO {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getNome() {

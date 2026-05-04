@@ -122,6 +122,9 @@ public class TecnicoServiceImpl implements TecnicoService {
         TecnicoResponseDTO dto = new TecnicoResponseDTO();
 
         dto.setId(tecnico.getId());
+        if (tecnico.getUsuario() != null) {
+            dto.setEmail(tecnico.getUsuario().getEmail());
+        }
         dto.setNome(tecnico.getNome());
         dto.setCpf(tecnico.getCpf());
         dto.setCargo(tecnico.getCargo());

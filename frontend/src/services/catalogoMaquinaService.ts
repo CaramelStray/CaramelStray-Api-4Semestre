@@ -13,6 +13,13 @@ export interface CatalogoMaquinaCreateDTO {
   limiteManutencao?: string
 }
 
+export interface CatalogoMaquinaChecklistPadraoResponseDTO {
+  codigoCatalogoMaquina: number
+  codigoTarefa: number
+  descricaoTarefa: string
+  categoria?: string
+}
+
 export const catalogoMaquinaService = {
   listarTodos: () => apiFetch<CatalogoMaquinaResponseDTO[]>('/catalogo-maquinas'),
   
@@ -31,4 +38,18 @@ export const catalogoMaquinaService = {
   remover: (id: number) => apiFetch<void>(`/catalogo-maquinas/${id}`, {
     method: 'DELETE',
   }),
+
+  listarChecklistPadrao: (codigoCatalogoMaquina: number) =>
+    apiFetch<CatalogoMaquinaChecklistPadraoResponseDTO[]>(`/catalogo-maquinas/${codigoCatalogoMaquina}/checklist`),
+
+  adicionarChecklistPadrao: (codigoCatalogoMaquina: number, codigoTarefa: number) =>
+    apiFetch<CatalogoMaquinaChecklistPadraoResponseDTO>(`/catalogo-maquinas/${codigoCatalogoMaquina}/checklist`, {
+      method: 'POST',
+      body: JSON.stringify({ codigoTarefa }),
+    }),
+
+  removerChecklistPadrao: (codigoCatalogoMaquina: number, codigoTarefa: number) =>
+    apiFetch<void>(`/catalogo-maquinas/${codigoCatalogoMaquina}/checklist/${codigoTarefa}`, {
+      method: 'DELETE',
+    }),
 }

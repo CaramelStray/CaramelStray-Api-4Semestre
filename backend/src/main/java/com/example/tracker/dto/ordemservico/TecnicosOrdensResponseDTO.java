@@ -1,0 +1,48 @@
+package com.example.tracker.dto.ordemservico;
+
+import com.example.tracker.entity.OrdemServico;
+import java.time.LocalDateTime;
+
+public class TecnicosOrdensResponseDTO {
+
+    private Integer codigo;
+    private String nomeCliente;
+    private String status;
+    private String criticidade;
+    private String tipoOrdem;
+    private LocalDateTime dataAbertura;
+    private LocalDateTime dataAgendamento;
+
+    public static TecnicosOrdensResponseDTO fromEntity(OrdemServico os) {
+        TecnicosOrdensResponseDTO dto = new TecnicosOrdensResponseDTO();
+        dto.setCodigo(os.getCodigo());
+        dto.setNomeCliente(os.getCliente() != null ? os.getCliente().getNomeEmpresa() : null);
+        dto.setStatus(os.getStatus());
+        dto.setCriticidade(os.getCriticidade());
+        dto.setTipoOrdem(os.getTipoOrdem());
+        dto.setDataAbertura(os.getDataAbertura());
+        dto.setDataAgendamento(os.getDataAgendamento());
+        return dto;
+    }
+
+    public Integer getCodigo() { return codigo; }
+    public void setCodigo(Integer codigo) { this.codigo = codigo; }
+
+    public String getNomeCliente() { return nomeCliente; }
+    public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getCriticidade() { return criticidade; }
+    public void setCriticidade(String criticidade) { this.criticidade = criticidade; }
+
+    public String getTipoOrdem() { return tipoOrdem; }
+    public void setTipoOrdem(String tipoOrdem) { this.tipoOrdem = tipoOrdem; }
+
+    public LocalDateTime getDataAbertura() { return dataAbertura; }
+    public void setDataAbertura(LocalDateTime dataAbertura) { this.dataAbertura = dataAbertura; }
+
+    public LocalDateTime getDataAgendamento() { return dataAgendamento; }
+    public void setDataAgendamento(LocalDateTime dataAgendamento) { this.dataAgendamento = dataAgendamento; }
+}

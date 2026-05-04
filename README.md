@@ -12,8 +12,9 @@
   <a href ="#solucao"> Solução</a>  |
   <a href ="#backlog"> Backlog do Produto</a>  |
   <a href ="#sprint"> Cronograma de Sprints</a>  | <a href ="#sprintdor">Product backlog -> DOR e DOD</a> |
-  <a href ="#tecnologias">Tecnologias</a> |  <a href ="#figma">Figma</a> |
-  <a href ="#branchs">Estrutura de Branchs</a>  |
+  <a href ="#tecnologias">Tecnologias</a> |  
+  <a href ="#branchs">Estrutura de Branchs e Commits</a>  |
+       <a href ="#down">Burn Down</a> |  
   <a href ="#equipe"> Equipe</a> | <a href ="#manual"> Manual do usuário</a>
 </p>
 
@@ -43,36 +44,37 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 **API:** 2026-1  
 **Fatec SJC**
 
+# Backlog do Produto — Estimativas Revisadas
+
 | Rank | Prioridade | User Story | Estimativa | Sprint |
 |------|------------|-----------|-----------|--------|
-| 1 | Alta | Como gestor, quero criar uma ordem de manutenção vinculada a um sistema e a um contrato para iniciar o planejamento do atendimento | 50 | 1 |
-| 2 | Alta | Como técnico, quero registrar os dados da execução da manutenção para documentar o que foi realizado na visita | 30 | 2 |
-| 3 | Alta | Como gestor, quero definir a criticidade de uma ordem de manutenção para organizar os atendimentos por impacto | 40 | 2 |
-| 4 | Alta | Como gestor, quero registrar viagens de manutenção associadas a ordens para planejar o deslocamento dos técnicos | 50 | 2 |
-| 5 | Alta | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | 50 | 3 |
-| 6 | Alta | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | 40 | 3 |
-| 7 | Média | Como gestor, quero cadastrar sistemas instalados nos clientes para registrar os equipamentos sob contrato de manutenção | 40 | 1 |
-| 8 | Média | Como gestor, quero cadastrar contratos de manutenção vinculados a clientes e sistemas para definir intervalos e SLAs de atendimento | 40 | 1 |
-| 9 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
-| 10 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 60 | 2 |
-| 11 | Média | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | 40 | 2 |
-| 12 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 40 | 2 |
-| 13 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 40 | 3 |
-| 14 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
-| 15| Baixa | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 60 | 2 |
-| 16 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 40 | 1 |
-| 17 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 40 | 1 |
-| 18 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 60 | 3 |
-| 19 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 60 | 3 |
-
+| 1 | Alta | Como gestor, quero criar uma ordem de manutenção vinculada a um sistema e a um contrato para iniciar o planejamento do atendimento | 13 | 1 |
+| 2 | Alta | Como técnico, quero registrar os dados da execução da manutenção para documentar o que foi realizado na visita | 13 | 2 |
+| 3 | Alta | Como gestor, quero definir a criticidade de uma ordem de manutenção para organizar os atendimentos por impacto | 5 | 2 |
+| 4 | Alta | Como gestor, quero registrar viagens de manutenção associadas a ordens para planejar o deslocamento dos técnicos | 8 | 2 |
+| 5 | Alta | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | 5 | 2 |
+| 6 | Alta | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | 13 | 2 |
+| 7 | Média | Como gestor, quero cadastrar sistemas instalados nos clientes para registrar os equipamentos sob contrato de manutenção | 8 | 1 |
+| 8 | Média | Como gestor, quero cadastrar contratos de manutenção vinculados a clientes e sistemas para definir intervalos e SLAs de atendimento | 8 | 1 |
+| 9 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 8 | 1 |
+| 10 | Média | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | 8 | 2 |
+| 11 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 8 | 2 |
+| 12 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 13 | 2 |
+| 13 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 13 | 3 |
+| 14 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 8 | 3 |
+| 15 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 5 | 1 |
+| 16 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 5 | 1 |
+| 17 | Baixa | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 13 | 3 |
+| 18 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 13 | 3 |
+| 19 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 13 | 3 |
 
 ---
 
 ## 📅 Cronograma de Sprints <a id="sprint"></a>
-| Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Site Tracker                                  |
+| Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Video Tracker                                  |
 | --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------- |----------------------------------------------- |
-| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Jira](https://patriciamoraesviegas.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiZDkzMDgzMDkzMzZiNGU2NTk0NDgwZjZhODZjNGRlOGQiLCJwIjoiaiJ9)  |[Sprint 1 entrega](http://tracker.pedrohenribeiro.com/) |
-| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](#) |[Sprint 2 Tasks](#)|  |
+| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Tasks](documentacao/sprints/sprint-1/tasks_sprint1.csv) ||
+| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](documentacao/sprints/sprint2) |[Sprint 2 Tasks Semana 1](documentacao/sprints/sprint2/primeira_semana.csv) <br> [Sprint 2 Tasks Semana 2](documentacao/sprints/sprint2/segunda_semana.csv) <br> [Sprint 2 Tasks Semana 3](documentacao/sprints/sprint2/terceira_semana.csv)|  [Sprint 2 Video](https://youtu.be/xsFScifns6g)|
 | 🔖 **SPRINT 3** | 11/05 - 31/05 | [Em processo...](#)| [Em processo...](#) ||
 | ⚡️ **feira de soluções** |  |  |  ||
 
@@ -95,9 +97,14 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
  <a href="https://www.figma.com/"><img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"/></a>
 </h4>
 
-# 🪵 Estrutura de branchs <a id="branchs"></a>
+# 🪵 Estrutura de branchs e Commits <a id="branchs"></a>
 
-[📄 Estrutura de branchs](./documentacao/estrutura_de_branch.md)
+[📄 Estrutura de branchs e commits](./documentacao/estrutura_de_branch.md)
+
+# 📉 Burn Down <a id="down"></a>
+
+[📄 Burn Down](./documentacao/burn_down.md)
+
 
 # 📚 Manual de usuário <a id="manual"></a>
 [Manual do usuário](./documentacao/manual_usuario.md)

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { watch } from 'vue'
 import { useForm, useFieldArray } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -11,6 +12,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/ui/form'
 import {
   Select,
@@ -26,6 +28,10 @@ import {
   type CatalogoSoftwareResponseDTO,
 } from '@/services/catalogoSoftwareService'
 
+const props = defineProps<{
+  initialData?: CatalogoSoftwareResponseDTO | null
+}>()
+
 const emit = defineEmits<{
   fechar: []
   sucesso: [software: CatalogoSoftwareResponseDTO]
@@ -34,15 +40,15 @@ const emit = defineEmits<{
 // ── Schema ────────────────────────────────────────────────────────────────────
 
 const formSchema = toTypedSchema(z.object({
-  nomeSoftware: z.string({ required_error: '*' }).min(1, '*'),
-  versao: z.string({ required_error: '*' }).min(1, '*'),
-  tipo: z.string({ required_error: '*' }).min(1, '*'),
-  desenvolvedorFornecedor: z.string({ required_error: '*' }).min(1, '*'),
+  nomeSoftware: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  versao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').regex(/^[\d.]+$/, 'Use apenas números e pontos (ex: 12.2.10)'),
+  tipo: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  desenvolvedorFornecedor: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   urlDocumentacao: z.string().url('URL inválida').optional().or(z.literal('')),
   descricaoTecnica: z.string().optional().default(''),
   ativo: z.boolean().default(true),
   checklistPadrao: z.array(z.object({
-    descricao: z.string({ required_error: '*' }).min(1, '*'),
+    descricao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
     obrigatorio: z.boolean().default(false),
   })).optional().default([]),
 }))
@@ -61,17 +67,39 @@ const form = useForm({
 
 const { fields, push, remove } = useFieldArray<{ descricao: string; obrigatorio: boolean }>('checklistPadrao')
 
+watch(() => props.initialData, (data) => {
+  if (data) {
+    form.setValues({
+      nomeSoftware: data.nomeSoftware,
+      versao: data.versao,
+      tipo: data.tipo,
+      desenvolvedorFornecedor: data.desenvolvedorFornecedor,
+      urlDocumentacao: data.urlDocumentacao || '',
+      descricaoTecnica: data.descricaoTecnica || '',
+      ativo: data.ativo,
+      checklistPadrao: data.checklistPadrao || [],
+    })
+  }
+}, { immediate: true })
+
 const tiposDisponiveis = [
   'ERP', 'MES', 'SCADA', 'PLM', 'CAD/CAM',
   'BI / Analytics', 'CRM', 'Monitoramento',
   'Segurança', 'Infraestrutura', 'Outro',
 ]
 
+const onlyVersionChars = (e: KeyboardEvent) => {
+  const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End']
+  if (!e.ctrlKey && !e.metaKey && !allowed.includes(e.key) && !/^[\d.]$/.test(e.key)) {
+    e.preventDefault()
+  }
+}
+
 // ── Submit ────────────────────────────────────────────────────────────────────
 
 const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
   try {
-    const softwareCriado = await catalogoSoftwareService.criar({
+    const payload = {
       nomeSoftware: values.nomeSoftware,
       versao: values.versao,
       tipo: values.tipo,
@@ -80,10 +108,17 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       descricaoTecnica: values.descricaoTecnica || undefined,
       ativo: values.ativo,
       checklistPadrao: values.checklistPadrao?.length ? values.checklistPadrao : undefined,
-    })
+    }
 
-    resetForm()
-    emit('sucesso', softwareCriado)
+    let software: CatalogoSoftwareResponseDTO
+    if (props.initialData) {
+      software = await catalogoSoftwareService.atualizar(props.initialData.id, payload)
+    } else {
+      software = await catalogoSoftwareService.criar(payload)
+      resetForm()
+    }
+
+    emit('sucesso', software)
     emit('fechar')
   } catch (error: any) {
     const data = error.response?.data
@@ -92,7 +127,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
     if (msg.includes('nome') || msg.includes('already exists')) {
       form.setFieldError('nomeSoftware', 'Já existe um software com este nome e versão.')
     } else {
-      alert('Erro ao cadastrar: ' + (data?.message || 'Verifique os dados informados.'))
+      alert('Erro ao salvar: ' + (data?.message || 'Verifique os dados informados.'))
     }
   }
 })
@@ -119,34 +154,36 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
         </FormField>
 
         <!-- Nome -->
-        <FormField v-slot="{ componentField, errorMessage }" name="nomeSoftware">
+        <FormField v-slot="{ componentField }" name="nomeSoftware">
           <FormItem>
             <FormLabel class="flex items-center gap-1">
-              Nome do Software <span v-if="errorMessage" class="text-red-500 font-bold">*</span>
+              Nome do Software <span class="text-red-500 font-bold">*</span>
             </FormLabel>
             <FormControl>
               <Input type="text" placeholder="Ex: Oracle EBS, SAP R3..." v-bind="componentField" />
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
         <!-- Versão -->
-        <FormField v-slot="{ componentField, errorMessage }" name="versao">
+        <FormField v-slot="{ componentField }" name="versao">
           <FormItem>
             <FormLabel class="flex items-center gap-1">
-              Versão <span v-if="errorMessage" class="text-red-500 font-bold">*</span>
+              Versão <span class="text-red-500 font-bold">*</span>
             </FormLabel>
             <FormControl>
-              <Input type="text" placeholder="Ex: 12.2.10, 3.0.1..." v-bind="componentField" />
+              <Input type="text" placeholder="Ex: 12.2.10, 3.0.1..." v-bind="componentField" @keydown="onlyVersionChars" />
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
         <!-- Tipo -->
-        <FormField v-slot="{ value, handleChange, errorMessage }" name="tipo">
+        <FormField v-slot="{ value, handleChange }" name="tipo">
           <FormItem>
             <FormLabel class="flex items-center gap-1">
-              Tipo <span v-if="errorMessage" class="text-red-500 font-bold">*</span>
+              Tipo <span class="text-red-500 font-bold">*</span>
             </FormLabel>
             <Select :model-value="value" @update:model-value="handleChange">
               <FormControl>
@@ -158,31 +195,31 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
                 </SelectGroup>
               </SelectContent>
             </Select>
+            <FormMessage />
           </FormItem>
         </FormField>
 
         <!-- Fornecedor -->
-        <FormField v-slot="{ componentField, errorMessage }" name="desenvolvedorFornecedor">
+        <FormField v-slot="{ componentField }" name="desenvolvedorFornecedor">
           <FormItem>
             <FormLabel class="flex items-center gap-1">
-              Desenvolvedor / Fornecedor <span v-if="errorMessage" class="text-red-500 font-bold">*</span>
+              Desenvolvedor / Fornecedor <span class="text-red-500 font-bold">*</span>
             </FormLabel>
             <FormControl>
               <Input type="text" placeholder="Ex: Oracle, SAP, Interno..." v-bind="componentField" />
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
         <!-- URL Documentação -->
-        <FormField v-slot="{ componentField, errorMessage }" name="urlDocumentacao">
+        <FormField v-slot="{ componentField }" name="urlDocumentacao">
           <FormItem>
-            <FormLabel class="flex items-center gap-1">
-              URL da Documentação
-              <span v-if="errorMessage" class="text-red-500 text-xs font-normal">{{ errorMessage }}</span>
-            </FormLabel>
+            <FormLabel>URL da Documentação</FormLabel>
             <FormControl>
               <Input type="url" placeholder="https://docs.exemplo.com/..." v-bind="componentField" />
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
@@ -235,14 +272,15 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pr-10">
             <!-- Descrição -->
-            <FormField :name="`checklistPadrao[${index}].descricao`" v-slot="{ componentField, errorMessage }">
+            <FormField :name="`checklistPadrao[${index}].descricao`" v-slot="{ componentField }">
               <FormItem class="col-span-1 md:col-span-2">
                 <FormLabel class="flex items-center gap-1">
-                  Descrição <span v-if="errorMessage" class="text-red-500 font-bold">*</span>
+                  Descrição <span class="text-red-500 font-bold">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input placeholder="Ex: Verificar licença ativa..." v-bind="componentField" />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             </FormField>
 
@@ -275,7 +313,7 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       <div class="flex items-center justify-between border-t mt-10 pt-6">
         <Button type="button" variant="ghost" @click="emit('fechar')">Cancelar</Button>
         <Button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8">
-          Cadastrar Software
+          {{ props.initialData ? 'Salvar Alterações' : 'Cadastrar Software' }}
         </Button>
       </div>
 

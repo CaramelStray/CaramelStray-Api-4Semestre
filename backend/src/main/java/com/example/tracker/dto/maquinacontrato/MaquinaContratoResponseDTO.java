@@ -1,8 +1,11 @@
 package com.example.tracker.dto.maquinacontrato;
 
+import com.example.tracker.dto.maquinasoftwareinstalado.MaquinaSoftwareInstaladoResponseDTO;
 import com.example.tracker.entity.MaquinaContrato;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public class MaquinaContratoResponseDTO {
 
@@ -16,23 +19,40 @@ public class MaquinaContratoResponseDTO {
     private BigDecimal latitude;
     private BigDecimal longitude;
 
+    private List<MaquinaSoftwareInstaladoResponseDTO> softwaresInstalados;
+
     public static MaquinaContratoResponseDTO fromEntity(MaquinaContrato maquinaContrato) {
         MaquinaContratoResponseDTO dto = new MaquinaContratoResponseDTO();
+
         dto.setCodigo(maquinaContrato.getCodigo());
+
         if (maquinaContrato.getContrato() != null) {
             dto.setCodigoContrato(maquinaContrato.getContrato().getCodigo());
         }
+
         if (maquinaContrato.getCatalogoMaquina() != null) {
             dto.setCodigoCatalogoMaquina(maquinaContrato.getCatalogoMaquina().getCodigo());
         }
+
         dto.setNumeroSerie(maquinaContrato.getNumeroSerie());
         dto.setDataInstalacao(maquinaContrato.getDataInstalacao());
         dto.setManutencaoFeita(maquinaContrato.getManutencaoFeita());
         dto.setTrabalhoEmAltura(maquinaContrato.getTrabalhoEmAltura());
         dto.setLatitude(maquinaContrato.getLatitude());
         dto.setLongitude(maquinaContrato.getLongitude());
+
+        if (maquinaContrato.getSoftwaresInstalados() != null) {
+            dto.setSoftwaresInstalados(
+                maquinaContrato.getSoftwaresInstalados()
+                    .stream()
+                    .map(MaquinaSoftwareInstaladoResponseDTO::fromEntity)
+                    .toList()
+            );
+        }
+
         return dto;
     }
+
 
     public Integer getCodigo() {
         return codigo;
@@ -104,5 +124,13 @@ public class MaquinaContratoResponseDTO {
 
     public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
+    }
+
+    public List<MaquinaSoftwareInstaladoResponseDTO> getSoftwaresInstalados() {
+        return softwaresInstalados;
+    }
+
+    public void setSoftwaresInstalados(List<MaquinaSoftwareInstaladoResponseDTO> softwaresInstalados) {
+        this.softwaresInstalados = softwaresInstalados;
     }
 }

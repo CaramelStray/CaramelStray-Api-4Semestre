@@ -9,7 +9,7 @@ import {
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { 
+import {
   Download, Plus, Monitor, Layers, AlertCircle, TerminalSquare,
   Pencil, Eye, Search, ExternalLink, X, CheckCircle2
 } from 'lucide-vue-next'
@@ -18,6 +18,8 @@ import { catalogoSoftwareService, type CatalogoSoftwareResponseDTO } from '@/ser
 import SoftwareCadastroForm from '@/components/softwares/SoftwareCadastroPopup.vue'
 
 const isCadastroOpen = ref(false)
+const isEditOpen = ref(false)
+const editingSoftware = ref<CatalogoSoftwareResponseDTO | null>(null)
 const searchQuery = ref('')
 
 const softwares = ref<CatalogoSoftwareResponseDTO[]>([])
@@ -109,8 +111,18 @@ const fecharSucessoCadastro = () => {
   }
 }
 
+const abrirEdicao = (software: CatalogoSoftwareResponseDTO) => {
+  editingSoftware.value = software
+  isEditOpen.value = true
+}
+
 const onCadastroSucesso = (software: CatalogoSoftwareResponseDTO) => {
   mostrarSucessoCadastro(`Software "${software.nomeSoftware}" v${software.versao} cadastrado com sucesso.`)
+  carregarSoftwares()
+}
+
+const onEdicaoSucesso = (software: CatalogoSoftwareResponseDTO) => {
+  mostrarSucessoCadastro(`Software "${software.nomeSoftware}" v${software.versao} atualizado com sucesso.`)
   carregarSoftwares()
 }
 
@@ -163,7 +175,7 @@ onBeforeUnmount(() => {
     <div v-else-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
     
     <template v-else>
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div :class="['grid gap-4 xl:grid-cols-4', stats.length > 1 ? 'grid-cols-2' : 'grid-cols-1']">
         <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{{ stat.label }}</CardTitle>
@@ -176,23 +188,22 @@ onBeforeUnmount(() => {
         </Card>
       </div>
 
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
-        <div class="relative flex-1 w-full">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center w-full">
+        <div class="grid grid-cols-2 gap-4 w-full sm:w-auto sm:flex sm:gap-4 sm:shrink-0 sm:order-2">
+          <Button variant="outline" size="lg" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 border-border hover:bg-muted/20">
+            <Download class="w-4 h-4 mr-2 shrink-0" /> Exportar Relatório
+          </Button>
+          <Button size="lg" @click="isCadastroOpen = true" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
+            <Plus class="w-4 h-4 mr-2 shrink-0" /> Novo Software
+          </Button>
+        </div>
+        <div class="relative w-full sm:flex-1 sm:order-1">
           <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
           <Input 
             v-model="searchQuery" 
             placeholder="Buscar por nome, tipo ou fornecedor..." 
             class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary" 
           />
-        </div>
-        <div class="flex gap-3 shrink-0 w-full sm:w-auto">
-          <Button variant="outline" size="lg" class="h-12 w-full sm:w-auto font-bold uppercase text-[11px] px-6 border-border hover:bg-muted/20">
-            <Download class="w-4 h-4 mr-2" /> Exportar Relatório
-          </Button>
-          
-          <Button size="lg" @click="isCadastroOpen = true" class="h-12 w-full sm:w-auto font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
-            <Plus class="w-4 h-4 mr-2" /> Novo Software
-          </Button>
         </div>
       </div>
 
@@ -211,7 +222,7 @@ onBeforeUnmount(() => {
               <TableHead class="h-12">Fornecedor</TableHead>
               <TableHead class="h-12 text-center">Status</TableHead>
               <TableHead class="h-12 text-center">Docs</TableHead>
-              <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+              <TableHead class="text-right pr-6 h-12">Ações</TableHead>
             </TableRow>
           </TableHeader>
           
@@ -284,10 +295,7 @@ onBeforeUnmount(() => {
 
               <TableCell class="text-right pr-6">
                 <div class="flex items-center justify-end gap-1">
-                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-foreground transition-colors">
-                    <Eye class="size-4.5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-foreground transition-colors">
+                  <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicao(s)">
                     <Pencil class="size-4.5" />
                   </Button>
                 </div>
@@ -308,7 +316,7 @@ onBeforeUnmount(() => {
       <Transition name="modal">
         <div v-if="isCadastroOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isCadastroOpen = false"></div>
-          
+
           <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[60vw] max-h-[90vh] overflow-hidden">
             <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
               <div>
@@ -319,7 +327,7 @@ onBeforeUnmount(() => {
                 <X class="w-6 h-6" />
               </Button>
             </div>
-            
+
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
               <SoftwareCadastroForm
                 @fechar="isCadastroOpen = false"
@@ -329,7 +337,34 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </Transition>
+
+      <Transition name="modal">
+        <div v-if="isEditOpen" class="fixed inset-0 z-[100] flex items-center justify-center">
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isEditOpen = false"></div>
+
+          <div class="modal-content relative bg-background border rounded-xl shadow-2xl flex flex-col w-[95vw] md:w-[60vw] max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b bg-muted/30">
+              <div>
+                <h2 class="text-2xl font-bold tracking-tight">Editar Software</h2>
+                <p class="text-sm text-muted-foreground mt-1">Altere os dados do sistema selecionado.</p>
+              </div>
+              <Button variant="ghost" size="icon" @click="isEditOpen = false" class="hover:bg-red-500/10 hover:text-red-500">
+                <X class="w-6 h-6" />
+              </Button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+              <SoftwareCadastroForm
+                :initialData="editingSoftware"
+                @fechar="isEditOpen = false"
+                @sucesso="onEdicaoSucesso"
+              />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
+
 
   </div>
 </template>

@@ -47,7 +47,7 @@ const onSubmit = form.handleSubmit(async (values) => {
     localStorage.setItem('user_email', response.email)
     localStorage.setItem('user_role', response.auth)
 
-    router.push('/')
+    router.push(response.auth === 'ROLE_TECNICO' ? '/minhas-ordens' : '/')
     
   } catch (error: any) {
     const status = error.response?.status
@@ -101,7 +101,7 @@ const onSubmit = form.handleSubmit(async (values) => {
               <FormControl>
                 <Input
                   type="password"
-                  placeholder="Sua senha secreta"
+                  placeholder="Sua senha"
                   class="bg-muted/20 border-border hover:border-blue-500/50 focus:border-blue-500 transition-colors"
                   v-bind="componentField"
                 />

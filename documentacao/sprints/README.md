@@ -13,7 +13,7 @@
 <p align="center">
   | <a href ="#desafio"> Desafio</a>  |
       <a href ="#dod"> DOD e DOR</a> |
-  <a href ="#backlog"> Backlog</a>  |
+  <a href ="#sprints"> Sprints Planejadas</a>  |
   <a href ="#equipe"> Equipe</a>  |
 </p>
 
@@ -29,63 +29,84 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 ---
 
 ## ✅ Definition of Done (DoD) – Tracker <a id="dod"></a>
-Código backend desenvolvido em Spring Boot versionado no repositório principal.
-Banco de dados (PostgreSQL) atualizado com scripts versionados (Flyway).
-Frontend implementado em Vue.js + Vuetify, responsivo e integrado ao backend.
-Autenticação e autorização implementadas via JWT, validadas em Postman.
-Testes unitários e de integração com cobertura mínima de 80% nas regras críticas.
-Endpoints REST documentados com Swagger.
-Interfaces confirmadas no Figma antes da implementação.
-Funcionalidade validada em ambiente de homologação com dados reais de teste.
-Deploy automatizado testado (build + banco + API + frontend funcionando em conjunto).
-Documentação de uso e técnica atualizada (README ou Wiki).
+
+- Código backend desenvolvido em **Spring Boot** versionado no repositório principal.  
+- Banco de dados (**PostgreSQL**) atualizado com **scripts versionados (Flyway)**.  
+- Frontend implementado em **Vue.js + Vuetify**, responsivo e integrado ao backend.  
+- Autenticação e autorização implementadas via **JWT**, validadas em **Postman**.  
+- Testes unitários e de integração com cobertura mínima de **80%** nas regras críticas.  
+- Endpoints REST documentados com **Swagger**.  
+- Interfaces confirmadas no **Figma** antes da implementação.  
+- Funcionalidade validada em ambiente de **homologação** com dados reais de teste.  
+- Deploy automatizado testado (build + banco + API + frontend funcionando em conjunto).  
+- Documentação de uso e técnica atualizada (README ou Wiki).  
+
 
 ---
 
 ## ✅ Definition of Ready (DoR) – Tracker
-User Story validada e compreendida pelo time técnico.
-Critérios de aceitação claros, objetivos e documentados.
-Protótipos/Wireframes definidos no Figma e revisados com o cliente.
-Modelagem de entidades e relacionamentos definida em PostgreSQL.
-Contratos de API descritos no Swagger.
-Dependências externas identificadas (bibliotecas, integrações).
-Estratégia de autenticação/autorização via JWT definida.
-Dados de exemplo para testes.
-Estimativa de esforço registrada pelo time.
-Reunião de refinamento realizada com aprovação do cliente.
+
+- User Story validada e compreendida pelo time técnico.  
+- Critérios de aceitação claros, objetivos e documentados.  
+- Protótipos/Wireframes definidos no **Figma** e revisados com o cliente.  
+- Modelagem de entidades e relacionamentos definida em **PostgreSQL**.  
+- Contratos de API descritos no **Swagger**.  
+- Dependências externas identificadas (bibliotecas, integrações).  
+- Estratégia de autenticação/autorização via **JWT** definida.  
+- Dados de exemplo ou **mocks** prontos para testes.  
+- Estimativa de esforço registrada pelo time.  
+- Reunião de refinamento realizada com aprovação do cliente. 
 
 ---
 
-## 📋 Backlog do Produto <a id="backlog"></a>
+## 📋 Sprints Planejadas <a id="sprints"></a>
 
-# Backlog do Produto — Sistema de Gestão de Manutenções
+# 🗓️ Sprints Planejadas — Sistema de Gestão de Manutenções
 
 **Parceiro:** Altave  
 **Curso:** 4º Banco de Dados  
 **API:** 2026-1  
 **Fatec SJC**
 
-| Rank | Prioridade | User Story | Estimativa | Sprint |
-|------|------------|-----------|-----------|--------|
-| 1 | Alta | Como gestor, quero criar uma ordem de manutenção vinculada a um sistema e a um contrato para iniciar o planejamento do atendimento | 50 | 1 |
-| 2 | Alta | Como técnico, quero registrar os dados da execução da manutenção para documentar o que foi realizado na visita | 30 | 2 |
-| 3 | Alta | Como gestor, quero definir a criticidade de uma ordem de manutenção para organizar os atendimentos por impacto | 40 | 2 |
-| 4 | Alta | Como gestor, quero registrar viagens de manutenção associadas a ordens para planejar o deslocamento dos técnicos | 50 | 2 |
-| 5 | Alta | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | 50 | 3 |
-| 6 | Alta | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | 40 | 3 |
-| 7 | Média | Como gestor, quero cadastrar sistemas instalados nos clientes para registrar os equipamentos sob contrato de manutenção | 40 | 1 |
-| 8 | Média | Como gestor, quero cadastrar contratos de manutenção vinculados a clientes e sistemas para definir intervalos e SLAs de atendimento | 40 | 1 |
-| 9 | Média | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
-| 10 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 60 | 2 |
-| 11 | Média | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | 40 | 2 |
-| 12 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 40 | 2 |
-| 13 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 40 | 3 |
-| 14 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 3 |
-| 15| Baixa | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 60 | 2 |
-| 16 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 40 | 1 |
-| 17 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 40 | 1 |
-| 18 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 60 | 3 |
-| 19 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 60 | 3 |
+
+
+## 🚀 Sprint 1 – Planejada
+
+| ID   | User Story | Prioridade | Status | Backlog Completo | DoR Atendido | DoD Atendido | Requisito Referenciado |
+|------|------------|------------|--------|------------------|--------------|--------------|------------------------|
+| S1-1 | Como gestor, quero criar uma ordem de manutenção vinculada a um sistema e a um contrato para iniciar o planejamento do atendimento | Alta | ✅ Concluída | ✅ | ✅ | ✅ | [1] Criação de ordem de manutenção |
+| S1-2 | Como gestor, quero cadastrar sistemas instalados nos clientes para registrar os equipamentos sob contrato de manutenção | Média | ✅ Concluída | ✅ | ✅ | ✅ | [2] Cadastro de sistemas |
+| S1-3 | Como gestor, quero cadastrar contratos de manutenção vinculados a clientes e sistemas para definir intervalos e SLAs de atendimento | Média | ✅ Concluída | ✅ | ✅ | ✅ | [3] Cadastro de contratos |
+| S1-4 | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | Baixa | ✅ Concluída | ✅ | ✅ | ✅ | [4] Cadastro de clientes |
+| S1-5 | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | Baixa | ✅ Concluída | ✅ | ✅ | ✅ | [5] Cadastro de técnicos |
+
+---
+
+## 🚀 Sprint 2 – Planejada
+
+| ID   | User Story | Prioridade | Status | Backlog Completo | DoR Atendido | DoD Atendido | Requisito Referenciado |
+|------|------------|------------|--------|------------------|--------------|--------------|------------------------|
+| S2-1 | Como técnico, quero registrar os dados da execução da manutenção para documentar o que foi realizado na visita | Alta | ✅ Concluída | ✅ | ✅ | ✅ | [6] Registro de execução da manutenção |
+| S2-2 | Como gestor, quero definir a criticidade de uma ordem de manutenção para organizar os atendimentos por impacto | Alta | ✅ Concluída | ✅ | ✅ | ✅ | [7] Criticidade de ordem de manutenção |
+| S2-3 | Como gestor, quero registrar viagens de manutenção associadas a ordens para planejar o deslocamento dos técnicos | Alta | ✅ Concluída | ✅ | ✅ | ✅ | [8] Registro de viagens de manutenção |
+| S2-4 | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | Média | ⏳ Em andamento | ✅ | ✅ | ❌ | [9] Dashboard de ordens |
+| S2-5 | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | Média | ⏳ Em andamento | ✅ | ✅ | ✅ | [10] Checklist de preparação |
+| S2-6 | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | Média | ⏳ Em andamento | ✅ | ✅ | ✅ | [11] Checklist da manutenção |
+| S2-7 | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | Baixa | 🔜 Planejada | ✅ | ✅ | ❌ | [12] Calendário de disponibilidade |
+
+---
+
+## 🚀 Sprint 3 – Planejada
+
+| ID   | User Story | Prioridade | Status | Backlog Completo | DoR Atendido | DoD Atendido | Requisito Referenciado |
+|------|------------|------------|--------|------------------|--------------|--------------|------------------------|
+| S3-1 | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | Alta | 🔜 Planejada | ✅ | ✅ | ✅ | [13] Histórico de manutenções |
+| S3-2 | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | Alta | 🔜 Planejada | ✅ | ✅ | ✅ | [14] Relatório de manutenções |
+| S3-3 | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | Média | 🔜 Planejada | ✅ | ✅ | ✅ | [15] Cadastro de máquinas |
+| S3-4 | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | Média | 🔜 Planejada | ✅ | ✅ | ❌ | [16] Registro de ciclo de embarcações |
+| S3-5 | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | Média | 🔜 Planejada | ✅ | ✅ | ✅ | [17] Cadastro de ativos |
+| S3-6 | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | Baixa | 🔜 Planejada | ✅ | ✅ | ❌ | [18] Mapa de sistemas instalados |
+| S3-7 | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | Baixa | 🔜 Planejada | ✅ | ✅ | ❌ | [19] Rastreamento de técnicos no mapa |
 
 ## 🎓 Equipe <a id="equipe"></a>
 

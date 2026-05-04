@@ -1,7 +1,6 @@
 package com.example.tracker.dto.tecnico;
 
 import java.math.BigDecimal;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,11 +9,8 @@ import lombok.Setter;
 @Setter
 public class TecnicoCreateDTO {
 
-    @NotBlank(message = "O email do usuario e obrigatorio.")
-    @Email(message = "Email invalido.")
     private String email;
 
-    @NotBlank(message = "A senha do usuario e obrigatoria.")
     private String senha;
 
     @NotBlank(message = "O nome do tecnico e obrigatorio.")

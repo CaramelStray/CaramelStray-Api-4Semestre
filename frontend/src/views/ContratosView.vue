@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,8 +17,11 @@ import ContratoCadastroPopup from '@/components/contrato/ContratoCadastroPopup.v
 import { contratoService, type ContratoResponseDTO } from '@/services/contratoService'
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
 
+const router = useRouter()
 const searchQuery = ref('')
 const showNovoContratoPopup = ref(false)
+const showEditContratoPopup = ref(false)
+const editingContrato = ref<ContratoResponseDTO | null>(null)
 const contratos = ref<ContratoResponseDTO[]>([])
 
 // Mapa: codigoContrato → ClienteResponseDTO
@@ -105,6 +109,15 @@ const carregarContratos = async () => {
   }
 }
 
+const abrirDetalhesContrato = (contrato: ContratoResponseDTO) => {
+  router.push(`/contratos/${contrato.codigo}`)
+}
+
+const abrirEdicaoContrato = (contrato: ContratoResponseDTO) => {
+  editingContrato.value = contrato
+  showEditContratoPopup.value = true
+}
+
 onMounted(carregarContratos)
 
 const filteredContratos = computed(() => {
@@ -160,7 +173,7 @@ const stats = computed(() => [
     <div v-if="erro"    class="text-center py-12 text-red-400">{{ erro }}</div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{{ stat.label }}</CardTitle>
@@ -174,22 +187,22 @@ const stats = computed(() => [
     </div>
 
     <!-- Busca + botões -->
-    <div class="flex items-center justify-between gap-4 w-full">
-      <div class="relative flex-1">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center w-full">
+      <div class="grid grid-cols-2 gap-4 w-full sm:w-auto sm:flex sm:gap-4 sm:shrink-0 sm:order-2">
+        <Button variant="outline" size="lg" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 border-border hover:bg-muted/20">
+          <Download class="w-4 h-4 mr-2 shrink-0" /> Exportar Relatório
+        </Button>
+        <Button @click="showNovoContratoPopup = true" size="lg" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
+          <Plus class="w-4 h-4 mr-2 shrink-0" /> Novo Contrato
+        </Button>
+      </div>
+      <div class="relative w-full sm:flex-1 sm:order-1">
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
         <Input
           v-model="searchQuery"
           placeholder="Buscar contrato ou cliente..."
           class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary"
         />
-      </div>
-      <div class="flex gap-3 shrink-0">
-        <Button variant="outline" size="lg" class="h-12 font-bold uppercase text-[11px] px-6 border-border hover:bg-muted/20">
-          <Download class="w-4 h-4 mr-2" /> Exportar Relatório
-        </Button>
-        <Button @click="showNovoContratoPopup = true" size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
-          <Plus class="w-4 h-4 mr-2" /> Novo Contrato
-        </Button>
       </div>
     </div>
 
@@ -208,7 +221,7 @@ const stats = computed(() => [
             <TableHead class="h-12">Data Início</TableHead>
             <TableHead class="h-12">Data Fim</TableHead>
             <TableHead class="h-12">Status</TableHead>
-            <TableHead class="text-right pr-14 h-12">Ações</TableHead>
+            <TableHead class="text-right pr-6 h-12">Ações</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -257,10 +270,10 @@ const stats = computed(() => [
 
             <TableCell class="text-right pr-6">
               <div class="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-blue-400 transition-colors" @click="abrirDetalhesContrato(contrato)">
                   <Eye class="size-5" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors">
+                <Button variant="ghost" size="icon" class="h-9 w-9 text-muted-foreground hover:text-white transition-colors" @click="abrirEdicaoContrato(contrato)">
                   <Pencil class="size-5" />
                 </Button>
               </div>
@@ -277,5 +290,7 @@ const stats = computed(() => [
     </div>
 
     <ContratoCadastroPopup v-model:open="showNovoContratoPopup" @success="carregarContratos" />
+    <ContratoCadastroPopup v-model:open="showEditContratoPopup" :initialData="editingContrato" @success="carregarContratos" />
+
   </div>
 </template>

@@ -1,12 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
 } from "lucide-vue-next"
 
 import {
@@ -38,6 +37,8 @@ const props = defineProps<{
   }
 }>()
 
+const displayEmail = computed(() => localStorage.getItem('user_email') ?? props.user.email)
+
 const { isMobile } = useSidebar()
 const router = useRouter()
 
@@ -66,8 +67,8 @@ const handleLogout = () => {
               </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ user.name }}</span>
-              <span class="truncate text-xs">{{ user.email }}</span>
+              <span class="truncate font-medium">{{ displayEmail }}</span>
+              <span class="truncate text-xs">{{ displayEmail }}</span>
             </div>
             <ChevronsUpDown class="ml-auto size-4" />
           </SidebarMenuButton>
@@ -87,8 +88,8 @@ const handleLogout = () => {
                 </AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">{{ user.name }}</span>
-                <span class="truncate text-xs">{{ user.email }}</span>
+                <span class="truncate font-semibold">{{ displayEmail }}</span>
+                <span class="truncate text-xs">{{ displayEmail }}</span>
               </div>
             </div>
           </DropdownMenuLabel>

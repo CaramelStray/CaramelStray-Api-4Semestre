@@ -39,6 +39,7 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 | 4 | Alta | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | 40 | 2 | ✅ |
 | 5 | Média | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | 40 | 2 |  |
 | 6 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 40 | 2 |  |
+| 7 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 2 |
 
 ## 🎓 Equipe <a id="equipe"></a>
 

@@ -15,20 +15,32 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { dynamicBreadcrumb } from '@/composables/useBreadcrumbs'
 
 const route = useRoute()
 
-const pageTitle = computed(() => {
+const basePageTitle = computed(() => {
+  if (route.path.startsWith('/ordens')) return 'Gestão de Ordens'
+  if (route.path.startsWith('/clientes')) return 'Clientes'
+  if (route.path.startsWith('/contratos')) return 'Contratos'
+  if (route.path.startsWith('/tecnicos')) return 'Técnicos'
+  
   const titles: Record<string, string> = {
     '/dashboard': 'Dashboard',
     '/mapa': 'Mapa (GIS)',
     '/manutencao': 'Manutenção',
-    '/ordens': 'Gestão de Ordens',
-    '/clientes': 'Clientes',
+    '/relatorio-manutencao': 'Histórico de Manutenções',
+    '/viagem-preparacao': 'Preparação de Viagem',
     '/maquinas': 'Máquinas',
-    '/tecnicos': 'Técnicos',
-    '/contratos': 'Contratos',
+    '/catalogo-maquinas': 'Máquinas',
+    '/softwares': 'Sistemas',
+    '/certificacoes': 'Certificações',
     '/configuracoes': 'Configurações',
+    '/ativos': 'Ativos',
+    '/catalogo-ativos': 'Catálogo de Ativos',
+    '/minhas-ordens': 'Minhas Ordens',
+    '/calendario': 'Calendário',
+    '/ordens-tecnico': 'Ordens',
   }
   return titles[route.path] ?? 'Altave'
 })
@@ -45,8 +57,22 @@ const pageTitle = computed(() => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{{ pageTitle }}</BreadcrumbPage>
+                  <template v-if="dynamicBreadcrumb">
+                    <BreadcrumbLink :href="'#'" @click.prevent="$router.back()">
+                      {{ basePageTitle }}
+                    </BreadcrumbLink>
+                  </template>
+                  <template v-else>
+                    <BreadcrumbPage>{{ basePageTitle }}</BreadcrumbPage>
+                  </template>
                 </BreadcrumbItem>
+                
+                <template v-if="dynamicBreadcrumb">
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{{ dynamicBreadcrumb }}</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </template>
               </BreadcrumbList>
             </Breadcrumb>
           </div>

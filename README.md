@@ -71,10 +71,10 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 ---
 
 ## 📅 Cronograma de Sprints <a id="sprint"></a>
-| Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Site Tracker                                  |
+| Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Video Tracker                                  |
 | --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------- |----------------------------------------------- |
-| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Tasks](documentacao/sprints/sprint-1/tasks_sprint1.csv) |[Sprint 1 entrega](http://tracker.pedrohenribeiro.com/) |
-| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](documentacao/sprints/sprint2) |[Sprint 2 Tasks Semana 1](documentacao/sprints/sprint2/primeira_semana.csv) <br> [Sprint 2 Tasks Semana 2](documentacao/sprints/sprint2/segunda_semana.csv) <br> [Sprint 2 Tasks Semana 3](documentacao/sprints/sprint2/terceira_semana.csv)|  |
+| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Tasks](documentacao/sprints/sprint-1/tasks_sprint1.csv) ||
+| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](documentacao/sprints/sprint2) |[Sprint 2 Tasks Semana 1](documentacao/sprints/sprint2/primeira_semana.csv) <br> [Sprint 2 Tasks Semana 2](documentacao/sprints/sprint2/segunda_semana.csv) <br> [Sprint 2 Tasks Semana 3](documentacao/sprints/sprint2/terceira_semana.csv)|  [Sprint 2 Video](https://youtu.be/xsFScifns6g)|
 | 🔖 **SPRINT 3** | 11/05 - 31/05 | [Em processo...](#)| [Em processo...](#) ||
 | ⚡️ **feira de soluções** |  |  |  ||
 

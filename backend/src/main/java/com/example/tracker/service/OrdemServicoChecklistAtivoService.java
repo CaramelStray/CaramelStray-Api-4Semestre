@@ -32,7 +32,11 @@ public interface OrdemServicoChecklistAtivoService {
 
     OrdemServicoChecklistAtivo marcarLevado(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario);
 
+    OrdemServicoChecklistAtivo desmarcarLevado(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario);
+
     OrdemServicoChecklistAtivo marcarDevolvido(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario);
+
+    OrdemServicoChecklistAtivo desmarcarDevolvido(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario);
 
     void remover(Integer codigoOrdemServico, Integer codigoItem);
 }

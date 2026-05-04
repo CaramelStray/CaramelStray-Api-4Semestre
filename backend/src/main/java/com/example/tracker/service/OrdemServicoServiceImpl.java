@@ -258,6 +258,40 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         ordemServicoRepository.deleteById(Objects.requireNonNull(idNaoNulo));
     }
 
+    @Override
+    @Transactional
+    public OrdemServico atualizarStatusTecnico(Integer id, String novoStatus, String emailUsuario) {
+        Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
+
+        if (novoStatus == null || novoStatus.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status e obrigatorio");
+        }
+
+        String statusNormalizado = novoStatus.trim().toUpperCase();
+        java.util.Set<String> statusPermitidos = java.util.Set.of("EM_PREPARACAO", "EM_EXECUCAO", "FINALIZADA");
+        if (!statusPermitidos.contains(statusNormalizado)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Status invalido. Permitidos: " + statusPermitidos);
+        }
+
+        Tecnico tecnico = tecnicoRepository.findByUsuarioEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Tecnico nao encontrado para o usuario autenticado"));
+
+        OrdemServico ordemServico = ordemServicoRepository.findById(Objects.requireNonNull(idNaoNulo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Ordem de servico nao encontrada"));
+
+        if (ordemServico.getFuncionario() == null
+                || !Objects.equals(ordemServico.getFuncionario().getId(), tecnico.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Acesso negado: esta ordem nao esta atribuida a voce");
+        }
+
+        ordemServico.setStatus(statusNormalizado);
+        return ordemServicoRepository.save(ordemServico);
+    }
+
     private RelacoesOrdemServico validarEntrada(OrdemServicoCreateDTO dto) {
         if (dto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados da ordem de servico sao obrigatorios");

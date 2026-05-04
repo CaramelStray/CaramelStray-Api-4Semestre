@@ -5,7 +5,7 @@ import {
   ArrowLeft, ClipboardList, Building2, Calendar, MapPin, Phone, Mail,
   Cpu, Wifi, WifiOff, AlertTriangle, MessageSquare, ChevronDown, ChevronUp,
   Loader2, CheckCircle2, XCircle, Circle, Package, PackageCheck, RotateCcw,
-  Wrench, Layers,
+  Wrench, Layers, Flag,
 } from 'lucide-vue-next'
 import {
   ordemServicoService,
@@ -35,11 +35,13 @@ const salvandoDevolver = ref<Record<number, boolean>>({})
 const salvandoManut    = ref<Record<number, boolean>>({})
 const obsAberto        = ref<Record<number, boolean>>({})
 const obsInputs        = ref<Record<number, string>>({})
+const salvandoFinalizar = ref(false)
 
 // Erros de ação inline
 const erroLevar    = ref('')
 const erroDevolver = ref('')
 const erroManut    = ref('')
+const erroFinalizar = ref('')
 
 function limparErroComDelay(refErro: typeof erroLevar) {
   setTimeout(() => { refErro.value = '' }, 5000)
@@ -54,10 +56,22 @@ const manutTotal     = computed(() => checklistMaquina.value.length)
 const manutFeitos    = computed(() => checklistMaquina.value.filter(i => i.realizado !== null && i.realizado !== undefined).length)
 const manutConcluida = computed(() => manutTotal.value > 0 && manutFeitos.value === manutTotal.value)
 
+// Manutenção só editável se levar concluído (ou se não há checklist de levar)
+const manutBloqueada = computed(() => levarTotal.value > 0 && !levarConcluido.value)
+
 const ativosLevados     = computed(() => checklistAtivos.value.filter(a => a.levado))
 const devolverTotal     = computed(() => ativosLevados.value.length)
 const devolverFeitos    = computed(() => ativosLevados.value.filter(a => a.devolvido).length)
 const devolverConcluida = computed(() => devolverTotal.value > 0 && devolverFeitos.value === devolverTotal.value)
+
+// Devolver só editável se manutenção concluída (ou se não há checklist de manutenção)
+const devolverBloqueada = computed(() => manutTotal.value > 0 && !manutConcluida.value)
+
+// Botão Finalizar aparece quando todos devolvidos e ordem ainda não finalizada
+const podeFinalizarOrdem = computed(() =>
+  devolverConcluida.value &&
+  !['FINALIZADA', 'FINALIZADO'].includes(ordem.value?.status ?? '')
+)
 
 // Detecta se a ordem está em estado que bloqueia edição
 const STATUS_BLOQUEADOS = ['FINALIZADA', 'FINALIZADO', 'CANCELADA', 'CANCELADO', 'CONCLUIDA']
@@ -69,14 +83,15 @@ watch(devolverConcluida, (v) => { if (v) secaoDevolverAberta.value = false })
 
 // ── Visual config ─────────────────────────────────────────────────────────
 const statusConfig: Record<string, { dot: string; badge: string; label: string }> = {
-  AGUARDANDO:  { dot: 'bg-amber-500',   badge: 'bg-amber-500/15 text-amber-400 border-amber-500/30',       label: 'Aguardando'  },
-  AGENDADO:    { dot: 'bg-blue-400',    badge: 'bg-blue-400/15 text-blue-400 border-blue-400/30',          label: 'Agendado'    },
-  EM_EXECUCAO: { dot: 'bg-indigo-500',  badge: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',    label: 'Em Execução' },
-  CONCLUIDA:   { dot: 'bg-emerald-500', badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30', label: 'Concluída'   },
-  FINALIZADA:  { dot: 'bg-emerald-500', badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30', label: 'Finalizada'  },
-  FINALIZADO:  { dot: 'bg-emerald-500', badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30', label: 'Finalizado'  },
-  CANCELADA:   { dot: 'bg-red-500',     badge: 'bg-red-500/15 text-red-400 border-red-500/30',             label: 'Cancelada'   },
-  CANCELADO:   { dot: 'bg-red-500',     badge: 'bg-red-500/15 text-red-400 border-red-500/30',             label: 'Cancelado'   },
+  AGUARDANDO:      { dot: 'bg-amber-500',   badge: 'bg-amber-500/15 text-amber-400 border-amber-500/30',       label: 'Aguardando'      },
+  AGENDADO:        { dot: 'bg-blue-400',    badge: 'bg-blue-400/15 text-blue-400 border-blue-400/30',          label: 'Agendado'        },
+  EM_EXECUCAO:     { dot: 'bg-indigo-500',  badge: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',    label: 'Em Execução'     },
+  EM_PREPARACAO:   { dot: 'bg-violet-500',  badge: 'bg-violet-500/15 text-violet-400 border-violet-500/30',    label: 'EM PREPARAÇÃO'   },
+  CONCLUIDA:       { dot: 'bg-emerald-500', badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30', label: 'Concluída'       },
+  FINALIZADA:      { dot: 'bg-emerald-500', badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30', label: 'Finalizada'      },
+  FINALIZADO:      { dot: 'bg-emerald-500', badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30', label: 'Finalizado'      },
+  CANCELADA:       { dot: 'bg-red-500',     badge: 'bg-red-500/15 text-red-400 border-red-500/30',             label: 'Cancelada'       },
+  CANCELADO:       { dot: 'bg-red-500',     badge: 'bg-red-500/15 text-red-400 border-red-500/30',             label: 'Cancelado'       },
 }
 const criticidadeConfig: Record<string, string> = {
   CRITICA: 'bg-red-500/15 text-red-400 border-red-500/30',
@@ -94,19 +109,47 @@ function fmt(dt?: string | null) {
   })
 }
 
-// ── Ações: Levar ──────────────────────────────────────────────────────────
-async function marcarLevado(item: AtivoLocal) {
-  if (item.levado || salvandoLevar.value[item.codigo]) return
+// Ordem de progress\u00e3o do status — s\u00f3 avan\u00e7a, nunca regride
+const STATUS_ORDEM = ['AGUARDANDO', 'AGENDADO', 'EM_PREPARACAO', 'EM_EXECUCAO', 'FINALIZADA']
+
+// ── Helper: atualizar status localmente ───────────────────────────────────
+async function atualizarStatusOrdem(novoStatus: string) {
+  if (!ordem.value) return
+  const statusAtual = ordem.value.status ?? ''
+  if (statusAtual === novoStatus) return
+  // N\u00e3o deixa regredir o status
+  const idxAtual = STATUS_ORDEM.indexOf(statusAtual)
+  const idxNovo  = STATUS_ORDEM.indexOf(novoStatus)
+  if (idxAtual >= 0 && idxNovo >= 0 && idxNovo <= idxAtual) return
+  try {
+    await ordemServicoService.atualizarStatus(ordemId, novoStatus)
+    ordem.value = { ...ordem.value, status: novoStatus }
+  } catch {
+    // silencia — o status visual n\u00e3o \u00e9 cr\u00edtico
+  }
+}
+
+// ── Ações: Levar (toggle — chama /levar para marcar, /deslevar para desmarcar) ──
+async function toggleLevado(item: AtivoLocal) {
+  if (salvandoLevar.value[item.codigo] || ordemBloqueada.value) return
   salvandoLevar.value[item.codigo] = true
   erroLevar.value = ''
   try {
-    const atualizado = await ordemServicoService.marcarAtivoLevado(ordemId, item.codigo)
+    let atualizado
+    if (!item.levado) {
+      atualizado = await ordemServicoService.marcarAtivoLevado(ordemId, item.codigo)
+      await atualizarStatusOrdem('EM_PREPARACAO')
+    } else {
+      atualizado = await ordemServicoService.desmarcarAtivoLevado(ordemId, item.codigo)
+    }
     const idx = checklistAtivos.value.findIndex(a => a.codigo === item.codigo)
     if (idx !== -1 && atualizado) {
       checklistAtivos.value[idx] = { ...checklistAtivos.value[idx], levado: atualizado.levado, devolvido: atualizado.devolvido }
+    } else if (idx !== -1) {
+      checklistAtivos.value[idx] = { ...checklistAtivos.value[idx], levado: !item.levado }
     }
   } catch(e: any) {
-    const msg = e?.response?.data?.message ?? e?.message ?? 'Erro ao marcar ativo como levado.'
+    const msg = e?.response?.data?.message ?? e?.message ?? 'Erro ao alterar status do ativo.'
     erroLevar.value = msg
     limparErroComDelay(erroLevar)
   } finally {
@@ -114,19 +157,26 @@ async function marcarLevado(item: AtivoLocal) {
   }
 }
 
-// ── Ações: Devolver ───────────────────────────────────────────────────────
-async function marcarDevolvido(item: AtivoLocal) {
-  if (item.devolvido || salvandoDevolver.value[item.codigo]) return
+// ── Ações: Devolver (toggle — chama /devolver para marcar, /desdevolver para desmarcar) ──
+async function toggleDevolvido(item: AtivoLocal) {
+  if (salvandoDevolver.value[item.codigo] || ordemBloqueada.value || devolverBloqueada.value) return
   salvandoDevolver.value[item.codigo] = true
   erroDevolver.value = ''
   try {
-    const atualizado = await ordemServicoService.marcarAtivoDevolvido(ordemId, item.codigo)
+    let atualizado
+    if (!item.devolvido) {
+      atualizado = await ordemServicoService.marcarAtivoDevolvido(ordemId, item.codigo)
+    } else {
+      atualizado = await ordemServicoService.desmarcarAtivoDevolvido(ordemId, item.codigo)
+    }
     const idx = checklistAtivos.value.findIndex(a => a.codigo === item.codigo)
     if (idx !== -1 && atualizado) {
       checklistAtivos.value[idx] = { ...checklistAtivos.value[idx], levado: atualizado.levado, devolvido: atualizado.devolvido }
+    } else if (idx !== -1) {
+      checklistAtivos.value[idx] = { ...checklistAtivos.value[idx], devolvido: !item.devolvido }
     }
   } catch(e: any) {
-    const msg = e?.response?.data?.message ?? e?.message ?? 'Erro ao marcar ativo como devolvido.'
+    const msg = e?.response?.data?.message ?? e?.message ?? 'Erro ao alterar devolução do ativo.'
     erroDevolver.value = msg
     limparErroComDelay(erroDevolver)
   } finally {
@@ -136,13 +186,10 @@ async function marcarDevolvido(item: AtivoLocal) {
 
 // ── Ações: Manutenção ─────────────────────────────────────────────────────
 async function toggleRealizado(item: MaquinaChecklistManutencaoResponseDTO) {
-  if (!item.codigoHistoricoManutencao || salvandoManut.value[item.codigo]) return
-  if (item.realizado === false) return
-  if (!item.realizado) {
-    await salvarManut(item, true, undefined)
-  } else {
-    obsAberto.value[item.codigo] = true
-  }
+  if (!item.codigoHistoricoManutencao || salvandoManut.value[item.codigo] || manutBloqueada.value) return
+  // One-way: só marca, não desmarca
+  if (item.realizado !== null && item.realizado !== undefined) return
+  await salvarManut(item, true, undefined)
 }
 
 async function salvarManut(item: MaquinaChecklistManutencaoResponseDTO, realizado: boolean, obs: string | undefined) {
@@ -150,6 +197,8 @@ async function salvarManut(item: MaquinaChecklistManutencaoResponseDTO, realizad
   salvandoManut.value[item.codigo] = true
   erroManut.value = ''
   try {
+    // Ao marcar o PRIMEIRO item de manutençao como realizado → EM EXECUÇÃO
+    const primeiroCheck = realizado && checklistMaquina.value.every(i => !i.realizado)
     const atualizado = await ordemServicoService.atualizarChecklistMaquinaItem(
       item.codigoHistoricoManutencao, item.codigo, { realizado, observacaoTarefa: obs },
     )
@@ -157,6 +206,7 @@ async function salvarManut(item: MaquinaChecklistManutencaoResponseDTO, realizad
       const idx = checklistMaquina.value.findIndex(i => i.codigo === item.codigo)
       if (idx !== -1) checklistMaquina.value[idx] = atualizado
     }
+    if (primeiroCheck) await atualizarStatusOrdem('EM_EXECUCAO')
   } catch(e: any) {
     const msg = e?.response?.data?.message ?? e?.message ?? 'Erro ao atualizar item de manutenção.'
     erroManut.value = msg
@@ -177,6 +227,23 @@ async function confirmarNaoRealizado(item: MaquinaChecklistManutencaoResponseDTO
 function cancelarObs(codigo: number) {
   obsAberto.value[codigo] = false
   obsInputs.value[codigo] = ''
+}
+
+// ── Ação: Finalizar Ordem ─────────────────────────────────────────────────
+async function finalizarOrdem() {
+  if (salvandoFinalizar.value) return
+  salvandoFinalizar.value = true
+  erroFinalizar.value = ''
+  try {
+    await ordemServicoService.atualizarStatus(ordemId, 'FINALIZADA')
+    if (ordem.value) ordem.value = { ...ordem.value, status: 'FINALIZADA' }
+  } catch(e: any) {
+    const msg = e?.response?.data?.message ?? e?.message ?? 'Erro ao finalizar ordem.'
+    erroFinalizar.value = msg
+    limparErroComDelay(erroFinalizar)
+  } finally {
+    salvandoFinalizar.value = false
+  }
 }
 
 // ── Carregamento ──────────────────────────────────────────────────────────
@@ -415,9 +482,9 @@ onMounted(async () => {
                 :key="item.codigo"
                 class="flex items-center gap-3 px-4 py-3 transition-colors"
                 :class="[
-                  !item.levado && !ordemBloqueada ? 'cursor-pointer hover:bg-muted/10' : 'cursor-default',
+                  !ordemBloqueada ? 'cursor-pointer hover:bg-muted/10' : 'cursor-default',
                 ]"
-                @click="marcarLevado(item)"
+                @click="toggleLevado(item)"
               >
                 <div class="shrink-0 flex items-center justify-center pointer-events-none">
                   <Loader2 v-if="salvandoLevar[item.codigo]" class="size-4 animate-spin text-muted-foreground" />
@@ -425,7 +492,7 @@ onMounted(async () => {
                     v-else
                     type="checkbox"
                     :checked="item.levado"
-                    :disabled="item.levado || ordemBloqueada"
+                    :disabled="ordemBloqueada"
                     class="size-4 accent-blue-500"
                   />
                 </div>
@@ -439,7 +506,7 @@ onMounted(async () => {
                     <span v-if="item.numeroSerie" class="font-mono"> &middot; S/N {{ item.numeroSerie }}</span>
                   </p>
                 </div>
-                <span v-if="item.levado" class="shrink-0 text-xs font-semibold text-blue-400 pointer-events-none">levando</span>
+                <span v-if="item.levado" class="shrink-0 text-xs font-semibold text-emerald-400 pointer-events-none">levado ✓</span>
                 <span v-else class="shrink-0 text-xs font-semibold text-amber-400 pointer-events-none">falta levar</span>
               </div>
             </div>
@@ -475,6 +542,15 @@ onMounted(async () => {
               </div>
             </button>
 
+            <!-- Aviso de bloqueio: manutenção liberada só após levar concluído -->
+            <div
+              v-if="manutBloqueada"
+              class="mx-4 mb-3 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs flex items-center gap-2"
+            >
+              <AlertTriangle class="size-3.5 shrink-0" />
+              Conclua o check de <strong>Ativos a Levar</strong> primeiro para liberar este checklist.
+            </div>
+
             <!-- Erro de ação -->
             <div v-if="erroManut && secaoManutAberta" class="mx-4 mb-2 px-3 py-2 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
               <XCircle class="size-3.5 shrink-0" /> {{ erroManut }}
@@ -489,6 +565,7 @@ onMounted(async () => {
                 v-for="item in checklistMaquina"
                 :key="item.codigo"
                 class="px-4 py-3 space-y-2"
+                :class="manutBloqueada ? 'opacity-50 pointer-events-none' : ''"
               >
                 <div class="flex items-center gap-3">
                   <button
@@ -576,6 +653,15 @@ onMounted(async () => {
               </div>
             </button>
 
+            <!-- Aviso de bloqueio: devolver liberado só após manutenção -->
+            <div
+              v-if="devolverBloqueada"
+              class="mx-4 mb-3 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs flex items-center gap-2"
+            >
+              <AlertTriangle class="size-3.5 shrink-0" />
+              Conclua o <strong>Checklist de Manutenção</strong> primeiro para liberar a devolução.
+            </div>
+
             <!-- Erro de ação -->
             <div v-if="erroDevolver && secaoDevolverAberta" class="mx-4 mb-2 px-3 py-2 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
               <XCircle class="size-3.5 shrink-0" /> {{ erroDevolver }}
@@ -591,9 +677,10 @@ onMounted(async () => {
                 :key="item.codigo"
                 class="flex items-center gap-3 px-4 py-3 transition-colors"
                 :class="[
-                  !item.devolvido && !ordemBloqueada ? 'cursor-pointer hover:bg-muted/10' : 'cursor-default',
+                  !ordemBloqueada && !devolverBloqueada ? 'cursor-pointer hover:bg-muted/10' : 'cursor-default',
+                  devolverBloqueada ? 'opacity-50 pointer-events-none' : '',
                 ]"
-                @click="marcarDevolvido(item)"
+                @click="toggleDevolvido(item)"
               >
                 <div class="shrink-0 flex items-center justify-center pointer-events-none">
                   <Loader2 v-if="salvandoDevolver[item.codigo]" class="size-4 animate-spin text-muted-foreground" />
@@ -601,7 +688,7 @@ onMounted(async () => {
                     v-else
                     type="checkbox"
                     :checked="item.devolvido"
-                    :disabled="item.devolvido || ordemBloqueada"
+                    :disabled="ordemBloqueada || devolverBloqueada"
                     class="size-4 accent-amber-500"
                   />
                 </div>
@@ -619,6 +706,27 @@ onMounted(async () => {
                 <span v-else class="shrink-0 text-xs font-semibold text-amber-400 pointer-events-none">falta devolver</span>
               </div>
             </div>
+          </div>
+
+          <!-- ── Botão Finalizar Ordem ── -->
+          <div v-if="podeFinalizarOrdem && !ordemBloqueada" class="rounded-xl border border-emerald-500/40 bg-emerald-500/5 p-5 text-center space-y-3">
+            <div class="flex items-center justify-center gap-2 text-emerald-400">
+              <CheckCircle2 class="size-5" />
+              <p class="text-sm font-semibold">Todos os ativos foram devolvidos!</p>
+            </div>
+            <p class="text-xs text-muted-foreground">Clique abaixo para registrar a conclusão desta ordem de serviço.</p>
+            <div v-if="erroFinalizar" class="px-3 py-2 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-xs flex items-center gap-2 text-left">
+              <XCircle class="size-3.5 shrink-0" /> {{ erroFinalizar }}
+            </div>
+            <button
+              class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/30 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              :disabled="salvandoFinalizar"
+              @click="finalizarOrdem"
+            >
+              <Loader2 v-if="salvandoFinalizar" class="size-4 animate-spin" />
+              <Flag v-else class="size-4" />
+              Finalizar Ordem
+            </button>
           </div>
 
           <!-- Estado vazio -->

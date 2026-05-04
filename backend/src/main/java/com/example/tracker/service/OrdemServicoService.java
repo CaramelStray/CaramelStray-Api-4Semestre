@@ -38,6 +38,8 @@ public interface OrdemServicoService {
 
     OrdemServico atualizar(Integer id, OrdemServicoCreateDTO dto);
 
+    OrdemServico atualizarStatusTecnico(Integer id, String novoStatus, String emailUsuario);
+
     void deletar(Integer id);
 
     List<MaquinaChecklistManutencaoResponseDTO> listarChecklistMaquina(Integer id);

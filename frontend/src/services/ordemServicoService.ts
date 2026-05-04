@@ -202,14 +202,9 @@ export const ordemServicoService = {
     }),
 
   atualizarStatus: (codigoOrdem: number, status: string) =>
-    apiFetch<OrdemServicoResponseDTO>(`/ordens-servico/${codigoOrdem}/status`, {
+    apiFetch<OrdemServicoResponseDTO>(`/ordens-servico/minhas-ordens/${codigoOrdem}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),
-    }),
-
-  finalizarOrdem: (codigoOrdem: number) =>
-    apiFetch<OrdemServicoResponseDTO>(`/ordens-servico/${codigoOrdem}/finalizar`, {
-      method: 'PATCH',
     }),
 
   adicionarChecklistMaquinaItem: (codigoHistoricoManutencao: number, codigoTarefa: number) =>

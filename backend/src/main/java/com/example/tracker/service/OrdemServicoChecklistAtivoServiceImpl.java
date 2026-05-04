@@ -222,6 +222,22 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
 
     @Override
     @Transactional
+    public OrdemServicoChecklistAtivo desmarcarLevado(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario) {
+        Integer codigoOs = requireId(codigoOrdemServico, "Codigo da ordem de servico e obrigatorio");
+        Integer codigoIt = requireId(codigoItem, "Codigo do item e obrigatorio");
+        OrdemServico ordemServico = buscarOrdemServico(codigoOs);
+        validarTecnicoPodeAlterarOrdem(ordemServico, emailUsuario);
+        validarOrdemEditavel(ordemServico);
+        OrdemServicoChecklistAtivo item = checklistRepository
+                .findByCodigoAndOrdemServicoCodigo(codigoIt, codigoOs)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item do checklist nao encontrado"));
+        item.setLevado(false);
+        item.setDevolvido(false); // se desmarcar levado, devolvido tambem deve ser desfeito
+        return checklistRepository.save(item);
+    }
+
+    @Override
+    @Transactional
     public OrdemServicoChecklistAtivo marcarDevolvido(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario) {
         Integer codigoOs = requireId(codigoOrdemServico, "Codigo da ordem de servico e obrigatorio");
         Integer codigoIt = requireId(codigoItem, "Codigo do item e obrigatorio");
@@ -235,6 +251,21 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O ativo precisa ser levado antes de ser devolvido");
         }
         item.setDevolvido(true);
+        return checklistRepository.save(item);
+    }
+
+    @Override
+    @Transactional
+    public OrdemServicoChecklistAtivo desmarcarDevolvido(Integer codigoOrdemServico, Integer codigoItem, String emailUsuario) {
+        Integer codigoOs = requireId(codigoOrdemServico, "Codigo da ordem de servico e obrigatorio");
+        Integer codigoIt = requireId(codigoItem, "Codigo do item e obrigatorio");
+        OrdemServico ordemServico = buscarOrdemServico(codigoOs);
+        validarTecnicoPodeAlterarOrdem(ordemServico, emailUsuario);
+        validarOrdemEditavel(ordemServico);
+        OrdemServicoChecklistAtivo item = checklistRepository
+                .findByCodigoAndOrdemServicoCodigo(codigoIt, codigoOs)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item do checklist nao encontrado"));
+        item.setDevolvido(false);
         return checklistRepository.save(item);
     }
 

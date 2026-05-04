@@ -30,12 +30,17 @@ const basePageTitle = computed(() => {
     '/mapa': 'Mapa (GIS)',
     '/manutencao': 'Manutenção',
     '/relatorio-manutencao': 'Histórico de Manutenções',
-    '/viagem-preparacao': 'Preparacao de Viagem',
+    '/viagem-preparacao': 'Preparação de Viagem',
     '/maquinas': 'Máquinas',
     '/catalogo-maquinas': 'Máquinas',
     '/softwares': 'Sistemas',
     '/certificacoes': 'Certificações',
     '/configuracoes': 'Configurações',
+    '/ativos': 'Ativos',
+    '/catalogo-ativos': 'Catálogo de Ativos',
+    '/minhas-ordens': 'Minhas Ordens',
+    '/calendario': 'Calendário',
+    '/ordens-tecnico': 'Ordens',
   }
   return titles[route.path] ?? 'Altave'
 })

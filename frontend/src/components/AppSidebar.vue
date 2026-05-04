@@ -31,7 +31,7 @@ const navGeralAdmin = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Mapa", url: "/mapa", icon: Map },
   { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
-  { title: "Preparacao de Viagem", url: "/viagem-preparacao", icon: Route },
+  { title: "Preparação de Viagem", url: "/viagem-preparacao", icon: Route },
   { title: "Histórico de Manutenções", url: "/relatorio-manutencao", icon: Wrench }
 ]
 

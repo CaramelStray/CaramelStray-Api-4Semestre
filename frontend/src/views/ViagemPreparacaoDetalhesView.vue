@@ -178,7 +178,7 @@ async function carregar() {
       ])
     }
   } catch (e: any) {
-    erro.value = e.message ?? 'Erro ao carregar preparacao de viagem'
+    erro.value = e.message ?? 'Erro ao carregar preparação de viagem'
   } finally {
     loading.value = false
   }
@@ -195,14 +195,14 @@ onMounted(carregar)
         @click="router.push('/viagem-preparacao')"
       >
         <ArrowLeft class="size-4" />
-        Preparacao de Viagem
+        Preparação de Viagem
       </button>
       <ChevronRight class="size-3.5" />
       <span class="text-foreground font-medium">{{ viagem ? `Viagem #${viagem.codigo}` : 'Preparacao' }}</span>
     </div>
 
     <div v-if="loading" class="flex items-center justify-center py-24 text-muted-foreground gap-3">
-      <Loader2 class="size-5 animate-spin" /> Carregando preparacao de viagem...
+      <Loader2 class="size-5 animate-spin" /> Carregando preparação de viagem...
     </div>
 
     <div v-else-if="erro && !viagem" class="py-24 text-center text-red-400">{{ erro }}</div>
@@ -214,7 +214,7 @@ onMounted(carregar)
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center flex-wrap gap-3">
-            <h1 class="text-2xl font-bold text-foreground">Preparacao de Viagem</h1>
+            <h1 class="text-2xl font-bold text-foreground">Preparação de Viagem</h1>
             <span
               :class="['inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold uppercase tracking-wide', statusConfig[viagem.status]?.badge ?? 'bg-muted/30 text-muted-foreground border-border']"
             >

@@ -173,7 +173,7 @@ const stats = computed(() => [
     <div v-if="erro"    class="text-center py-12 text-red-400">{{ erro }}</div>
 
     <!-- Stats -->
-    <div :class="['grid gap-4 xl:grid-cols-4', stats.length > 1 ? 'grid-cols-2' : 'grid-cols-1']">
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{{ stat.label }}</CardTitle>
@@ -187,22 +187,22 @@ const stats = computed(() => [
     </div>
 
     <!-- Busca + botões -->
-    <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between w-full">
-      <div class="relative flex-1">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center w-full">
+      <div class="grid grid-cols-2 gap-4 w-full sm:w-auto sm:flex sm:gap-4 sm:shrink-0 sm:order-2">
+        <Button variant="outline" size="lg" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 border-border hover:bg-muted/20">
+          <Download class="w-4 h-4 mr-2 shrink-0" /> Exportar Relatório
+        </Button>
+        <Button @click="showNovoContratoPopup = true" size="lg" class="h-12 font-bold uppercase text-[11px] px-4 sm:px-6 bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
+          <Plus class="w-4 h-4 mr-2 shrink-0" /> Novo Contrato
+        </Button>
+      </div>
+      <div class="relative w-full sm:flex-1 sm:order-1">
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
         <Input
           v-model="searchQuery"
           placeholder="Buscar contrato ou cliente..."
           class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary"
         />
-      </div>
-      <div class="flex gap-3 shrink-0">
-        <Button variant="outline" size="lg" class="h-12 font-bold uppercase text-[11px] px-6 border-border hover:bg-muted/20">
-          <Download class="w-4 h-4 mr-2" /> Exportar Relatório
-        </Button>
-        <Button @click="showNovoContratoPopup = true" size="lg" class="h-12 font-bold uppercase text-[11px] px-6 bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
-          <Plus class="w-4 h-4 mr-2" /> Novo Contrato
-        </Button>
       </div>
     </div>
 

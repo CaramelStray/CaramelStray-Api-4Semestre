@@ -821,7 +821,7 @@ const formSchema = toTypedSchema(z.object({
   codigoContrato:        z.string({ required_error: '*' }).min(1, 'Selecione um contrato'),
   criticidade:           z.string({ required_error: '*' }).min(1, 'Selecione a criticidade'),
   tipoOrdem:             z.string({ required_error: '*' }).min(1, 'Selecione o tipo de ordem'),
-  dataAgendamento:       z.string({ required_error: '*' }).min(1, 'Selecione a data de agendamento'),
+  dataAgendamento:       z.string({ required_error: '*' }).min(1, 'Selecione a data de agendamento').refine((v: string) => v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Data inválida'),
   observacaoGeral:       z.string().optional().or(z.literal('')),
   codigoMaquinaContrato: z.string({ required_error: '*' }).min(1, 'Selecione uma máquina'),
   codigoFuncionario:     z.string({ required_error: '*' }).min(1, 'Selecione um técnico'),

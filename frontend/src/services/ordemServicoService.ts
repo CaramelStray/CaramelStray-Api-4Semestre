@@ -186,8 +186,29 @@ export const ordemServicoService = {
       method: 'PATCH',
     }),
 
+  desmarcarAtivoLevado: (codigoOrdem: number, codigoItem: number) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO>(`/ordens-servico/minhas-ordens/${codigoOrdem}/checklist-ativos/${codigoItem}/deslevar`, {
+      method: 'PATCH',
+    }),
+
   marcarAtivoDevolvido: (codigoOrdem: number, codigoItem: number) =>
     apiFetch<OrdemServicoChecklistAtivoResponseDTO>(`/ordens-servico/minhas-ordens/${codigoOrdem}/checklist-ativos/${codigoItem}/devolver`, {
+      method: 'PATCH',
+    }),
+
+  desmarcarAtivoDevolvido: (codigoOrdem: number, codigoItem: number) =>
+    apiFetch<OrdemServicoChecklistAtivoResponseDTO>(`/ordens-servico/minhas-ordens/${codigoOrdem}/checklist-ativos/${codigoItem}/desdevolver`, {
+      method: 'PATCH',
+    }),
+
+  atualizarStatus: (codigoOrdem: number, status: string) =>
+    apiFetch<OrdemServicoResponseDTO>(`/ordens-servico/${codigoOrdem}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    }),
+
+  finalizarOrdem: (codigoOrdem: number) =>
+    apiFetch<OrdemServicoResponseDTO>(`/ordens-servico/${codigoOrdem}/finalizar`, {
       method: 'PATCH',
     }),
 

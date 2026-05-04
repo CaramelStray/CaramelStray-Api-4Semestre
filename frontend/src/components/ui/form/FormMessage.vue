@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import type { HTMLAttributes } from "vue"
 import { ErrorMessage } from "vee-validate"
+import { useFormField } from "./useFormField"
 import { toValue } from "vue"
 import { cn } from "@/lib/utils"
-import { useFormField } from "./useFormField"
 import { AlertCircle } from "lucide-vue-next"
 
 const props = defineProps<{
@@ -14,15 +14,17 @@ const { name, formMessageId } = useFormField()
 </script>
 
 <template>
-  <ErrorMessage
-    :id="formMessageId"
-    data-slot="form-message"
-    :name="toValue(name)"
-    v-slot="{ message }"
-  >
-    <div :class="cn('flex items-center gap-2 mt-1 text-sm font-medium bg-red-500/10 text-red-500 px-3 py-2 rounded-md border border-red-500/20', props.class)">
-      <AlertCircle class="w-4 h-4 shrink-0" />
-      <p>{{ message }}</p>
-    </div>
-  </ErrorMessage>
+  <!--
+    Wrapper de altura fixa: sempre ocupa h-5 + mt-1.
+    Quando há erro, mostra ícone + texto compacto.
+    Quando não há erro, o slot não renderiza nada mas o wrapper vazio mantém o espaço.
+  -->
+  <div :id="formMessageId" data-slot="form-message" :class="cn('h-5 mt-1 overflow-hidden', props.class)">
+    <ErrorMessage :name="toValue(name)" v-slot="{ message }">
+      <div class="flex items-center gap-1">
+        <AlertCircle class="w-3 h-3 shrink-0 text-red-500" />
+        <p class="text-[11px] font-medium text-red-500 truncate leading-none">{{ message }}</p>
+      </div>
+    </ErrorMessage>
+  </div>
 </template>

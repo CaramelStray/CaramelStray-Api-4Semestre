@@ -104,7 +104,7 @@ onMounted(carregarViagens)
     <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
     <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">

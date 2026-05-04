@@ -370,15 +370,15 @@ onMounted(async () => {
 const formSchema = toTypedSchema(z.object({
   codigoCliente: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   status: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  dataInicio: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
-  dataFim: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+  dataInicio: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').refine((v: string) => v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Data inválida'),
+  dataFim: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').refine((v: string) => v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Data inválida'),
   periodoManutencaoPreventiva: z.coerce.number({ required_error: 'Campo obrigatório' }).min(1, 'Informe um período válido'),
   descricao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
 
   maquinas: z.array(z.object({
     codigoMaquina: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
     numeroSerie: z.string().optional().default(''),
-    dataInstalacao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+    dataInstalacao: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório').refine((v: string) => v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v), 'Data inválida'),
   })).min(1, 'Adicione pelo menos uma máquina'),
 
   softwares: z.array(z.object({

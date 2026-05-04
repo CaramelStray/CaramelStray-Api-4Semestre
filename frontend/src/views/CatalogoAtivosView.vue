@@ -133,22 +133,11 @@ const filteredCatalogo = computed(() => {
       </div>
     </Transition>
 
-    <div class="flex items-start justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="flex items-center justify-center w-10 h-10 rounded-full border border-blue-500 bg-blue-500/20 text-blue-400">
-          <Package class="w-5 h-5" />
-        </div>
-        <div>
-          <h1 class="text-2xl font-bold tracking-tight">Catálogo de Ativos</h1>
-          <p class="text-sm text-muted-foreground">Tipos de produtos disponíveis no inventário</p>
-        </div>
-      </div>
-    </div>
 
     <div v-if="loading" class="text-center py-12 text-muted-foreground">Carregando...</div>
     <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{{ stat.label }}</CardTitle>
@@ -161,8 +150,8 @@ const filteredCatalogo = computed(() => {
       </Card>
     </div>
 
-    <div class="flex items-center justify-between gap-4 w-full">
-      <div class="relative flex-1">
+    <div class="flex items-center gap-4 w-full">
+      <div class="relative flex-1 sm:order-1">
         <Search class="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
         <Input
           v-model="searchQuery"
@@ -170,7 +159,7 @@ const filteredCatalogo = computed(() => {
           class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary"
         />
       </div>
-      <div class="flex gap-3 shrink-0">
+      <div class="shrink-0">
         <Button size="lg" @click="isCadastroOpen = true" class="h-12 font-bold uppercase text-[11px] px-6 bg-[#2563eb] dark:bg-blue-600 hover:opacity-90 text-white border-none shadow-md">
           <Plus class="w-4 h-4 mr-2" /> Novo Produto
         </Button>

@@ -18,12 +18,13 @@ const emit = defineEmits<{
 
 const calendarOpen = ref(false)
 const inputValue = ref('')
+const hasInvalidDate = ref(false)
 
 const maxYear = computed(() => new Date().getFullYear() + 30)
 const maxValue = computed(() => today(getLocalTimeZone()).add({ years: 30 }))
 
 const calendarValue = computed((): CalendarDate | undefined => {
-  if (!props.modelValue) return undefined
+  if (!props.modelValue || props.modelValue === '__invalid__') return undefined
   const parts = props.modelValue.split('-').map(Number)
   if (parts.length !== 3 || parts.some(isNaN)) return undefined
   const [year, month, day] = parts
@@ -33,7 +34,11 @@ const calendarValue = computed((): CalendarDate | undefined => {
 watch(
   () => props.modelValue,
   (newVal: string | undefined) => {
-    if (!newVal) { inputValue.value = ''; return }
+    if (newVal !== '__invalid__') hasInvalidDate.value = false
+    if (!newVal || newVal === '__invalid__') {
+      if (newVal !== '__invalid__') inputValue.value = ''
+      return
+    }
     const parts = newVal.split('-')
     if (parts.length === 3) {
       const [year, month, day] = parts
@@ -51,10 +56,10 @@ function isValidDate(day: number, month: number, year: number): boolean {
 }
 
 function onInput(e: Event) {
+  hasInvalidDate.value = false
   const input = e.target as HTMLInputElement
   let digits = input.value.replace(/\D/g, '').slice(0, 8)
 
-  // Cap day to 01-31 as soon as 2 digits are present
   if (digits.length >= 2) {
     let day = Number(digits.slice(0, 2))
     if (day === 0) day = 1
@@ -62,7 +67,6 @@ function onInput(e: Event) {
     digits = String(day).padStart(2, '0') + digits.slice(2)
   }
 
-  // Cap month to 01-12 as soon as 4 digits are present
   if (digits.length >= 4) {
     let month = Number(digits.slice(2, 4))
     if (month === 0) month = 1
@@ -70,7 +74,6 @@ function onInput(e: Event) {
     digits = digits.slice(0, 2) + String(month).padStart(2, '0') + digits.slice(4)
   }
 
-  // Cap year to maxYear and validate the full date when all 8 digits are present
   if (digits.length === 8) {
     let year = Number(digits.slice(4, 8))
     if (year > maxYear.value) year = maxYear.value
@@ -84,7 +87,6 @@ function onInput(e: Event) {
     }
   }
 
-  // Format as DD/MM/YYYY
   let formatted = digits.slice(0, 2)
   if (digits.length > 2) formatted += '/' + digits.slice(2, 4)
   if (digits.length > 4) formatted += '/' + digits.slice(4, 8)
@@ -98,18 +100,29 @@ function onBlur() {
   if (digits.length === 0) {
     emit('update:modelValue', '')
   } else if (digits.length < 8) {
-    // Incomplete date — revert display to last valid model value
-    if (!props.modelValue) {
+    // Incomplete — revert to last valid value or clear
+    if (!props.modelValue || props.modelValue === '__invalid__') {
       inputValue.value = ''
+      emit('update:modelValue', '')
     } else {
       const [year, month, day] = props.modelValue.split('-')
       inputValue.value = `${day}/${month}/${year}`
+    }
+  } else {
+    // 8 digits present — check if the displayed date is actually valid
+    const day = Number(digits.slice(0, 2))
+    const month = Number(digits.slice(2, 4))
+    const year = Number(digits.slice(4, 8))
+    if (!isValidDate(day, month, year)) {
+      hasInvalidDate.value = true
+      emit('update:modelValue', '__invalid__')
     }
   }
 }
 
 function onCalendarSelect(val: CalendarDate | undefined) {
   if (!val) return
+  hasInvalidDate.value = false
   emit('update:modelValue', val.toString())
   calendarOpen.value = false
 }
@@ -122,6 +135,7 @@ function onCalendarSelect(val: CalendarDate | undefined) {
       placeholder="DD/MM/AAAA"
       maxlength="10"
       data-slot="input"
+      :aria-invalid="hasInvalidDate"
       :class="cn(
         'file:text-foreground placeholder:text-muted-foreground border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 pr-9 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm',
         'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',

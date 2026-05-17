@@ -101,6 +101,20 @@ public class TecnicoServiceImpl implements TecnicoService {
         tecnico.setEstado(limpar(dto.getEstado()));
         tecnico.setDisponibilidade(limpar(dto.getDisponibilidade()));
 
+        if (tecnico.getUsuario() != null) {
+            String novoEmail = normalizar(dto.getEmail());
+            if (novoEmail != null && !novoEmail.equals(tecnico.getUsuario().getEmail())) {
+                if (usuarioRepository.findByEmail(novoEmail).isPresent()) {
+                    throw new IllegalArgumentException("Ja existe usuario cadastrado com este email.");
+                }
+                tecnico.getUsuario().setEmail(novoEmail);
+            }
+            if (dto.getSenha() != null && !dto.getSenha().trim().isEmpty()) {
+                tecnico.getUsuario().setSenha(passwordEncoder.encode(dto.getSenha()));
+            }
+            usuarioRepository.save(tecnico.getUsuario());
+        }
+
         Tecnico atualizado = tecnicoRepository.save(tecnico);
         return toDTO(atualizado);
     }

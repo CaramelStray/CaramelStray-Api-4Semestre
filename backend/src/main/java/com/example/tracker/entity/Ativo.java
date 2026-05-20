@@ -35,6 +35,10 @@ public class Ativo {
     @JoinColumn(name = "codigo_funcionario_responsavel")
     private Tecnico funcionarioResponsavel;
 
+    @ManyToOne
+    @JoinColumn(name = "codigo_maquina_contrato")
+    private MaquinaContrato maquinaContrato;
+
     @Column(name = "status", length = 100)
     private String status;
 
@@ -84,6 +88,14 @@ public class Ativo {
 
     public void setFuncionarioResponsavel(Tecnico funcionarioResponsavel) {
         this.funcionarioResponsavel = funcionarioResponsavel;
+    }
+
+    public MaquinaContrato getMaquinaContrato() {
+        return maquinaContrato;
+    }
+
+    public void setMaquinaContrato(MaquinaContrato maquinaContrato) {
+        this.maquinaContrato = maquinaContrato;
     }
 
     public String getStatus() {

@@ -11,6 +11,7 @@ import {
   CheckCircle2, Clock, Eye, MapPinned, Route, Search, Truck,
 } from 'lucide-vue-next'
 import { viagemService, type ViagemResponseDTO } from '@/services/viagemService'
+import EmbarcacoesAtracadasCard from '@/components/viagem/EmbarcacoesAtracadasCard.vue'
 
 const router = useRouter()
 
@@ -127,6 +128,8 @@ onMounted(carregarViagens)
         class="pl-11 bg-sidebar h-12 text-sm w-full border-border focus-visible:ring-1 focus-visible:ring-sidebar-primary"
       />
     </div>
+
+    <EmbarcacoesAtracadasCard :viagens="viagens" />
 
     <div class="rounded-md border border-border bg-sidebar overflow-hidden">
       <div class="p-4 border-b border-border bg-muted/5">

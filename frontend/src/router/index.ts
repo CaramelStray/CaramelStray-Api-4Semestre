@@ -1,4 +1,3 @@
-import path from 'path/win32'
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Página inicial de cada role após login
@@ -122,6 +121,10 @@ const router = createRouter({
     {
       path: '/configuracoes',
       component: () => import('@/views/ConfiguracoesView.vue'),
+    },
+    {
+      path: '/dashboard',
+      component: () => import('@/views/DashboardView.vue'),
     },
   ],
 })

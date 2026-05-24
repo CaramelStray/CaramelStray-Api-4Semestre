@@ -37,7 +37,11 @@ const props = defineProps<{
   }
 }>()
 
-const displayEmail = computed(() => localStorage.getItem('user_email') ?? props.user.email)
+const initials = computed(() => {
+  const n = props.user.name || props.user.email || 'U'
+  const p = n.trim().split(' ')
+  return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : n.substring(0, 2).toUpperCase()
+})
 
 const { isMobile } = useSidebar()
 const router = useRouter()
@@ -46,6 +50,8 @@ const handleLogout = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('user_email')
   localStorage.removeItem('user_role')
+  localStorage.removeItem('user_avatar')
+  localStorage.removeItem('user_name')
   
   router.push('/login')
 }
@@ -63,12 +69,12 @@ const handleLogout = () => {
             <Avatar class="h-8 w-8 rounded-lg">
               <AvatarImage :src="user.avatar" :alt="user.name" />
               <AvatarFallback class="rounded-lg">
-                CN
+                {{ initials }}
               </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ displayEmail }}</span>
-              <span class="truncate text-xs">{{ displayEmail }}</span>
+              <span class="truncate font-medium">{{ user.name }}</span>
+              <span class="truncate text-xs">{{ user.email }}</span>
             </div>
             <ChevronsUpDown class="ml-auto size-4" />
           </SidebarMenuButton>
@@ -84,18 +90,18 @@ const handleLogout = () => {
               <Avatar class="h-8 w-8 rounded-lg">
                 <AvatarImage :src="user.avatar" :alt="user.name" />
                 <AvatarFallback class="rounded-lg">
-                  CN
+                  {{ initials }}
                 </AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">{{ displayEmail }}</span>
-                <span class="truncate text-xs">{{ displayEmail }}</span>
+                <span class="truncate font-semibold">{{ user.name }}</span>
+                <span class="truncate text-xs">{{ user.email }}</span>
               </div>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem @click="router.push('/minha-conta')">
               <BadgeCheck />
               Minha conta
             </DropdownMenuItem>

@@ -123,6 +123,10 @@ const router = createRouter({
       path: '/configuracoes',
       component: () => import('@/views/ConfiguracoesView.vue'),
     },
+    {
+      path: '/minha-conta',
+      component: () => import('@/views/MinhaContaView.vue'),
+    },
   ],
 })
 

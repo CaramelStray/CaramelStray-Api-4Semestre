@@ -1,5 +1,6 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.QuantidadeOrdens.OrdensPorStatusDTO;
 import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
@@ -45,4 +46,6 @@ public interface OrdemServicoService {
     List<MaquinaChecklistManutencaoResponseDTO> listarChecklistMaquina(Integer id);
     
     List<OrdemServico> buscarPorStatus(String status);
+
+    List<OrdensPorStatusDTO> buscarQuantidadePorStatus();
 }

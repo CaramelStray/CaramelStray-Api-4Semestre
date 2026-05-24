@@ -1,5 +1,6 @@
 package com.example.tracker.repository;
 
+import com.example.tracker.dto.QuantidadeOrdens.OrdensPorStatusDTO;
 import com.example.tracker.entity.OrdemServico;
 import java.util.List;
 import java.util.Optional;
@@ -20,16 +21,26 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
     List<OrdemServico> findByMaquinaContratoCodigo(Integer codigoMaquinaContrato);
 
     @Query("""
-        SELECT os FROM OrdemServico os
-        LEFT JOIN FETCH os.cliente
-        LEFT JOIN FETCH os.funcionario
-        LEFT JOIN FETCH os.softwareInstalado
-        LEFT JOIN FETCH os.contrato
-        LEFT JOIN FETCH os.maquinaContrato mc
-        LEFT JOIN FETCH mc.catalogoMaquina
-        WHERE os.codigo = :id
-    """)
+                SELECT os FROM OrdemServico os
+                LEFT JOIN FETCH os.cliente
+                LEFT JOIN FETCH os.funcionario
+                LEFT JOIN FETCH os.softwareInstalado
+                LEFT JOIN FETCH os.contrato
+                LEFT JOIN FETCH os.maquinaContrato mc
+                LEFT JOIN FETCH mc.catalogoMaquina
+                WHERE os.codigo = :id
+            """)
     Optional<OrdemServico> findByIdCompleto(Integer id);
 
     List<OrdemServico> findByStatus(String status);
+
+    @Query("""
+                SELECT new com.example.tracker.dto.QuantidadeOrdens.OrdensPorStatusDTO(
+                    os.status,
+                    COUNT(os)
+                )
+                FROM OrdemServico os
+                GROUP BY os.status
+            """)
+    List<OrdensPorStatusDTO> contarOrdensPorStatus();
 }

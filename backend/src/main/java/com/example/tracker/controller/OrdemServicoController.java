@@ -1,5 +1,6 @@
 package com.example.tracker.controller;
 
+import com.example.tracker.dto.QuantidadeOrdens.OrdensPorStatusDTO;
 import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicoOrdemDetalhesResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
@@ -248,6 +249,14 @@ public class OrdemServicoController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(ordens);
+    }
+
+    @GetMapping("/quantidade-por-status")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<OrdensPorStatusDTO>> buscarQuantidadePorStatus() {
+
+        return ResponseEntity.ok(
+                ordemServicoService.buscarQuantidadePorStatus());
     }
 
     @PatchMapping("/tecnico-ordens/{id}/checklist-ativos/{codigoItem}/checkin")

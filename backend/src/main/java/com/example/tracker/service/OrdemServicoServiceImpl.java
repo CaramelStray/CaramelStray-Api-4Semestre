@@ -1,5 +1,6 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.QuantidadeOrdens.OrdensPorStatusDTO;
 import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
@@ -237,6 +238,21 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
 
         return itens;
     }
+
+    @Override
+@Transactional(readOnly = true)
+public List<OrdensPorStatusDTO> buscarQuantidadePorStatus() {
+
+    List<OrdensPorStatusDTO> itens = ordemServicoRepository.contarOrdensPorStatus();
+
+    if (itens.isEmpty()) {
+        throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Nenhuma ordem de servico encontrada");
+    }
+
+    return itens;
+}
 
     @Override
     @Transactional

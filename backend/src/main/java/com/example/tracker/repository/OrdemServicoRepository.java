@@ -30,4 +30,6 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
         WHERE os.codigo = :id
     """)
     Optional<OrdemServico> findByIdCompleto(Integer id);
+
+    List<OrdemServico> findByStatus(String status);
 }

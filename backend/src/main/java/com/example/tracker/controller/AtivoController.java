@@ -46,6 +46,12 @@ public class AtivoController {
         return ResponseEntity.ok(ativoService.buscarPorFuncionario(codigoFuncionario));
     }
 
+    @GetMapping("/maquina-contrato/{codigoMaquinaContrato}")
+    public ResponseEntity<List<AtivoResponseDTO>> buscarPorMaquinaContrato(
+            @PathVariable Integer codigoMaquinaContrato) {
+        return ResponseEntity.ok(ativoService.buscarPorMaquinaContrato(codigoMaquinaContrato));
+    }
+
     @GetMapping("/status/{status}")
     public ResponseEntity<List<AtivoResponseDTO>> buscarPorStatus(@PathVariable String status) {
         return ResponseEntity.ok(ativoService.buscarPorStatus(status));

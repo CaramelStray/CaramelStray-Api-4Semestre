@@ -53,6 +53,9 @@ public class MaquinaContrato {
     @OneToMany(mappedBy = "maquinaContrato", fetch = FetchType.LAZY)
     private List<MaquinaSoftwareInstalado> softwaresInstalados = new ArrayList<>();
 
+    @OneToMany(mappedBy = "maquinaContrato", fetch = FetchType.LAZY)
+    private List<Ativo> ativos = new ArrayList<>();
+
     public Integer getCodigo() {
         return codigo;
     }
@@ -131,5 +134,13 @@ public class MaquinaContrato {
 
     public void setSoftwaresInstalados(List<MaquinaSoftwareInstalado> softwaresInstalados) {
         this.softwaresInstalados = softwaresInstalados;
+    }
+
+    public List<Ativo> getAtivos() {
+        return ativos;
+    }
+
+    public void setAtivos(List<Ativo> ativos) {
+        this.ativos = ativos;
     }
 }

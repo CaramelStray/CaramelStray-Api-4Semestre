@@ -15,6 +15,7 @@ public class AtivoResponseDTO {
     private String descricao;
     private Integer codigoFuncionarioResponsavel;
     private String nomeFuncionarioResponsavel;
+    private Integer codigoMaquinaContrato;
     private String status;
 
     public static AtivoResponseDTO fromEntity(Ativo ativo) {
@@ -36,6 +37,10 @@ public class AtivoResponseDTO {
         if (ativo.getFuncionarioResponsavel() != null) {
             dto.setCodigoFuncionarioResponsavel(ativo.getFuncionarioResponsavel().getId());
             dto.setNomeFuncionarioResponsavel(ativo.getFuncionarioResponsavel().getNome());
+        }
+
+        if (ativo.getMaquinaContrato() != null) {
+            dto.setCodigoMaquinaContrato(ativo.getMaquinaContrato().getCodigo());
         }
 
         return dto;
@@ -73,6 +78,9 @@ public class AtivoResponseDTO {
 
     public String getNomeFuncionarioResponsavel() { return nomeFuncionarioResponsavel; }
     public void setNomeFuncionarioResponsavel(String nomeFuncionarioResponsavel) { this.nomeFuncionarioResponsavel = nomeFuncionarioResponsavel; }
+
+    public Integer getCodigoMaquinaContrato() { return codigoMaquinaContrato; }
+    public void setCodigoMaquinaContrato(Integer codigoMaquinaContrato) { this.codigoMaquinaContrato = codigoMaquinaContrato; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

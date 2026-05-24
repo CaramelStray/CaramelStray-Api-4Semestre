@@ -70,6 +70,9 @@ public class OrdemServico {
     @OneToMany(mappedBy = "ordemServico")
     private List<OrdemServicoChecklistAtivo> checklistAtivos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "ordemServico")
+    private List<OrdemServicoTecnico> tecnicos = new ArrayList<>();
+
     @OneToOne(mappedBy = "ordemServico")
     private MaquinaHistoricoManutencao historicoManutencao;
 
@@ -191,6 +194,14 @@ public class OrdemServico {
 
     public void setChecklistAtivos(List<OrdemServicoChecklistAtivo> checklistAtivos) {
         this.checklistAtivos = checklistAtivos;
+    }
+
+    public List<OrdemServicoTecnico> getTecnicos() {
+        return tecnicos;
+    }
+
+    public void setTecnicos(List<OrdemServicoTecnico> tecnicos) {
+        this.tecnicos = tecnicos;
     }
 
     public MaquinaHistoricoManutencao getHistoricoManutencao() {

@@ -160,6 +160,10 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
       <td><a href="https://github.com/thorlyndgaard"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/thor-lyndgaard-b2155826b/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
     </tr>
+      <td>Guilherme Bezerra</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/GuilhermebJunqueira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/guilherme-bezerra-a01035170/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td> 
   </table>
 </div>
 

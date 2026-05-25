@@ -90,6 +90,11 @@ const router = createRouter({
       meta: { roles: ['ROLE_ADMIN'] },
     },
     {
+      path: '/mapa',
+      component: () => import('@/views/MapaView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
+    },
+    {
       path: '/ativos',
       component: () => import('@/views/AtivosView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },

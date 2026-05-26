@@ -121,6 +121,7 @@ CREATE TABLE public.tb_cad_ativo (
     lote character varying(255),
     descricao text,
     codigo_funcionario_responsavel integer,
+    codigo_maquina_contrato integer,
     status character varying(100)
 );
 
@@ -2292,6 +2293,14 @@ ALTER TABLE ONLY public.tb_cad_ativo
     ADD CONSTRAINT fk_ativo_funcionario FOREIGN KEY (codigo_funcionario_responsavel) REFERENCES public.tb_cad_funcionario(codigo) ON DELETE CASCADE;
 
 
+--
+-- Name: tb_cad_ativo fk_ativo_maquina_contrato; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_cad_ativo
+    ADD CONSTRAINT fk_ativo_maquina_contrato FOREIGN KEY (codigo_maquina_contrato) REFERENCES public.tb_srv_maquina_contrato(codigo) ON DELETE SET NULL;
+
+
 
 
 
@@ -2868,6 +2877,22 @@ ALTER TABLE public.tb_cad_contrato
 
 ALTER TABLE public.tb_srv_maquina_contrato
     ADD COLUMN IF NOT EXISTS certificacao_requerida character varying(255);
+
+ALTER TABLE public.tb_cad_ativo
+    ADD COLUMN IF NOT EXISTS codigo_maquina_contrato integer;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'fk_ativo_maquina_contrato'
+    ) THEN
+        ALTER TABLE ONLY public.tb_cad_ativo
+            ADD CONSTRAINT fk_ativo_maquina_contrato
+            FOREIGN KEY (codigo_maquina_contrato)
+            REFERENCES public.tb_srv_maquina_contrato(codigo)
+            ON DELETE SET NULL;
+    END IF;
+END $$;
 
 
 CREATE TABLE IF NOT EXISTS public.tb_cad_status_tecnico (

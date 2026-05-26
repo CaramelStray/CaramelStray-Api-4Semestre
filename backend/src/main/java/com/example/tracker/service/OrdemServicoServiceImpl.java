@@ -20,6 +20,7 @@ import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
 import com.example.tracker.repository.MaquinaSoftwareInstaladoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.TecnicoRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -66,6 +67,27 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     @Transactional(readOnly = true)
     public List<OrdemServico> listarTodos() {
         return ordemServicoRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrdemServico> buscarPorPeriodo(LocalDate dataInicio, LocalDate dataFim) {
+        if (dataInicio == null || dataFim == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Data de inicio e data de fim sao obrigatorias");
+        }
+
+        if (dataFim.isBefore(dataInicio)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A data de fim nao pode ser anterior a data de inicio");
+        }
+
+        LocalDateTime inicio = dataInicio.atStartOfDay();
+        LocalDateTime fim = dataFim.plusDays(1).atStartOfDay().minusNanos(1);
+
+        return ordemServicoRepository.findByDataAberturaBetween(inicio, fim);
     }
 
     @Override

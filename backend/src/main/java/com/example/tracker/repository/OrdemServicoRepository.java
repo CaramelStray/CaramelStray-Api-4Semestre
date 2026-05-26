@@ -1,6 +1,7 @@
 package com.example.tracker.repository;
 
 import com.example.tracker.entity.OrdemServico;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,8 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
     List<OrdemServico> findByContratoCodigo(Integer codigoContrato);
 
     List<OrdemServico> findByMaquinaContratoCodigo(Integer codigoMaquinaContrato);
+
+    List<OrdemServico> findByDataAberturaBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
 
     @Query("""
         SELECT os FROM OrdemServico os

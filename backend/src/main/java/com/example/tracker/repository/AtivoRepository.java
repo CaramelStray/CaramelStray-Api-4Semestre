@@ -10,5 +10,7 @@ public interface AtivoRepository extends JpaRepository<Ativo, Integer> {
 
     List<Ativo> findByFuncionarioResponsavelId(Integer codigoFuncionario);
 
+    List<Ativo> findByMaquinaContratoCodigo(Integer codigoMaquinaContrato);
+
     List<Ativo> findByStatus(String status);
 }

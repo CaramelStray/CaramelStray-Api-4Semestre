@@ -121,6 +121,7 @@ CREATE TABLE public.tb_cad_ativo (
     lote character varying(255),
     descricao text,
     codigo_funcionario_responsavel integer,
+    codigo_maquina_contrato integer,
     status character varying(100)
 );
 
@@ -2230,6 +2231,21 @@ ALTER TABLE ONLY public.tb_cad_ativo_estoque
 
 ALTER TABLE ONLY public.tb_cad_ativo
     ADD CONSTRAINT fk_ativo_funcionario FOREIGN KEY (codigo_funcionario_responsavel) REFERENCES public.tb_cad_funcionario(codigo) ON DELETE CASCADE;
+
+
+--
+-- Name: tb_cad_ativo fk_ativo_maquina_contrato; Type: FK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_cad_ativo
+    ADD CONSTRAINT fk_ativo_maquina_contrato FOREIGN KEY (codigo_maquina_contrato) REFERENCES public.tb_srv_maquina_contrato(codigo);
+
+
+--
+-- Name: idx_ativo_maquina_contrato; Type: INDEX; Schema: public; Owner: user_dev
+--
+
+CREATE INDEX idx_ativo_maquina_contrato ON public.tb_cad_ativo USING btree (codigo_maquina_contrato);
 
 
 

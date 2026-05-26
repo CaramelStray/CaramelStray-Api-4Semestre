@@ -125,6 +125,10 @@ const router = createRouter({
     {
       path: '/dashboard',
       component: () => import('@/views/DashboardView.vue'),
+    },    
+    {
+      path: '/minha-conta',
+      component: () => import('@/views/MinhaContaView.vue'),
     },
   ],
 })

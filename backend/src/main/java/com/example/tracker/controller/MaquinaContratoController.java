@@ -1,7 +1,9 @@
 package com.example.tracker.controller;
 
+import com.example.tracker.dto.ativo.AtivoResponseDTO;
 import com.example.tracker.dto.maquinacontrato.MaquinaContratoCreateDTO;
 import com.example.tracker.dto.maquinacontrato.MaquinaContratoResponseDTO;
+import com.example.tracker.service.AtivoService;
 import com.example.tracker.service.MaquinaContratoService;
 
 import jakarta.validation.Valid;
@@ -16,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class MaquinaContratoController {
 
     private final MaquinaContratoService service;
+    private final AtivoService ativoService;
 
-    public MaquinaContratoController(MaquinaContratoService service) {
+    public MaquinaContratoController(MaquinaContratoService service, AtivoService ativoService) {
         this.service = service;
+        this.ativoService = ativoService;
     }
 
     @GetMapping
@@ -29,6 +33,11 @@ public class MaquinaContratoController {
     @GetMapping("/{id}")
     public ResponseEntity<MaquinaContratoResponseDTO> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
+    @GetMapping("/{id}/ativos")
+    public ResponseEntity<List<AtivoResponseDTO>> listarAtivos(@PathVariable Integer id) {
+        return ResponseEntity.ok(ativoService.buscarPorMaquinaContrato(id));
     }
 
     @GetMapping("/contrato/{codigoContrato}")

@@ -936,6 +936,35 @@ ALTER TABLE public.tb_srv_ordem_servico_checklist_ativo ALTER COLUMN codigo ADD 
 
 
 --
+-- Name: tb_srv_ciclo_embarcacao; Type: TABLE; Schema: public; Owner: user_dev
+--
+
+CREATE TABLE public.tb_srv_ciclo_embarcacao (
+    codigo integer NOT NULL,
+    embarcacao character varying(255) NOT NULL,
+    data_chegada timestamp without time zone NOT NULL,
+    data_saida timestamp without time zone,
+    local character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.tb_srv_ciclo_embarcacao OWNER TO user_dev;
+
+--
+-- Name: tb_srv_ciclo_embarcacao_codigo_seq; Type: SEQUENCE; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_srv_ciclo_embarcacao ALTER COLUMN codigo ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.tb_srv_ciclo_embarcacao_codigo_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: tb_cad_tipo_viagem; Type: TABLE; Schema: public; Owner: user_dev
 --
 
@@ -1462,6 +1491,14 @@ COPY public.tb_srv_maquina_troca_imprevista_manutencao (codigo, codigo_historico
 
 
 --
+-- Data for Name: tb_srv_ciclo_embarcacao; Type: TABLE DATA; Schema: public; Owner: user_dev
+--
+
+COPY public.tb_srv_ciclo_embarcacao (codigo, embarcacao, data_chegada, data_saida, local) FROM stdin;
+\.
+
+
+--
 -- Data for Name: geocode_settings; Type: TABLE DATA; Schema: tiger; Owner: user_dev
 --
 
@@ -1527,6 +1564,13 @@ SELECT pg_catalog.setval('public.tb_srv_ordem_servico_codigo_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.tb_srv_ordem_servico_checklist_ativo_codigo_seq', 1, false);
+
+
+--
+-- Name: tb_srv_ciclo_embarcacao_codigo_seq; Type: SEQUENCE SET; Schema: public; Owner: user_dev
+--
+
+SELECT pg_catalog.setval('public.tb_srv_ciclo_embarcacao_codigo_seq', 1, false);
 
 
 --
@@ -1734,6 +1778,22 @@ ALTER TABLE ONLY public.tb_srv_ordem_servico_checklist_ativo
 
 ALTER TABLE ONLY public.tb_srv_ordem_servico_checklist_ativo
     ADD CONSTRAINT uk_ordem_servico_checklist_ativo UNIQUE (codigo_ordem_servico, codigo_ativo);
+
+
+--
+-- Name: tb_srv_ciclo_embarcacao tb_srv_ciclo_embarcacao_pkey; Type: CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE ONLY public.tb_srv_ciclo_embarcacao
+    ADD CONSTRAINT tb_srv_ciclo_embarcacao_pkey PRIMARY KEY (codigo);
+
+
+--
+-- Name: tb_srv_ciclo_embarcacao tb_srv_ciclo_embarcacao_periodo_check; Type: CHECK CONSTRAINT; Schema: public; Owner: user_dev
+--
+
+ALTER TABLE public.tb_srv_ciclo_embarcacao
+    ADD CONSTRAINT tb_srv_ciclo_embarcacao_periodo_check CHECK (((data_saida IS NULL) OR (data_saida >= data_chegada)));
 
 
 --
@@ -2783,6 +2843,7 @@ SELECT pg_catalog.setval('public.tb_srv_maquina_troca_imprevista_manutencao_codi
 SELECT pg_catalog.setval('public.tb_srv_tecnico_ferramenta_ativo_codigo_seq', COALESCE((SELECT MAX(codigo) FROM public.tb_srv_tecnico_ferramenta_ativo), 1), true);
 SELECT pg_catalog.setval('public.tb_srv_ordem_servico_codigo_seq', COALESCE((SELECT MAX(codigo) FROM public.tb_srv_ordem_servico), 1), true);
 SELECT pg_catalog.setval('public.tb_srv_ordem_servico_checklist_ativo_codigo_seq', COALESCE((SELECT MAX(codigo) FROM public.tb_srv_ordem_servico_checklist_ativo), 1), true);
+SELECT pg_catalog.setval('public.tb_srv_ciclo_embarcacao_codigo_seq', COALESCE((SELECT MAX(codigo) FROM public.tb_srv_ciclo_embarcacao), 1), true);
 SELECT pg_catalog.setval('public.tb_srv_viagem_codigo_seq', COALESCE((SELECT MAX(codigo) FROM public.tb_srv_viagem), 1), true);
 SELECT pg_catalog.setval('public.tb_srv_viagem_parada_codigo_seq', COALESCE((SELECT MAX(codigo) FROM public.tb_srv_viagem_parada), 1), true);
 SELECT pg_catalog.setval('public.tb_srv_viagem_checklist_dinamico_codigo_seq', COALESCE((SELECT MAX(codigo) FROM public.tb_srv_viagem_checklist_dinamico), 1), true);

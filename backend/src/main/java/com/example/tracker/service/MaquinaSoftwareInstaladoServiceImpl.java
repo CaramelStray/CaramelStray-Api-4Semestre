@@ -1,14 +1,21 @@
 package com.example.tracker.service;
 
 import com.example.tracker.dto.maquinasoftwareinstalado.MaquinaSoftwareInstaladoCreateDTO;
+import com.example.tracker.dto.maquinasoftwareinstalado.SistemaLocalizacaoStatusResponseDTO;
 import com.example.tracker.entity.CatalogoSoftware;
 import com.example.tracker.entity.MaquinaContrato;
 import com.example.tracker.entity.MaquinaSoftwareInstalado;
+import com.example.tracker.entity.OrdemServico;
 import com.example.tracker.repository.CatalogoSoftwareRepository;
 import com.example.tracker.repository.MaquinaContratoRepository;
 import com.example.tracker.repository.MaquinaSoftwareInstaladoRepository;
+import com.example.tracker.repository.OrdemServicoRepository;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,17 +24,23 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class MaquinaSoftwareInstaladoServiceImpl implements MaquinaSoftwareInstaladoService {
 
+    private static final Set<String> STATUS_EM_EXECUCAO = Set.of("EM_EXECUCAO");
+    private static final Set<String> TIPOS_MANUTENCAO = Set.of("MANUTENCAO_PREVENTIVA", "MANUTENCAO_CORRETIVA");
+
     private final MaquinaSoftwareInstaladoRepository maquinaSoftwareInstaladoRepository;
     private final MaquinaContratoRepository maquinaContratoRepository;
     private final CatalogoSoftwareRepository catalogoSoftwareRepository;
+    private final OrdemServicoRepository ordemServicoRepository;
 
     public MaquinaSoftwareInstaladoServiceImpl(
             MaquinaSoftwareInstaladoRepository maquinaSoftwareInstaladoRepository,
             MaquinaContratoRepository maquinaContratoRepository,
-            CatalogoSoftwareRepository catalogoSoftwareRepository) {
+            CatalogoSoftwareRepository catalogoSoftwareRepository,
+            OrdemServicoRepository ordemServicoRepository) {
         this.maquinaSoftwareInstaladoRepository = maquinaSoftwareInstaladoRepository;
         this.maquinaContratoRepository = maquinaContratoRepository;
         this.catalogoSoftwareRepository = catalogoSoftwareRepository;
+        this.ordemServicoRepository = ordemServicoRepository;
     }
 
     @Override
@@ -67,6 +80,32 @@ public class MaquinaSoftwareInstaladoServiceImpl implements MaquinaSoftwareInsta
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma instalacao encontrada para o software");
         }
         return itens;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SistemaLocalizacaoStatusResponseDTO> listarSistemasComLocalizacaoStatus() {
+        List<MaquinaSoftwareInstalado> sistemas = maquinaSoftwareInstaladoRepository.findAllComLocalizacao();
+
+        List<Integer> codigosSistemas = sistemas.stream()
+                .map(MaquinaSoftwareInstalado::getCodigo)
+                .toList();
+
+        Map<Integer, List<OrdemServico>> ordensPorSistema = codigosSistemas.isEmpty()
+                ? Map.of()
+                : ordemServicoRepository.findOrdensAbertasPorSoftwaresInstalados(codigosSistemas).stream()
+                        .filter(this::isOrdemManutencao)
+                        .filter(os -> os.getSoftwareInstalado() != null)
+                        .collect(Collectors.groupingBy(os -> os.getSoftwareInstalado().getCodigo()));
+
+        LocalDateTime agora = LocalDateTime.now();
+
+        return sistemas.stream()
+                .map(sistema -> toSistemaLocalizacaoStatusResponseDTO(
+                        sistema,
+                        ordensPorSistema.getOrDefault(sistema.getCodigo(), List.of()),
+                        agora))
+                .toList();
     }
 
     @Override
@@ -129,6 +168,80 @@ public class MaquinaSoftwareInstaladoServiceImpl implements MaquinaSoftwareInsta
         entidade.setSoftware(software);
         entidade.setChaveLicenca(dto.getChaveLicenca());
         entidade.setVersaoInstalada(dto.getVersaoInstalada());
+    }
+
+    private SistemaLocalizacaoStatusResponseDTO toSistemaLocalizacaoStatusResponseDTO(
+            MaquinaSoftwareInstalado sistema,
+            List<OrdemServico> ordensAbertas,
+            LocalDateTime agora) {
+        SistemaLocalizacaoStatusResponseDTO dto = new SistemaLocalizacaoStatusResponseDTO();
+        CatalogoSoftware software = sistema.getSoftware();
+        MaquinaContrato maquinaContrato = sistema.getMaquinaContrato();
+
+        dto.setCodigoSistemaInstalado(sistema.getCodigo());
+
+        if (software != null) {
+            dto.setCodigoSoftware(software.getId());
+            dto.setNome(software.getNome());
+            dto.setTipo(software.getTipo());
+        }
+
+        if (maquinaContrato != null) {
+            dto.setCodigoMaquinaContrato(maquinaContrato.getCodigo());
+            dto.setNumeroSerieMaquina(maquinaContrato.getNumeroSerie());
+            dto.setLatitude(maquinaContrato.getLatitude());
+            dto.setLongitude(maquinaContrato.getLongitude());
+        }
+
+        boolean manutencaoEmExecucao = ordensAbertas.stream()
+                .anyMatch(ordem -> isOrdemEmExecucaoAgora(ordem, agora));
+        boolean manutencaoAtrasada = ordensAbertas.stream()
+                .anyMatch(ordem -> ordem.getDataAgendamento() != null && ordem.getDataAgendamento().isBefore(agora));
+        boolean manutencaoPendente = ordensAbertas.stream()
+                .anyMatch(ordem -> ordem.getDataAgendamento() != null && !ordem.getDataAgendamento().isBefore(agora));
+
+        dto.setStatusOperacional(definirStatusOperacional(software, manutencaoEmExecucao));
+        dto.setManutencaoPendente(manutencaoPendente);
+        dto.setManutencaoAtrasada(manutencaoAtrasada);
+
+        return dto;
+    }
+
+    private String definirStatusOperacional(CatalogoSoftware software, boolean manutencaoEmExecucao) {
+        if (software != null && Boolean.FALSE.equals(software.getAtivo())) {
+            return "INATIVO";
+        }
+        if (manutencaoEmExecucao) {
+            return "EM_MANUTENCAO";
+        }
+        return "ATIVO";
+    }
+
+    private boolean isOrdemManutencao(OrdemServico ordemServico) {
+        String tipo = normalizar(ordemServico.getTipoOrdem());
+        return tipo == null || TIPOS_MANUTENCAO.contains(tipo);
+    }
+
+    private boolean isOrdemEmExecucaoAgora(OrdemServico ordemServico, LocalDateTime agora) {
+        String status = normalizar(ordemServico.getStatus());
+        if (STATUS_EM_EXECUCAO.contains(status)) {
+            return true;
+        }
+
+        LocalDateTime inicio = ordemServico.getDataInicioExecucao();
+        if (inicio == null || inicio.isAfter(agora)) {
+            return false;
+        }
+
+        LocalDateTime fim = ordemServico.getDataFimExecucao();
+        return fim == null || !fim.isBefore(agora);
+    }
+
+    private String normalizar(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return null;
+        }
+        return valor.trim().toUpperCase();
     }
 
     private Integer requireId(Integer id, String mensagem) {

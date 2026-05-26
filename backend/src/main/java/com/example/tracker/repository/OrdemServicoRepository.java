@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Integer> {
 
@@ -30,4 +31,22 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
         WHERE os.codigo = :id
     """)
     Optional<OrdemServico> findByIdCompleto(Integer id);
+
+    @Query("""
+        SELECT os FROM OrdemServico os
+        JOIN FETCH os.softwareInstalado si
+        WHERE si.codigo IN :codigosSoftwareInstalado
+          AND (
+              os.status IS NULL OR UPPER(os.status) NOT IN (
+                  'FINALIZADA',
+                  'FINALIZADO',
+                  'CONCLUIDA',
+                  'CONCLUIDO',
+                  'CANCELADA',
+                  'CANCELADO'
+              )
+          )
+    """)
+    List<OrdemServico> findOrdensAbertasPorSoftwaresInstalados(
+            @Param("codigosSoftwareInstalado") List<Integer> codigosSoftwareInstalado);
 }

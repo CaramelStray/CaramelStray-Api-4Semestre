@@ -16,6 +16,8 @@ public interface AtivoService {
 
     List<AtivoResponseDTO> buscarPorFuncionario(Integer codigoFuncionario);
 
+    List<AtivoResponseDTO> buscarPorMaquinaContrato(Integer codigoMaquinaContrato);
+
     List<AtivoResponseDTO> buscarPorStatus(String status);
 
     AtivoResponseDTO atualizar(Integer id, AtivoCreateDTO dto);

@@ -1,4 +1,3 @@
-import path from 'path/win32'
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Página inicial de cada role após login
@@ -90,6 +89,11 @@ const router = createRouter({
       meta: { roles: ['ROLE_ADMIN'] },
     },
     {
+      path: '/mapa',
+      component: () => import('@/views/MapaView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
+    },
+    {
       path: '/ativos',
       component: () => import('@/views/AtivosView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },
@@ -122,6 +126,14 @@ const router = createRouter({
     {
       path: '/configuracoes',
       component: () => import('@/views/ConfiguracoesView.vue'),
+    },
+    {
+      path: '/dashboard',
+      component: () => import('@/views/DashboardView.vue'),
+    },    
+    {
+      path: '/minha-conta',
+      component: () => import('@/views/MinhaContaView.vue'),
     },
   ],
 })

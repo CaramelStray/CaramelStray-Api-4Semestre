@@ -11,6 +11,7 @@ public class AtivoCreateDTO {
     private String lote;
     private String descricao;
     private Integer codigoFuncionarioResponsavel;
+    private Integer codigoMaquinaContrato;
     private String status;
 
     public Integer getCodigoCatalogoAtivo() { return codigoCatalogoAtivo; }
@@ -27,6 +28,9 @@ public class AtivoCreateDTO {
 
     public Integer getCodigoFuncionarioResponsavel() { return codigoFuncionarioResponsavel; }
     public void setCodigoFuncionarioResponsavel(Integer codigoFuncionarioResponsavel) { this.codigoFuncionarioResponsavel = codigoFuncionarioResponsavel; }
+
+    public Integer getCodigoMaquinaContrato() { return codigoMaquinaContrato; }
+    public void setCodigoMaquinaContrato(Integer codigoMaquinaContrato) { this.codigoMaquinaContrato = codigoMaquinaContrato; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

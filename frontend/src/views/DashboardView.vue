@@ -1,17 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import type { Component } from 'vue'
+import { ClipboardList, Clock, AlertTriangle, CheckCircle2 } from 'lucide-vue-next'
 import OrdemDashboardCards from '@/components/ordemServico/OrdemDashboardCards.vue'
-
-// TODO: Integrar com API para buscar dados reais
-// Estrutura esperada do card:
-// {
-//   label: string
-//   value: string | number
-//   sub?: string
-//   icon: Component
-//   color?: string
-// }
+import { ordemServicoService } from '@/services/ordemServicoService'
 
 const stats = ref<{
   label: string
@@ -21,10 +13,26 @@ const stats = ref<{
   color?: string
 }[]>([])
 
-onMounted(() => {
-  // TODO: Chamar serviço de API aqui para buscar dados das ordens
-  // exemplo: const data = await ordemService.getDashboardStats()
-  // stats.value = data
+const iconMap: Record<string, Component> = {
+  ClipboardList,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+}
+
+onMounted(async () => {
+  try {
+    const data = await ordemServicoService.dashboardStats()
+    stats.value = data.map(card => ({
+      label: card.label,
+      value: card.value,
+      sub: card.sub,
+      color: card.color,
+      icon: iconMap[card.icon ?? 'ClipboardList'] ?? ClipboardList,
+    }))
+  } catch (error) {
+    console.error('Falha ao carregar dashboard:', error)
+  }
 })
 </script>
 

@@ -19,6 +19,10 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
 
     List<OrdemServico> findByMaquinaContratoCodigo(Integer codigoMaquinaContrato);
 
+    long countByStatus(String status);
+
+    long countByStatusIn(List<String> statuses);
+
     @Query("""
         SELECT os FROM OrdemServico os
         LEFT JOIN FETCH os.cliente

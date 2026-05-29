@@ -1,5 +1,6 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.dashboard.DashboardCardDTO;
 import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
@@ -131,6 +132,22 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     @Transactional(readOnly = true)
     public OrdemServicoDadosBasicosResponseDTO buscarDadosBasicosPorId(Integer id) {
         return OrdemServicoDadosBasicosResponseDTO.fromEntity(buscarPorId(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DashboardCardDTO> obterDashboardOrdens() {
+        long totalOrdens = ordemServicoRepository.count();
+        long aguardando = ordemServicoRepository.countByStatus("AGUARDANDO");
+        long emExecucao = ordemServicoRepository.countByStatus("EM_EXECUCAO");
+        long finalizadas = ordemServicoRepository.countByStatusIn(List.of("CONCLUIDA", "FINALIZADA"));
+
+        return List.of(
+                DashboardCardDTO.of("Total de Ordens", Math.toIntExact(totalOrdens), "Cadastradas no sistema", "text-blue-400", "ClipboardList"),
+                DashboardCardDTO.of("Aguardando", Math.toIntExact(aguardando), "Pendentes de execução", "text-amber-400", "Clock"),
+                DashboardCardDTO.of("Em Execução", Math.toIntExact(emExecucao), "Em andamento", "text-green-400", "AlertTriangle"),
+                DashboardCardDTO.of("Finalizadas", Math.toIntExact(finalizadas), "Ordens fechadas", "text-purple-400", "CheckCircle2")
+        );
     }
 
     @Override

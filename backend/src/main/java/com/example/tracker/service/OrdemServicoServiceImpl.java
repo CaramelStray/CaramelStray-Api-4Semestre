@@ -26,11 +26,16 @@ import com.example.tracker.repository.OrdemServicoChecklistAtivoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.OrdemServicoTecnicoRepository;
 import com.example.tracker.repository.TecnicoRepository;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
@@ -109,6 +114,38 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         return ordemServicoRepository.findAll();
     }
 
+   @Override
+@Transactional(readOnly = true)
+public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
+
+    List<TecnicosOrdensResponseDTO> ordens = tecnicoRepository
+            .findByUsuarioEmail(emailUsuario)
+            .map(tecnico -> ordemServicoRepository.findByFuncionarioId(tecnico.getId())
+                    .stream()
+                    .map(TecnicosOrdensResponseDTO::fromEntity)
+                    .toList())
+            .orElse(List.of());
+
+    Map<LocalDate, Long> quantidadePorDia = ordens.stream()
+            .filter(o -> o.getDataAgendamento() != null)
+            .collect(Collectors.groupingBy(
+                    o -> o.getDataAgendamento().toLocalDate(),
+                    Collectors.counting()
+            ));
+
+    ordens.forEach(ordem -> {
+        if (ordem.getDataAgendamento() == null) {
+            ordem.setPossuiConflito(false);
+            return;
+        }
+
+        ordem.setPossuiConflito(
+                quantidadePorDia.get(ordem.getDataAgendamento().toLocalDate()) > 1
+        );
+    });
+
+    return ordens;
+}
     @Override
     @Transactional(readOnly = true)
     public List<OrdemServico> buscarPorPeriodo(LocalDate dataInicio, LocalDate dataFim) {

@@ -55,4 +55,8 @@ public interface OrdemServicoService {
     void deletar(Integer id);
 
     List<MaquinaChecklistManutencaoResponseDTO> listarChecklistMaquina(Integer id);
+
+    
+    List<OrdemServico> buscarPorStatus(String status);
+
 }

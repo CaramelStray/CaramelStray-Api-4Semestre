@@ -6,6 +6,7 @@ import com.example.tracker.entity.Contrato;
 import com.example.tracker.entity.MaquinaContrato;
 import com.example.tracker.entity.MaquinaHistoricoManutencao;
 import com.example.tracker.entity.OrdemServico;
+import com.example.tracker.entity.OrdemServicoTecnico;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ public class TecnicoOrdemDetalhesResponseDTO {
     private LocalDateTime dataInicioExecucao;
     private LocalDateTime dataFimExecucao;
     private String observacaoGeral;
+    private List<Integer> codigosFuncionarios;
 
     private String nomeCliente;
     private String nomeResponsavelCliente;
@@ -57,6 +59,7 @@ public class TecnicoOrdemDetalhesResponseDTO {
         dto.setDataInicioExecucao(os.getDataInicioExecucao());
         dto.setDataFimExecucao(os.getDataFimExecucao());
         dto.setObservacaoGeral(os.getObservacaoGeral());
+        dto.setCodigosFuncionarios(extrairCodigosFuncionarios(os));
 
         if (os.getCliente() != null) {
             dto.setNomeCliente(os.getCliente().getNomeEmpresa());
@@ -108,6 +111,21 @@ public class TecnicoOrdemDetalhesResponseDTO {
         return dto;
     }
 
+    private static List<Integer> extrairCodigosFuncionarios(OrdemServico os) {
+        List<Integer> codigos = os.getTecnicos() == null
+                ? List.of()
+                : os.getTecnicos().stream()
+                        .map(OrdemServicoTecnico::getTecnico)
+                        .filter(tecnico -> tecnico != null && tecnico.getId() != null)
+                        .map(tecnico -> tecnico.getId())
+                        .distinct()
+                        .collect(Collectors.toList());
+        if (codigos.isEmpty() && os.getFuncionario() != null) {
+            return List.of(os.getFuncionario().getId());
+        }
+        return codigos;
+    }
+
     public Integer getCodigo() { return codigo; }
     public void setCodigo(Integer codigo) { this.codigo = codigo; }
 
@@ -134,6 +152,9 @@ public class TecnicoOrdemDetalhesResponseDTO {
 
     public String getObservacaoGeral() { return observacaoGeral; }
     public void setObservacaoGeral(String observacaoGeral) { this.observacaoGeral = observacaoGeral; }
+
+    public List<Integer> getCodigosFuncionarios() { return codigosFuncionarios; }
+    public void setCodigosFuncionarios(List<Integer> codigosFuncionarios) { this.codigosFuncionarios = codigosFuncionarios; }
 
     public String getNomeCliente() { return nomeCliente; }
     public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; }

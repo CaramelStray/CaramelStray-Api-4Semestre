@@ -6,6 +6,7 @@ import com.example.tracker.dto.tecnico.TecnicoResponseDTO;
 import com.example.tracker.entity.Perfil;
 import com.example.tracker.entity.Tecnico;
 import com.example.tracker.entity.Usuario;
+import com.example.tracker.enums.StatusTecnico;
 import com.example.tracker.repository.PerfilRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.repository.UsuarioRepository;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class TecnicoServiceImpl implements TecnicoService {
+
+    private static final StatusTecnico DISPONIBILIDADE_PADRAO = StatusTecnico.DISPONIVEL;
 
     private final TecnicoRepository tecnicoRepository;
     private final UsuarioRepository usuarioRepository;
@@ -53,7 +56,7 @@ public class TecnicoServiceImpl implements TecnicoService {
         novoTecnico.setLongitude(dto.getLongitude());
         novoTecnico.setCertificacao(limpar(dto.getCertificacao()));
         novoTecnico.setEstado(limpar(dto.getEstado()));
-        novoTecnico.setDisponibilidade(limpar(dto.getDisponibilidade()));
+        novoTecnico.setDisponibilidade(normalizarDisponibilidade(dto.getDisponibilidade()));
 
         Tecnico salvo = tecnicoRepository.save(novoTecnico);
         return toDTO(salvo);
@@ -99,7 +102,7 @@ public class TecnicoServiceImpl implements TecnicoService {
         tecnico.setLongitude(dto.getLongitude());
         tecnico.setCertificacao(limpar(dto.getCertificacao()));
         tecnico.setEstado(limpar(dto.getEstado()));
-        tecnico.setDisponibilidade(limpar(dto.getDisponibilidade()));
+        tecnico.setDisponibilidade(normalizarDisponibilidade(dto.getDisponibilidade()));
 
         if (tecnico.getUsuario() != null) {
             String novoEmail = normalizar(dto.getEmail());
@@ -225,5 +228,10 @@ public class TecnicoServiceImpl implements TecnicoService {
         }
         String valorLimpo = valor.trim();
         return valorLimpo.isEmpty() ? null : valorLimpo;
+    }
+
+    private String normalizarDisponibilidade(String valor) {
+        StatusTecnico disponibilidade = StatusTecnico.from(valor);
+        return disponibilidade == null ? DISPONIBILIDADE_PADRAO.name() : disponibilidade.name();
     }
 }

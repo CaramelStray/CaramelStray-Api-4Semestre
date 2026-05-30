@@ -121,6 +121,7 @@ CREATE TABLE public.tb_cad_ativo (
     lote character varying(255),
     descricao text,
     codigo_funcionario_responsavel integer,
+    codigo_maquina_contrato integer,
     status character varying(100)
 );
 

@@ -31,4 +31,6 @@ public interface MaquinaHistoricoManutencaoService {
     MaquinaHistoricoManutencao atualizar(Integer id, MaquinaHistoricoManutencaoCreateDTO dto);
 
     void deletar(Integer id);
+
+    public List<Integer> listarFuncionarios(Integer codigoHistorico);
 }

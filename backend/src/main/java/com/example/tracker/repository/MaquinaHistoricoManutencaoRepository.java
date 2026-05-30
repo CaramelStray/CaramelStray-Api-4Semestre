@@ -62,4 +62,5 @@ public interface MaquinaHistoricoManutencaoRepository extends JpaRepository<Maqu
                     """,
             nativeQuery = true)
     List<Integer> findFuncionarioIdsByHistoricoId(@Param("codigoHistorico") Integer codigoHistorico);
+
 }

@@ -34,11 +34,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,7 +118,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
 
     List<TecnicosOrdensResponseDTO> ordens = tecnicoRepository
             .findByUsuarioEmail(emailUsuario)
-            .map(tecnico -> ordemServicoRepository.findByFuncionarioId(tecnico.getId())
+            .map(tecnico -> ordemServicoRepository.findByFuncionarioParticipanteId(tecnico.getId())
                     .stream()
                     .map(TecnicosOrdensResponseDTO::fromEntity)
                     .toList())
@@ -169,17 +167,6 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
-        return tecnicoRepository.findByUsuarioEmail(emailUsuario)
-                .map(tecnico -> ordemServicoRepository.findByFuncionarioParticipanteId(tecnico.getId())
-                        .stream()
-                        .map(TecnicosOrdensResponseDTO::fromEntity)
-                        .toList())
-                .orElse(List.of());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public OrdemServico buscarTecnicoOrdem(Integer id, String emailUsuario) {
         Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
 
@@ -191,8 +178,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
 
-        if (ordemServico.getFuncionario() == null
-                || !Objects.equals(ordemServico.getFuncionario().getId(), tecnico.getId())) {
+        if (!tecnicoParticipaDaOrdem(ordemServico, tecnico.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Acesso negado: esta ordem nao esta atribuida a voce");
         }

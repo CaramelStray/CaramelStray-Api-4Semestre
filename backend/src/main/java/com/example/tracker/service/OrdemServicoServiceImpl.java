@@ -26,19 +26,20 @@ import com.example.tracker.repository.OrdemServicoChecklistAtivoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.OrdemServicoTecnicoRepository;
 import com.example.tracker.repository.TecnicoRepository;
+import com.example.tracker.dto.ordemservico.AgendaOrdemResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicoAgendaResponseDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,18 +165,85 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         LocalDateTime inicio = dataInicio.atStartOfDay();
         LocalDateTime fim = dataFim.plusDays(1).atStartOfDay().minusNanos(1);
 
-        return ordemServicoRepository.findByDataAberturaBetween(inicio, fim);
+        return ordemServicoRepository.findByDataAgendamentoBetween(inicio, fim);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
-        return tecnicoRepository.findByUsuarioEmail(emailUsuario)
-                .map(tecnico -> ordemServicoRepository.findByFuncionarioParticipanteId(tecnico.getId())
-                        .stream()
-                        .map(TecnicosOrdensResponseDTO::fromEntity)
-                        .toList())
-                .orElse(List.of());
+    public List<TecnicoAgendaResponseDTO> buscarAgendaPorPeriodo(
+            LocalDate dataInicio, LocalDate dataFim, Integer codigoFuncionario) {
+        if (dataInicio == null || dataFim == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Data de inicio e data de fim sao obrigatorias");
+        }
+
+        if (dataFim.isBefore(dataInicio)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A data de fim nao pode ser anterior a data de inicio");
+        }
+
+        LocalDateTime inicio = dataInicio.atStartOfDay();
+        LocalDateTime fim = dataFim.plusDays(1).atStartOfDay().minusNanos(1);
+
+        List<Tecnico> tecnicos = codigoFuncionario == null
+                ? tecnicoRepository.findAll()
+                : List.of(tecnicoRepository.findById(requireId(codigoFuncionario,
+                        "Codigo do tecnico e obrigatorio"))
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Tecnico nao encontrado")));
+
+        List<OrdemServico> ordensPeriodo = ordemServicoRepository.findByDataAgendamentoBetween(inicio, fim);
+
+        Map<Integer, TecnicoAgendaResponseDTO> agendaPorTecnico = tecnicos.stream()
+                .collect(Collectors.toMap(
+                        Tecnico::getId,
+                        TecnicoAgendaResponseDTO::fromEntity,
+                        (left, right) -> left,
+                        LinkedHashMap::new));
+
+        for (OrdemServico ordem : ordensPeriodo) {
+            Set<Tecnico> envolvidos = new LinkedHashSet<>();
+
+            if (ordem.getFuncionario() != null) {
+                envolvidos.add(ordem.getFuncionario());
+            }
+            if (ordem.getTecnicos() != null) {
+                ordem.getTecnicos().stream()
+                        .map(OrdemServicoTecnico::getTecnico)
+                        .filter(Objects::nonNull)
+                        .forEach(envolvidos::add);
+            }
+
+            for (Tecnico tecnico : envolvidos) {
+                if (codigoFuncionario != null && !codigoFuncionario.equals(tecnico.getId())) {
+                    continue;
+                }
+
+                TecnicoAgendaResponseDTO agenda = agendaPorTecnico.computeIfAbsent(
+                        tecnico.getId(),
+                        id -> TecnicoAgendaResponseDTO.fromEntity(tecnico));
+
+                agenda.getOrdens().add(AgendaOrdemResponseDTO.fromEntity(ordem));
+            }
+        }
+
+        agendaPorTecnico.values().forEach(tecnicoAgenda -> {
+            Map<LocalDate, Long> quantidadePorDia = tecnicoAgenda.getOrdens().stream()
+                    .filter(o -> o.getDataAgendamento() != null)
+                    .collect(Collectors.groupingBy(
+                            o -> o.getDataAgendamento().toLocalDate(),
+                            Collectors.counting()));
+
+            tecnicoAgenda.getOrdens().forEach(ordem -> ordem.setPossuiConflito(
+                    ordem.getDataAgendamento() != null
+                            && quantidadePorDia.getOrDefault(
+                            ordem.getDataAgendamento().toLocalDate(), 0L) > 1));
+        });
+
+        return new ArrayList<>(agendaPorTecnico.values());
     }
 
     @Override

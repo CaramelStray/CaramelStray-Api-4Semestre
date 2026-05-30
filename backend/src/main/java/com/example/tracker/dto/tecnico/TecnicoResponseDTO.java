@@ -1,6 +1,7 @@
 package com.example.tracker.dto.tecnico;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.tracker.dto.TecnicoHabilidade.TecnicoHabilidadeResponseDTO;
@@ -18,6 +19,7 @@ public class TecnicoResponseDTO {
     private String disponibilidade;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private LocalDateTime ultimaAtualizacaoLocalizacao;
     private List<TecnicoHabilidadeResponseDTO> habilidades;
 
     public Integer getId() {
@@ -106,6 +108,14 @@ public class TecnicoResponseDTO {
 
     public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
+    }
+
+    public LocalDateTime getUltimaAtualizacaoLocalizacao() {
+        return ultimaAtualizacaoLocalizacao;
+    }
+
+    public void setUltimaAtualizacaoLocalizacao(LocalDateTime ultimaAtualizacaoLocalizacao) {
+        this.ultimaAtualizacaoLocalizacao = ultimaAtualizacaoLocalizacao;
     }
 
     public List<TecnicoHabilidadeResponseDTO> getHabilidades() {

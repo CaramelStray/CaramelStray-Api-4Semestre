@@ -9,6 +9,7 @@ import com.example.tracker.entity.Usuario;
 import com.example.tracker.repository.PerfilRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.repository.UsuarioRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,6 +52,11 @@ public class TecnicoServiceImpl implements TecnicoService {
         novoTecnico.setTelefone(limpar(dto.getTelefone()));
         novoTecnico.setLatitude(dto.getLatitude());
         novoTecnico.setLongitude(dto.getLongitude());
+
+        if (dto.getLatitude() != null && dto.getLongitude() != null) {
+            novoTecnico.setUltimaAtualizacaoLocalizacao(LocalDateTime.now());
+        }
+
         novoTecnico.setCertificacao(limpar(dto.getCertificacao()));
         novoTecnico.setEstado(limpar(dto.getEstado()));
         novoTecnico.setDisponibilidade(limpar(dto.getDisponibilidade()));
@@ -91,12 +97,25 @@ public class TecnicoServiceImpl implements TecnicoService {
 
         validarCpfDuplicado(dto, id);
 
+        boolean localizacaoAlterada =
+                dto.getLatitude() != null
+                && dto.getLongitude() != null
+                && (
+                    !dto.getLatitude().equals(tecnico.getLatitude())
+                    || !dto.getLongitude().equals(tecnico.getLongitude())
+                );
+
         tecnico.setNome(limpar(dto.getNome()));
         tecnico.setCpf(limpar(dto.getCpf()));
         tecnico.setCargo(limpar(dto.getCargo()));
         tecnico.setTelefone(limpar(dto.getTelefone()));
         tecnico.setLatitude(dto.getLatitude());
         tecnico.setLongitude(dto.getLongitude());
+
+        if (localizacaoAlterada) {
+            tecnico.setUltimaAtualizacaoLocalizacao(LocalDateTime.now());
+        }
+
         tecnico.setCertificacao(limpar(dto.getCertificacao()));
         tecnico.setEstado(limpar(dto.getEstado()));
         tecnico.setDisponibilidade(limpar(dto.getDisponibilidade()));
@@ -148,6 +167,7 @@ public class TecnicoServiceImpl implements TecnicoService {
         dto.setDisponibilidade(tecnico.getDisponibilidade());
         dto.setLatitude(tecnico.getLatitude());
         dto.setLongitude(tecnico.getLongitude());
+        dto.setUltimaAtualizacaoLocalizacao(tecnico.getUltimaAtualizacaoLocalizacao());
 
         if (tecnico.getHabilidades() != null) {
             dto.setHabilidades(

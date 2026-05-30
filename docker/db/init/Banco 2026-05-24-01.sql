@@ -430,7 +430,8 @@ CREATE TABLE public.tb_cad_funcionario (
     estado character varying(100),
     disponibilidade character varying(100),
     latitude numeric(10,6),
-    longitude numeric(10,6)
+    longitude numeric(10,6),
+    ultima_atualizacao_localizacao timestamp without time zone
 );
 
 

@@ -2,6 +2,7 @@ package com.example.tracker.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -43,6 +44,9 @@ public class Tecnico {
 
     @Column(name = "longitude", precision = 10, scale = 6)
     private BigDecimal longitude;
+
+    @Column(name = "ultima_atualizacao_localizacao")
+    private LocalDateTime ultimaAtualizacaoLocalizacao;
 
     @OneToMany(mappedBy = "tecnico", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TecnicoHabilidade> habilidades;
@@ -95,22 +99,6 @@ public class Tecnico {
         this.telefone = telefone;
     }
 
-    public BigDecimal getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(BigDecimal latitude) {
-        this.latitude = latitude;
-    }
-
-    public BigDecimal getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(BigDecimal longitude) {
-        this.longitude = longitude;
-    }
-
     public String getCertificacao() {
         return certificacao;
     }
@@ -133,6 +121,30 @@ public class Tecnico {
 
     public void setDisponibilidade(String disponibilidade) {
         this.disponibilidade = disponibilidade;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public LocalDateTime getUltimaAtualizacaoLocalizacao() {
+        return ultimaAtualizacaoLocalizacao;
+    }
+
+    public void setUltimaAtualizacaoLocalizacao(LocalDateTime ultimaAtualizacaoLocalizacao) {
+        this.ultimaAtualizacaoLocalizacao = ultimaAtualizacaoLocalizacao;
     }
 
     public List<TecnicoHabilidade> getHabilidades() {

@@ -4,6 +4,8 @@ import type { Component } from 'vue'
 import { ClipboardList, Clock, AlertTriangle, CheckCircle2 } from 'lucide-vue-next'
 import OrdemDashboardCards from '@/components/ordemServico/OrdemDashboardCards.vue'
 import { ordemServicoService } from '@/services/ordemServicoService'
+import { computed } from 'vue'
+
 
 const stats = ref<{
   label: string
@@ -45,6 +47,21 @@ const ordensRecentes = ref([
     prazo: '-',
   },
 ])
+
+const resumo = computed(() => {
+  const map = Object.fromEntries(
+    stats.value.map(s => [s.label, s.value])
+  )
+
+  return {
+    abertas: map['Aguardando'] ?? 0,
+    emAndamento: map['Em Execução'] ?? 0,
+    concluidas: map['Finalizadas'] ?? 0,
+    atrasadas: 0,
+    canceladas: 0,
+    taxaConclusao: 0,
+  }
+})
 
 const filtroSelecionado = ref('Hoje')
 </script>

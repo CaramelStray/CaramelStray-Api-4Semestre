@@ -16,9 +16,11 @@ import com.example.tracker.entity.OrdemServicoChecklistAtivo;
 import com.example.tracker.service.OrdemServicoChecklistAtivoService;
 import com.example.tracker.service.OrdemServicoService;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,8 +46,16 @@ public class OrdemServicoController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<OrdemServicoResponseDTO>> listarOrdensServico() {
-        List<OrdemServicoResponseDTO> ordens = ordemServicoService.listarTodos().stream()
+    public ResponseEntity<List<OrdemServicoResponseDTO>> listarOrdensServico(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+        List<OrdemServico> entidades = dataInicio != null || dataFim != null
+                ? ordemServicoService.buscarPorPeriodo(dataInicio, dataFim)
+                : ordemServicoService.listarTodos();
+
+        List<OrdemServicoResponseDTO> ordens = entidades.stream()
                 .map(OrdemServicoResponseDTO::fromEntity)
                 .collect(Collectors.toList());
 
@@ -241,6 +251,20 @@ public class OrdemServicoController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(itens);
+    }
+
+    @GetMapping("/status/{status}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<OrdemServicoResponseDTO>> buscarPorStatus(
+            @PathVariable String status) {
+
+        List<OrdemServicoResponseDTO> ordens = ordemServicoService
+                .buscarPorStatus(status)
+                .stream()
+                .map(OrdemServicoResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(ordens);
     }
 
     @PatchMapping("/tecnico-ordens/{id}/checklist-ativos/{codigoItem}/checkin")

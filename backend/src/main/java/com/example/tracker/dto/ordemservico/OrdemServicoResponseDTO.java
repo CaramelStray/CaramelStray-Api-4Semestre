@@ -2,6 +2,7 @@ package com.example.tracker.dto.ordemservico;
 
 import com.example.tracker.dto.CatalogoMaquinaChecklistPadrao.CatalogoMaquinaChecklistPadraoResponseDTO;
 import com.example.tracker.entity.OrdemServico;
+import com.example.tracker.entity.OrdemServicoTecnico;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ public class OrdemServicoResponseDTO {
     private Integer codigo;
     private Integer codigoCliente;
     private Integer codigoFuncionario;
+    private List<Integer> codigosFuncionarios;
     private Integer codigoSoftwareInstalado;
     private Integer codigoContrato;
     private Integer codigoMaquinaContrato;
@@ -39,6 +41,19 @@ public class OrdemServicoResponseDTO {
     if (os.getFuncionario() != null) {
         dto.setCodigoFuncionario(os.getFuncionario().getId());
     }
+
+    List<Integer> codigosFuncionarios = os.getTecnicos() == null
+            ? List.of()
+            : os.getTecnicos().stream()
+                    .map(OrdemServicoTecnico::getTecnico)
+                    .filter(tecnico -> tecnico != null && tecnico.getId() != null)
+                    .map(tecnico -> tecnico.getId())
+                    .distinct()
+                    .collect(Collectors.toList());
+    if (codigosFuncionarios.isEmpty() && os.getFuncionario() != null) {
+        codigosFuncionarios = List.of(os.getFuncionario().getId());
+    }
+    dto.setCodigosFuncionarios(codigosFuncionarios);
 
     if (os.getSoftwareInstalado() != null) {
         dto.setCodigoSoftwareInstalado(os.getSoftwareInstalado().getCodigo());
@@ -113,6 +128,14 @@ public class OrdemServicoResponseDTO {
 
     public void setCodigoFuncionario(Integer codigoFuncionario) {
         this.codigoFuncionario = codigoFuncionario;
+    }
+
+    public List<Integer> getCodigosFuncionarios() {
+        return codigosFuncionarios;
+    }
+
+    public void setCodigosFuncionarios(List<Integer> codigosFuncionarios) {
+        this.codigosFuncionarios = codigosFuncionarios;
     }
 
     public Integer getCodigoSoftwareInstalado() {

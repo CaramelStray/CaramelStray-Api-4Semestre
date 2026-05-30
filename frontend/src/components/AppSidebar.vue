@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import type { SidebarProps } from '@/components/ui/sidebar'
 import {
-  LayoutDashboard, Map, Wrench, ClipboardList,CalendarDays,
+  LayoutDashboard, Map, Wrench, ClipboardList, CalendarDays,
   Users, Bot, UserCog, FileText,
   Settings2, GalleryVerticalEnd, Plus, Monitor, Award, Server, Package,Laptop, Cpu, Route
 } from "lucide-vue-next"
@@ -33,6 +33,7 @@ const teams = [
 const navGeralAdmin = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Mapa", url: "/mapa", icon: Map },
+  { title: "Calendário", url: "/calendario-gerente", icon: CalendarDays },
   { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
   { title: "Preparação de Viagem", url: "/viagem-preparacao", icon: Route },
   { title: "Histórico de Manutenções", url: "/relatorio-manutencao", icon: Wrench }

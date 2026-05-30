@@ -38,7 +38,6 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
     long countByStatusIn(List<String> statuses);
     List<OrdemServico> findByDataAberturaBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
     List<OrdemServico> findByDataAgendamentoBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
-    List<OrdemServico> findByStatus(String status);
     boolean existsByFuncionarioIdAndDataAgendamentoAndCodigoNotAndStatusNotIn(
             Integer codigoFuncionario,
             LocalDateTime dataAgendamento,

@@ -170,6 +170,48 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
 
     @Override
     @Transactional(readOnly = true)
+    public List<TecnicoAgendaResponseDTO> buscarAgendaPorPeriodo(LocalDate dataInicio, LocalDate dataFim, Integer codigoFuncionario) {
+        if (dataInicio == null || dataFim == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Data de inicio e data de fim sao obrigatorias");
+        }
+
+        if (dataFim.isBefore(dataInicio)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A data de fim nao pode ser anterior a data de inicio");
+        }
+
+        LocalDateTime inicio = dataInicio.atStartOfDay();
+        LocalDateTime fim = dataFim.plusDays(1).atStartOfDay().minusNanos(1);
+
+        List<OrdemServico> ordens = ordemServicoRepository.findByDataAgendamentoBetween(inicio, fim);
+        List<Tecnico> tecnicos;
+
+        if (codigoFuncionario != null) {
+            Tecnico tecnico = tecnicoRepository.findById(codigoFuncionario)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "Tecnico nao encontrado"));
+            tecnicos = List.of(tecnico);
+        } else {
+            tecnicos = tecnicoRepository.findAll();
+        }
+
+        return tecnicos.stream()
+                .map(tecnico -> {
+                    TecnicoAgendaResponseDTO dto = TecnicoAgendaResponseDTO.fromEntity(tecnico);
+                    dto.setOrdens(ordens.stream()
+                            .filter(os -> tecnicoParticipaDaOrdem(os, tecnico.getId()))
+                            .map(AgendaOrdemResponseDTO::fromEntity)
+                            .toList());
+                    return dto;
+                })
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public OrdemServico buscarTecnicoOrdem(Integer id, String emailUsuario) {
         Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
 

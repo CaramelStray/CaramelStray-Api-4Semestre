@@ -30,6 +30,9 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
 
     List<OrdemServico> findByMaquinaContratoCodigo(Integer codigoMaquinaContrato);
 
+    long countByStatus(String status);
+
+    long countByStatusIn(List<String> statuses);
     List<OrdemServico> findByDataAberturaBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
     boolean existsByFuncionarioIdAndDataAgendamentoAndCodigoNotAndStatusNotIn(
             Integer codigoFuncionario,

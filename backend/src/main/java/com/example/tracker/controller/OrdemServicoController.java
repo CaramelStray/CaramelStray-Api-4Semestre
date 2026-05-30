@@ -7,6 +7,7 @@ import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCheckinDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoResponseDTO;
+import com.example.tracker.dto.dashboard.DashboardCardDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoAtualizarStatusDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
@@ -65,6 +66,12 @@ public class OrdemServicoController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<OrdemServicoDadosBasicosResponseDTO>> listarDadosBasicosOrdensServico() {
         return ResponseEntity.ok(ordemServicoService.listarDadosBasicos());
+    }
+
+    @GetMapping("/dashboard")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<DashboardCardDTO>> obterDashboardOrdens() {
+        return ResponseEntity.ok(ordemServicoService.obterDashboardOrdens());
     }
 
     @GetMapping("/{id}")

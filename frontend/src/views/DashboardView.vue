@@ -1,17 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import {
-  Circle,
-  ArrowUpRight,
-} from 'lucide-vue-next'
+import { ref, onMounted } from 'vue'
+import type { Component } from 'vue'
+import { ClipboardList, Clock, AlertTriangle, CheckCircle2 } from 'lucide-vue-next'
+import OrdemDashboardCards from '@/components/ordemServico/OrdemDashboardCards.vue'
+import { ordemServicoService } from '@/services/ordemServicoService'
 
-const resumo = ref({
-  abertas: 0,
-  emAndamento: 0,
-  concluidas: 0,
-  atrasadas: 0,
-  canceladas: 0,
-  taxaConclusao: 0,
+const stats = ref<{
+  label: string
+  value: string | number
+  sub?: string
+  icon: Component
+  color?: string
+}[]>([])
+
+const iconMap: Record<string, Component> = {
+  ClipboardList,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+}
+
+onMounted(async () => {
+  try {
+    const data = await ordemServicoService.dashboardStats()
+    stats.value = data.map(card => ({
+      label: card.label,
+      value: card.value,
+      sub: card.sub,
+      color: card.color,
+      icon: iconMap[card.icon ?? 'ClipboardList'] ?? ClipboardList,
+    }))
+  } catch (error) {
+    console.error('Falha ao carregar dashboard:', error)
+  }
 })
 
 const ordensRecentes = ref([

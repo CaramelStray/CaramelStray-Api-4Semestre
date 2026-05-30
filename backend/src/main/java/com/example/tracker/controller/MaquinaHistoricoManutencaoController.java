@@ -113,4 +113,9 @@ public class MaquinaHistoricoManutencaoController {
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}/funcionarios")
+    public ResponseEntity<List<Integer>> listarFuncionarios(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.listarFuncionarios(id));
+    }
 }

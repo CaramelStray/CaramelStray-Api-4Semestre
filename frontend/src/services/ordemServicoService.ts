@@ -118,6 +118,14 @@ export interface OrdemServicoCreateDTO {
   observacaoGeral?: string
 }
 
+export interface DashboardCardDTO {
+  label: string
+  value: number
+  sub?: string
+  color?: string
+  icon?: string
+}
+
 export const ordemServicoService = {
   listar: () =>
     apiFetch<OrdemServicoResponseDTO[]>('/ordens-servico'),
@@ -162,6 +170,9 @@ export const ordemServicoService = {
     apiFetch<void>(`/ordens-servico/${id}`, {
       method: 'DELETE',
     }),
+
+  dashboardStats: () =>
+    apiFetch<DashboardCardDTO[]>('/ordens-servico/dashboard'),
 
   substituirChecklistAtivos: (id: number, items: Array<{ codigoAtivo: number; codigoFuncionario?: number; descricaoAtivo?: string }>) =>
     apiFetch<OrdemServicoChecklistAtivoResponseDTO[]>(`/ordens-servico/${id}/checklist-ativos`, {

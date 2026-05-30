@@ -13,4 +13,6 @@ public interface MaquinaChecklistManutencaoRepository extends JpaRepository<Maqu
     boolean existsByHistoricoManutencaoCodigoAndTarefaId(
             Integer codigoHistoricoManutencao,
             Integer codigoTarefa);
+
+    boolean existsByHistoricoManutencaoOrdemServicoCodigoAndRealizadoIsNull(Integer codigoOrdemServico);
 }

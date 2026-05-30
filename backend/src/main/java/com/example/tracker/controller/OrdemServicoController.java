@@ -246,6 +246,20 @@ public class OrdemServicoController {
         return ResponseEntity.ok(itens);
     }
 
+    @GetMapping("/status/{status}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<OrdemServicoResponseDTO>> buscarPorStatus(
+            @PathVariable String status) {
+
+        List<OrdemServicoResponseDTO> ordens = ordemServicoService
+                .buscarPorStatus(status)
+                .stream()
+                .map(OrdemServicoResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(ordens);
+    }
+
     @PatchMapping("/tecnico-ordens/{id}/checklist-ativos/{codigoItem}/checkin")
     @PreAuthorize("hasAuthority('ROLE_TECNICO')")
     public ResponseEntity<OrdemServicoChecklistAtivoResponseDTO> registrarCheckinChecklistAtivo(

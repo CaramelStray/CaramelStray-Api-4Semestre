@@ -47,3 +47,6 @@ public interface OrdemServicoService {
 
     List<MaquinaChecklistManutencaoResponseDTO> listarChecklistMaquina(Integer id);
 }
+    
+    List<OrdemServico> buscarPorStatus(String status);
+}

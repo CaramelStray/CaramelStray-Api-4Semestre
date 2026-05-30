@@ -94,6 +94,16 @@ const router = createRouter({
       meta: { roles: ['ROLE_ADMIN'] },
     },
     {
+      path: '/calendario-gerente',
+      component: () => import('@/views/CalendarioGerenteView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
+    },
+    {
+      path: '/calendario-tecnicos',
+      component: () => import('@/views/CalendarioTecnicosView.vue'),
+      meta: { roles: ['ROLE_ADMIN'] },
+    },
+    {
       path: '/ativos',
       component: () => import('@/views/AtivosView.vue'),
       meta: { roles: ['ROLE_ADMIN'] },

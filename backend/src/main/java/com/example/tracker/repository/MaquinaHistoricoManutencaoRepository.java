@@ -53,4 +53,13 @@ public interface MaquinaHistoricoManutencaoRepository extends JpaRepository<Maqu
     boolean existsTecnicoVinculado(
             @Param("codigoHistorico") Integer codigoHistorico,
             @Param("codigoFuncionario") Integer codigoFuncionario);
+
+    @Query(
+            value = """
+                    select codigo_funcionario
+                    from tb_srv_maquina_funcionario_manutencao
+                    where codigo_historico_manutencao = :codigoHistorico
+                    """,
+            nativeQuery = true)
+    List<Integer> findFuncionarioIdsByHistoricoId(@Param("codigoHistorico") Integer codigoHistorico);
 }

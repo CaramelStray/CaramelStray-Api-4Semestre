@@ -455,4 +455,9 @@ public class MaquinaHistoricoManutencaoServiceImpl implements MaquinaHistoricoMa
         }
         return id;
     }
+
+    @Override
+    public List<Integer> listarFuncionarios(Integer codigoHistorico) {
+        return maquinaHistoricoManutencaoRepository.findFuncionarioIdsByHistoricoId(codigoHistorico);
+    }
 }

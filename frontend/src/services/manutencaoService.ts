@@ -17,4 +17,7 @@ export interface ManutencaoRelatorioDTO {
 
 export const manutencaoService = {
   listarRelatorio: () => apiFetch<ManutencaoRelatorioDTO[]>('/maquinas-historicos-manutencao'),
+
+  listarFuncionarios: (codigoHistorico: number) =>
+    apiFetch<number[]>(`/maquinas-historicos-manutencao/${codigoHistorico}/funcionarios`),
 }

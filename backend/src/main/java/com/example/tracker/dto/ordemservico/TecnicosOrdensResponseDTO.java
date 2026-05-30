@@ -12,6 +12,7 @@ public class TecnicosOrdensResponseDTO {
     private String tipoOrdem;
     private LocalDateTime dataAbertura;
     private LocalDateTime dataAgendamento;
+    private Boolean possuiConflito;
 
     public static TecnicosOrdensResponseDTO fromEntity(OrdemServico os) {
         TecnicosOrdensResponseDTO dto = new TecnicosOrdensResponseDTO();
@@ -25,24 +26,67 @@ public class TecnicosOrdensResponseDTO {
         return dto;
     }
 
-    public Integer getCodigo() { return codigo; }
-    public void setCodigo(Integer codigo) { this.codigo = codigo; }
+    public Integer getCodigo() {
+        return codigo;
+    }
 
-    public String getNomeCliente() { return nomeCliente; }
-    public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; }
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getNomeCliente() {
+        return nomeCliente;
+    }
 
-    public String getCriticidade() { return criticidade; }
-    public void setCriticidade(String criticidade) { this.criticidade = criticidade; }
+    public void setNomeCliente(String nomeCliente) {
+        this.nomeCliente = nomeCliente;
+    }
 
-    public String getTipoOrdem() { return tipoOrdem; }
-    public void setTipoOrdem(String tipoOrdem) { this.tipoOrdem = tipoOrdem; }
+    public String getStatus() {
+        return status;
+    }
 
-    public LocalDateTime getDataAbertura() { return dataAbertura; }
-    public void setDataAbertura(LocalDateTime dataAbertura) { this.dataAbertura = dataAbertura; }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-    public LocalDateTime getDataAgendamento() { return dataAgendamento; }
-    public void setDataAgendamento(LocalDateTime dataAgendamento) { this.dataAgendamento = dataAgendamento; }
+    public String getCriticidade() {
+        return criticidade;
+    }
+
+    public void setCriticidade(String criticidade) {
+        this.criticidade = criticidade;
+    }
+
+    public String getTipoOrdem() {
+        return tipoOrdem;
+    }
+
+    public void setTipoOrdem(String tipoOrdem) {
+        this.tipoOrdem = tipoOrdem;
+    }
+
+    public LocalDateTime getDataAbertura() {
+        return dataAbertura;
+    }
+
+    public void setDataAbertura(LocalDateTime dataAbertura) {
+        this.dataAbertura = dataAbertura;
+    }
+
+    public LocalDateTime getDataAgendamento() {
+        return dataAgendamento;
+    }
+
+    public void setDataAgendamento(LocalDateTime dataAgendamento) {
+        this.dataAgendamento = dataAgendamento;
+    }
+
+    public Boolean getPossuiConflito() {
+        return possuiConflito;
+    }
+
+    public void setPossuiConflito(Boolean possuiConflito) {
+        this.possuiConflito = possuiConflito;
+    }
 }

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Integer> {
 
@@ -30,4 +31,14 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
         WHERE os.codigo = :id
     """)
     Optional<OrdemServico> findByIdCompleto(Integer id);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(os) > 0 THEN true ELSE false END
+        FROM OrdemServico os
+        WHERE os.funcionario.id = :codigoFuncionario
+          AND os.dataFimExecucao IS NULL
+          AND (os.status IS NULL OR UPPER(os.status) NOT IN ('FINALIZADA', 'FINALIZADO', 'CONCLUIDA', 'CONCLUIDO', 'CANCELADA', 'CANCELADO'))
+          AND (UPPER(os.status) = 'EM_EXECUCAO' OR os.dataInicioExecucao IS NOT NULL)
+    """)
+    boolean existsManutencaoAtivaPorTecnico(@Param("codigoFuncionario") Integer codigoFuncionario);
 }

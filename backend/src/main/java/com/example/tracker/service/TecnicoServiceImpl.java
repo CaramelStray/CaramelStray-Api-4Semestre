@@ -6,10 +6,14 @@ import com.example.tracker.dto.tecnico.TecnicoResponseDTO;
 import com.example.tracker.entity.Perfil;
 import com.example.tracker.entity.Tecnico;
 import com.example.tracker.entity.Usuario;
+import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
+import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.PerfilRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.repository.UsuarioRepository;
+import com.example.tracker.repository.ViagemRepository;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -22,10 +26,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TecnicoServiceImpl implements TecnicoService {
 
+    private static final String STATUS_DISPONIVEL = "DISPONIVEL";
+    private static final String STATUS_EM_ATENDIMENTO = "EM_ATENDIMENTO";
+    private static final String STATUS_EM_ROTA = "EM_ROTA";
+    private static final String STATUS_INDISPONIVEL = "INDISPONIVEL";
+
     private final TecnicoRepository tecnicoRepository;
     private final UsuarioRepository usuarioRepository;
     private final PerfilRepository perfilRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OrdemServicoRepository ordemServicoRepository;
+    private final MaquinaHistoricoManutencaoRepository maquinaHistoricoManutencaoRepository;
+    private final ViagemRepository viagemRepository;
 
     @Override
     @Transactional
@@ -131,7 +143,7 @@ public class TecnicoServiceImpl implements TecnicoService {
         dto.setTelefone(tecnico.getTelefone());
         dto.setCertificacao(tecnico.getCertificacao());
         dto.setEstado(tecnico.getEstado());
-        dto.setDisponibilidade(tecnico.getDisponibilidade());
+        dto.setDisponibilidade(calcularDisponibilidade(tecnico));
         dto.setLatitude(tecnico.getLatitude());
         dto.setLongitude(tecnico.getLongitude());
 
@@ -151,6 +163,32 @@ public class TecnicoServiceImpl implements TecnicoService {
         }
 
         return dto;
+    }
+
+    private String calcularDisponibilidade(Tecnico tecnico) {
+        if (tecnico == null || tecnico.getId() == null) {
+            return STATUS_DISPONIVEL;
+        }
+
+        Integer codigoTecnico = tecnico.getId();
+        if (viagemRepository.existsRotaAtivaPorTecnico(codigoTecnico)) {
+            return STATUS_EM_ROTA;
+        }
+
+        if (ordemServicoRepository.existsManutencaoAtivaPorTecnico(codigoTecnico)
+                || maquinaHistoricoManutencaoRepository.existsHistoricoAtivoPorTecnico(codigoTecnico)) {
+            return STATUS_EM_ATENDIMENTO;
+        }
+
+        String disponibilidadeAtual = limpar(tecnico.getDisponibilidade());
+        if (disponibilidadeAtual != null) {
+            String statusNormalizado = disponibilidadeAtual.toUpperCase(Locale.ROOT);
+            if (STATUS_INDISPONIVEL.equals(statusNormalizado)) {
+                return STATUS_INDISPONIVEL;
+            }
+        }
+
+        return STATUS_DISPONIVEL;
     }
 
     private void validarTecnico(TecnicoCreateDTO dto) {

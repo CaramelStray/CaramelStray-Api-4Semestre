@@ -80,7 +80,7 @@ const stats = computed(() => [
   },
   {
     label: 'Disponíveis',
-    value: tecnicos.value.filter(t => t.estado === 'DISPONÍVEL').length.toString(),
+    value: tecnicos.value.filter(t => t.estado === 'DISPONIVEL').length.toString(),
     sub: 'Prontos para acionamento',
     icon: ShieldCheck,
     color: 'text-purple-400',

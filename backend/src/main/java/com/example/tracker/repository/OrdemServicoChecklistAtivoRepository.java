@@ -17,5 +17,9 @@ public interface OrdemServicoChecklistAtivoRepository extends JpaRepository<Orde
             Integer codigoOrdemServico,
             Integer codigoAtivo);
 
+    boolean existsByOrdemServicoCodigoAndLevadoFalse(Integer codigoOrdemServico);
+
+    boolean existsByOrdemServicoCodigoAndLevadoTrueAndDevolvidoFalse(Integer codigoOrdemServico);
+
     void deleteByOrdemServicoCodigo(Integer codigoOrdemServico);
 }

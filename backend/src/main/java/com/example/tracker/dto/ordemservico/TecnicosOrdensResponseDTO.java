@@ -12,6 +12,7 @@ public class TecnicosOrdensResponseDTO {
     private String tipoOrdem;
     private LocalDateTime dataAbertura;
     private LocalDateTime dataAgendamento;
+    private Boolean possuiConflito;
 
     public static TecnicosOrdensResponseDTO fromEntity(OrdemServico os) {
         TecnicosOrdensResponseDTO dto = new TecnicosOrdensResponseDTO();
@@ -45,4 +46,7 @@ public class TecnicosOrdensResponseDTO {
 
     public LocalDateTime getDataAgendamento() { return dataAgendamento; }
     public void setDataAgendamento(LocalDateTime dataAgendamento) { this.dataAgendamento = dataAgendamento; }
+
+    public Boolean getPossuiConflito() {return possuiConflito;}
+    public void setPossuiConflito(Boolean possuiConflito) { this.possuiConflito = possuiConflito; }
 }

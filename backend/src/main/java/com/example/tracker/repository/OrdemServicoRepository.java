@@ -108,4 +108,15 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
     """)
     List<OrdemServico> findOrdensAbertasPorSoftwaresInstalados(
             @Param("codigosSoftwareInstalado") List<Integer> codigosSoftwareInstalado);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(DISTINCT os.codigo) > 0 THEN true ELSE false END
+        FROM OrdemServico os
+        LEFT JOIN os.tecnicos ost
+        WHERE (os.funcionario.id = :codigoFuncionario OR ost.tecnico.id = :codigoFuncionario)
+          AND os.dataFimExecucao IS NULL
+          AND (os.status IS NULL OR UPPER(os.status) NOT IN ('FINALIZADA', 'FINALIZADO', 'CONCLUIDA', 'CONCLUIDO', 'CANCELADA', 'CANCELADO'))
+          AND (UPPER(os.status) = 'EM_EXECUCAO' OR os.dataInicioExecucao IS NOT NULL)
+    """)
+    boolean existsManutencaoAtivaPorTecnico(@Param("codigoFuncionario") Integer codigoFuncionario);
 }

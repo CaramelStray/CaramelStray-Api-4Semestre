@@ -7,6 +7,7 @@ import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCheckinDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoChecklistAtivoResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicoAgendaResponseDTO;
 import com.example.tracker.dto.dashboard.DashboardCardDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoAtualizarStatusDTO;
@@ -60,6 +61,17 @@ public class OrdemServicoController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(ordens);
+    }
+
+    @GetMapping("/agenda")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<TecnicoAgendaResponseDTO>> buscarAgendaPorPeriodo(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+            @RequestParam(required = false) Integer codigoFuncionario) {
+        return ResponseEntity.ok(ordemServicoService.buscarAgendaPorPeriodo(dataInicio, dataFim, codigoFuncionario));
     }
 
     @GetMapping("/dados-basicos")

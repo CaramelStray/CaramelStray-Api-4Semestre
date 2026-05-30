@@ -26,10 +26,13 @@ import com.example.tracker.repository.OrdemServicoChecklistAtivoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.OrdemServicoTecnicoRepository;
 import com.example.tracker.repository.TecnicoRepository;
+import com.example.tracker.dto.ordemservico.AgendaOrdemResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicoAgendaResponseDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -162,7 +165,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         LocalDateTime inicio = dataInicio.atStartOfDay();
         LocalDateTime fim = dataFim.plusDays(1).atStartOfDay().minusNanos(1);
 
-        return ordemServicoRepository.findByDataAberturaBetween(inicio, fim);
+        return ordemServicoRepository.findByDataAgendamentoBetween(inicio, fim);
     }
 
     @Override

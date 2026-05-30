@@ -2,6 +2,7 @@ package com.example.tracker.controller;
 
 import com.example.tracker.dto.maquinasoftwareinstalado.MaquinaSoftwareInstaladoCreateDTO;
 import com.example.tracker.dto.maquinasoftwareinstalado.MaquinaSoftwareInstaladoResponseDTO;
+import com.example.tracker.dto.maquinasoftwareinstalado.SistemaLocalizacaoStatusResponseDTO;
 import com.example.tracker.entity.MaquinaSoftwareInstalado;
 import com.example.tracker.service.MaquinaSoftwareInstaladoService;
 import jakarta.validation.Valid;
@@ -48,6 +49,11 @@ public class MaquinaSoftwareInstaladoController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/localizacao-status")
+    public ResponseEntity<List<SistemaLocalizacaoStatusResponseDTO>> listarSistemasComLocalizacaoStatus() {
+        return ResponseEntity.ok(service.listarSistemasComLocalizacaoStatus());
     }
 
     @GetMapping("/{id}")

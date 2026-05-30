@@ -1,6 +1,7 @@
 package com.example.tracker.service;
 
 import com.example.tracker.dto.maquinasoftwareinstalado.MaquinaSoftwareInstaladoCreateDTO;
+import com.example.tracker.dto.maquinasoftwareinstalado.SistemaLocalizacaoStatusResponseDTO;
 import com.example.tracker.entity.MaquinaSoftwareInstalado;
 import java.util.List;
 
@@ -13,6 +14,8 @@ public interface MaquinaSoftwareInstaladoService {
     List<MaquinaSoftwareInstalado> buscarPorMaquinaContrato(Integer codigoMaquinaContrato);
 
     List<MaquinaSoftwareInstalado> buscarPorSoftware(Integer codigoSoftware);
+
+    List<SistemaLocalizacaoStatusResponseDTO> listarSistemasComLocalizacaoStatus();
 
     MaquinaSoftwareInstalado cadastrar(MaquinaSoftwareInstaladoCreateDTO dto);
 

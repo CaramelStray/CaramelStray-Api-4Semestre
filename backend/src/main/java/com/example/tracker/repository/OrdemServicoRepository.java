@@ -82,4 +82,22 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
         WHERE os.codigo = :id
     """)
     Optional<OrdemServico> findByIdCompleto(Integer id);
+
+    @Query("""
+        SELECT os FROM OrdemServico os
+        JOIN FETCH os.softwareInstalado si
+        WHERE si.codigo IN :codigosSoftwareInstalado
+          AND (
+              os.status IS NULL OR UPPER(os.status) NOT IN (
+                  'FINALIZADA',
+                  'FINALIZADO',
+                  'CONCLUIDA',
+                  'CONCLUIDO',
+                  'CANCELADA',
+                  'CANCELADO'
+              )
+          )
+    """)
+    List<OrdemServico> findOrdensAbertasPorSoftwaresInstalados(
+            @Param("codigosSoftwareInstalado") List<Integer> codigosSoftwareInstalado);
 }

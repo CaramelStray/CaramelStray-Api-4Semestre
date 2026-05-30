@@ -4,9 +4,11 @@ import com.example.tracker.dto.ativo.AtivoCreateDTO;
 import com.example.tracker.dto.ativo.AtivoResponseDTO;
 import com.example.tracker.entity.Ativo;
 import com.example.tracker.entity.CatalogoAtivo;
+import com.example.tracker.entity.MaquinaContrato;
 import com.example.tracker.entity.Tecnico;
 import com.example.tracker.repository.AtivoRepository;
 import com.example.tracker.repository.CatalogoAtivoRepository;
+import com.example.tracker.repository.MaquinaContratoRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class AtivoServiceImpl implements AtivoService {
     private final AtivoRepository ativoRepository;
     private final CatalogoAtivoRepository catalogoAtivoRepository;
     private final TecnicoRepository tecnicoRepository;
+    private final MaquinaContratoRepository maquinaContratoRepository;
 
     @Override
     @Transactional
@@ -57,6 +60,22 @@ public class AtivoServiceImpl implements AtivoService {
     @Transactional(readOnly = true)
     public List<AtivoResponseDTO> buscarPorFuncionario(Integer codigoFuncionario) {
         return ativoRepository.findByFuncionarioResponsavelId(codigoFuncionario).stream()
+                .map(AtivoResponseDTO::fromEntity)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AtivoResponseDTO> buscarPorMaquinaContrato(Integer codigoMaquinaContrato) {
+        if (codigoMaquinaContrato == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Codigo da maquina do contrato e obrigatorio");
+        }
+
+        if (!maquinaContratoRepository.existsById(codigoMaquinaContrato)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada");
+        }
+
+        return ativoRepository.findByMaquinaContratoCodigo(codigoMaquinaContrato).stream()
                 .map(AtivoResponseDTO::fromEntity)
                 .toList();
     }
@@ -107,6 +126,16 @@ public class AtivoServiceImpl implements AtivoService {
             ativo.setFuncionarioResponsavel(tecnico);
         } else {
             ativo.setFuncionarioResponsavel(null);
+        }
+
+        if (dto.getCodigoMaquinaContrato() != null) {
+            MaquinaContrato maquinaContrato = maquinaContratoRepository.findById(dto.getCodigoMaquinaContrato())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Maquina do contrato nao encontrada"));
+            ativo.setMaquinaContrato(maquinaContrato);
+        } else {
+            ativo.setMaquinaContrato(null);
         }
     }
 }

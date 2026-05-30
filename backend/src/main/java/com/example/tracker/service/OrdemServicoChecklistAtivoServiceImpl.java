@@ -299,6 +299,8 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
         Ativo ativo = ativoRepository.findById(Objects.requireNonNull(codigoAtivoNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ativo nao encontrado"));
 
+        validarAtivoPertenceAMaquinaDaOrdem(ordemServico, ativo);
+
         Tecnico funcionario = buscarFuncionarioDoItem(ordemServico, dto.getCodigoFuncionario());
 
         boolean levado = Boolean.TRUE.equals(dto.getLevado());
@@ -321,6 +323,21 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
         }
 
         return new ItemValidado(ativo, funcionario, descricaoAtivo);
+    }
+
+    private void validarAtivoPertenceAMaquinaDaOrdem(OrdemServico ordemServico, Ativo ativo) {
+        if (ativo.getMaquinaContrato() == null) {
+            return;
+        }
+
+        if (ordemServico.getMaquinaContrato() == null
+                || !Objects.equals(
+                        ativo.getMaquinaContrato().getCodigo(),
+                        ordemServico.getMaquinaContrato().getCodigo())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "O ativo informado nao pertence a maquina da ordem de servico");
+        }
     }
 
     private Tecnico buscarFuncionarioDoItem(OrdemServico ordemServico, Integer codigoFuncionario) {

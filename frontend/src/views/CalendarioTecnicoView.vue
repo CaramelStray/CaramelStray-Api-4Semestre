@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import type { TecnicoOrdemDetalhesResponseDTO } from '@/services/ordemServicoService'
 import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { CalendarDays, ChevronLeft, ChevronRight, Loader2, X } from 'lucide-vue-next'
@@ -14,7 +15,11 @@ const currentYear = ref(now.getFullYear())
 const currentMonth = ref(now.getMonth())
 
 // Bottom-sheet (mobile)
-const sheetDay = ref<string | null>(null)
+const showModal = ref(false)
+
+const ordemSelecionada = ref<TecnicoOrdemDetalhesResponseDTO | null>(null)
+
+const loadingModal = ref(false)
 
 const MONTH_NAMES = [
   'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
@@ -87,6 +92,18 @@ const sheetLabel  = computed(() => {
     weekday: 'long', day: '2-digit', month: 'long',
   })
 })
+
+async function abrirDetalhesOrdem(codigo: number) {
+  try {
+    loadingModal.value = true
+    showModal.value = true
+
+    ordemSelecionada.value =
+      await ordemServicoService.tecnicoOrdemPorId(codigo)
+  } finally {
+    loadingModal.value = false
+  }
+}
 
 onMounted(async () => {
   try { ordens.value = await ordemServicoService.tecnicosOrdens() }
@@ -203,7 +220,7 @@ onMounted(async () => {
                         v-for="o in (byDate.get(cell.key) ?? []).slice(0, 3)"
                         :key="o.codigo"
                         :class="['w-full text-left text-[10px] font-semibold px-1.5 py-0.5 rounded truncate transition-opacity hover:opacity-75', crit[o.criticidade]?.pill ?? 'bg-muted/30 text-muted-foreground border border-border']"
-                        @click.stop="router.push(`/minhas-ordens/${o.codigo}`)"
+                        @click.stop="abrirDetalhesOrdem(o.codigo)"
                       >
                         #{{ o.codigo }} {{ o.nomeCliente ? '· ' + o.nomeCliente : '' }}
                       </button>
@@ -237,6 +254,87 @@ onMounted(async () => {
       </div>
 
     </template>
+
+    <!-- Modal detalhes -->
+<Transition
+  enter-active-class="transition-opacity duration-200"
+  enter-from-class="opacity-0"
+  enter-to-class="opacity-100"
+  leave-active-class="transition-opacity duration-150"
+  leave-from-class="opacity-100"
+  leave-to-class="opacity-0"
+>
+  <div
+    v-if="showModal"
+    class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+    @click="showModal = false"
+  >
+    <div
+      class="w-full max-w-sm rounded-2xl border border-border bg-sidebar p-5 shadow-2xl"
+      @click.stop
+    >
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-foreground">
+            Detalhe da ordem
+          </h2>
+        </div>
+
+        <button
+          class="p-1 rounded-md hover:bg-muted transition-colors"
+          @click="showModal = false"
+        >
+          <X class="size-4 text-muted-foreground" />
+        </button>
+      </div>
+
+      <div v-if="loadingModal" class="py-10 flex justify-center">
+        <Loader2 class="size-5 animate-spin text-muted-foreground" />
+      </div>
+
+      <div
+        v-else-if="ordemSelecionada"
+        class="space-y-3 text-sm"
+      >
+        <div
+          class="inline-flex items-center rounded-full bg-blue-500/20 text-blue-300 px-3 py-1 text-xs font-semibold"
+        >
+          {{ ordemSelecionada.nomeCliente }}
+        </div>
+
+        <div class="space-y-2 text-muted-foreground">
+          <p>
+            <span class="font-bold text-foreground">
+              #OM-{{ ordemSelecionada.codigo }}
+            </span>
+            · {{ ordemSelecionada.tipoOrdem ?? 'Ordem de serviço' }}
+          </p>
+
+          <p>
+            {{ ordemSelecionada.cidadeCliente ?? '—' }}
+          </p>
+
+          <p>
+            {{ ordemSelecionada.dataAgendamento }}
+          </p>
+
+          <!-- conflito mockado -->
+          <p class="text-red-400 font-medium">
+            Conflito com OM-2039 no mesmo período
+          </p>
+        </div>
+
+        <Button
+          class="w-full mt-3"
+          variant="outline"
+          @click="router.push(`/minhas-ordens/${ordemSelecionada.codigo}`)"
+        >
+          Ver ordem completa
+        </Button>
+      </div>
+    </div>
+  </div>
+</Transition>
 
     <!-- ───── Bottom sheet overlay ───── -->
     <Transition

@@ -124,13 +124,17 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
 
         Tecnico tecnico = tecnicoRepository.findByUsuarioEmail(emailUsuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Tecnico nao encontrado para o usuario autenticado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Tecnico nao encontrado para o usuario autenticado"));
 
         OrdemServico ordemServico = ordemServicoRepository.findById(Objects.requireNonNull(idNaoNulo))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
 
-        if (!tecnicoParticipaDaOrdem(ordemServico, tecnico.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado: esta ordem nao esta atribuida a voce");
+        if (ordemServico.getFuncionario() == null
+                || !Objects.equals(ordemServico.getFuncionario().getId(), tecnico.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Acesso negado: esta ordem nao esta atribuida a voce");
         }
 
         return ordemServico;
@@ -149,9 +153,9 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     public OrdemServico buscarPorId(Integer id) {
         Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
         return ordemServicoRepository.findById(Objects.requireNonNull(idNaoNulo))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
     }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -159,11 +163,11 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
 
         OrdemServico os = ordemServicoRepository.findByIdCompleto(idNaoNulo)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
 
         return OrdemServicoResponseDTO.fromEntity(os);
     }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -174,14 +178,13 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     @Override
     @Transactional(readOnly = true)
     public List<OrdemServico> buscarPorCliente(Integer codigoCliente) {
-        Integer codigoClienteNaoNulo =
-                requireId(codigoCliente, "Codigo do cliente e obrigatorio");
+        Integer codigoClienteNaoNulo = requireId(codigoCliente, "Codigo do cliente e obrigatorio");
 
-        List<OrdemServico> itens =
-                ordemServicoRepository.findByClienteId(Objects.requireNonNull(codigoClienteNaoNulo));
+        List<OrdemServico> itens = ordemServicoRepository.findByClienteId(Objects.requireNonNull(codigoClienteNaoNulo));
 
         if (itens.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma ordem de servico encontrada para o cliente");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Nenhuma ordem de servico encontrada para o cliente");
         }
 
         return itens;
@@ -190,14 +193,14 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     @Override
     @Transactional(readOnly = true)
     public List<OrdemServico> buscarPorFuncionario(Integer codigoFuncionario) {
-        Integer codigoFuncionarioNaoNulo =
-                requireId(codigoFuncionario, "Codigo do funcionario e obrigatorio");
+        Integer codigoFuncionarioNaoNulo = requireId(codigoFuncionario, "Codigo do funcionario e obrigatorio");
 
         List<OrdemServico> itens =
                 ordemServicoRepository.findByFuncionarioParticipanteId(Objects.requireNonNull(codigoFuncionarioNaoNulo));
 
         if (itens.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma ordem de servico encontrada para o funcionario");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Nenhuma ordem de servico encontrada para o funcionario");
         }
 
         return itens;
@@ -206,14 +209,15 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     @Override
     @Transactional(readOnly = true)
     public List<OrdemServico> buscarPorSoftwareInstalado(Integer codigoSoftwareInstalado) {
-        Integer codigoSoftwareInstaladoNaoNulo =
-                requireId(codigoSoftwareInstalado, "Codigo do software instalado e obrigatorio");
+        Integer codigoSoftwareInstaladoNaoNulo = requireId(codigoSoftwareInstalado,
+                "Codigo do software instalado e obrigatorio");
 
-        List<OrdemServico> itens =
-                ordemServicoRepository.findBySoftwareInstaladoCodigo(Objects.requireNonNull(codigoSoftwareInstaladoNaoNulo));
+        List<OrdemServico> itens = ordemServicoRepository
+                .findBySoftwareInstaladoCodigo(Objects.requireNonNull(codigoSoftwareInstaladoNaoNulo));
 
         if (itens.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma ordem de servico encontrada para o software instalado");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Nenhuma ordem de servico encontrada para o software instalado");
         }
 
         return itens;
@@ -222,14 +226,14 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     @Override
     @Transactional(readOnly = true)
     public List<OrdemServico> buscarPorContrato(Integer codigoContrato) {
-        Integer codigoContratoNaoNulo =
-                requireId(codigoContrato, "Codigo do contrato e obrigatorio");
+        Integer codigoContratoNaoNulo = requireId(codigoContrato, "Codigo do contrato e obrigatorio");
 
-        List<OrdemServico> itens =
-                ordemServicoRepository.findByContratoCodigo(Objects.requireNonNull(codigoContratoNaoNulo));
+        List<OrdemServico> itens = ordemServicoRepository
+                .findByContratoCodigo(Objects.requireNonNull(codigoContratoNaoNulo));
 
         if (itens.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma ordem de servico encontrada para o contrato");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Nenhuma ordem de servico encontrada para o contrato");
         }
 
         return itens;
@@ -238,14 +242,36 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     @Override
     @Transactional(readOnly = true)
     public List<OrdemServico> buscarPorMaquinaContrato(Integer codigoMaquinaContrato) {
-        Integer codigoMaquinaContratoNaoNulo =
-                requireId(codigoMaquinaContrato, "Codigo da maquina do contrato e obrigatorio");
+        Integer codigoMaquinaContratoNaoNulo = requireId(codigoMaquinaContrato,
+                "Codigo da maquina do contrato e obrigatorio");
 
-        List<OrdemServico> itens =
-                ordemServicoRepository.findByMaquinaContratoCodigo(Objects.requireNonNull(codigoMaquinaContratoNaoNulo));
+        List<OrdemServico> itens = ordemServicoRepository
+                .findByMaquinaContratoCodigo(Objects.requireNonNull(codigoMaquinaContratoNaoNulo));
 
         if (itens.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma ordem de servico encontrada para a maquina do contrato");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Nenhuma ordem de servico encontrada para a maquina do contrato");
+        }
+
+        return itens;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrdemServico> buscarPorStatus(String status) {
+
+        if (status == null || status.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Status e obrigatorio");
+        }
+
+        List<OrdemServico> itens = ordemServicoRepository.findByStatus(status.trim().toUpperCase());
+
+        if (itens.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Nenhuma ordem de servico encontrada para o status informado");
         }
 
         return itens;
@@ -281,7 +307,8 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         Integer idNaoNulo = requireId(id, "Id da ordem de servico e obrigatorio");
 
         OrdemServico entidade = ordemServicoRepository.findById(Objects.requireNonNull(idNaoNulo))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordem de servico nao encontrada"));
 
         List<Tecnico> tecnicosAnteriores = listarTecnicosDaOrdem(entidade);
         RelacoesOrdemServico relacoes = validarEntrada(dto, entidade);
@@ -385,8 +412,10 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
                     "O contrato informado nao pertence ao cliente informado");
         }
 
-        MaquinaContrato maquinaContrato = maquinaContratoRepository.findById(Objects.requireNonNull(codigoMaquinaContratoNaoNulo))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada"));
+        MaquinaContrato maquinaContrato = maquinaContratoRepository
+                .findById(Objects.requireNonNull(codigoMaquinaContratoNaoNulo))
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Maquina do contrato nao encontrada"));
 
         if (maquinaContrato.getContrato() == null
                 || !Objects.equals(maquinaContrato.getContrato().getCodigo(), contrato.getCodigo())) {
@@ -406,10 +435,12 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         Integer codigoSoftwareInstalado = dto.getCodigoSoftwareInstalado();
         if (codigoSoftwareInstalado != null) {
             softwareInstalado = maquinaSoftwareInstaladoRepository.findById(codigoSoftwareInstalado)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Software instalado nao encontrado"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "Software instalado nao encontrado"));
 
             if (softwareInstalado.getMaquinaContrato() == null
-                    || !Objects.equals(softwareInstalado.getMaquinaContrato().getCodigo(), maquinaContrato.getCodigo())) {
+                    || !Objects.equals(softwareInstalado.getMaquinaContrato().getCodigo(),
+                            maquinaContrato.getCodigo())) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "O software instalado informado nao pertence a maquina do contrato informada");
@@ -518,8 +549,8 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
             return;
         }
 
-        List<OrdemServicoChecklistAtivo> checklistAtivos =
-                ordemServicoChecklistAtivoService.substituirChecklist(entidade.getCodigo(), dto.getChecklistAtivos());
+        List<OrdemServicoChecklistAtivo> checklistAtivos = ordemServicoChecklistAtivoService
+                .substituirChecklist(entidade.getCodigo(), dto.getChecklistAtivos());
         entidade.setChecklistAtivos(checklistAtivos);
     }
 

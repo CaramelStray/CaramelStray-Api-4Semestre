@@ -38,11 +38,11 @@ Desenvolver funcionalidades de visualização e planejamento operacional para ap
 
 | Rank | Prioridade | User Story | Estimativa (Fibonacci) | Sprint | Meta da Sprint |
 |------|------------|-----------|------------------------|--------|-------|
-| 1 | Alta | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 8 | 3 | ✅ |
-| 2 | Alta | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 8 | 3 | ✅ |
-| 3 | Média | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 5 | 3 | ✅ |
-| 4 | Média | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 8 | 3 |  |
-| 5 | Média | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 8 | 3 |  |
+| 1 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 8 | 3 | ✅ |
+| 2 | Média | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 5 | 3 | ✅ |
+| 3 | Média | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 8 | 3 | ✅ |
+| 4 | Baixa | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 8 | 3 |  |
+| 5 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 8 | 3 |  |
 
 ---
 
@@ -75,10 +75,9 @@ Desenvolver funcionalidades de visualização e planejamento operacional para ap
 | User Story | Definition of Ready (DoR) | Definition of Done (DoD) |
 |---|---|---|
 | US301 - Dashboard de ordens de manutenção | - User Story refinada e aprovada pelo cliente.<br>- Protótipo do dashboard validado no Figma.<br>- Definição dos indicadores e métricas necessárias.<br>- Estrutura das APIs de dashboard documentadas no Swagger.<br>- Dados de exemplo preparados para testes dos gráficos. | - Dashboard implementado em Vue.js + Vuetify.<br>- Endpoints desenvolvidos em Spring Boot.<br>- Dados integrados corretamente ao PostgreSQL.<br>- APIs documentadas no Swagger.<br>- Testes unitários e de integração realizados.<br>- Funcionalidade validada em homologação. |
-| US302 - Registro de ciclo de embarcações | - Regras de negócio dos ciclos definidas.<br>- Modelagem da entidade de embarcação revisada.<br>- Protótipos de cadastro aprovados no Figma.<br>- Contratos de API documentados.<br>- Critérios de aceitação revisados pelo time. | - CRUD de ciclos implementado.<br>- Banco atualizado com migrations Flyway.<br>- Frontend integrado ao backend.<br>- Testes de cadastro, edição e listagem concluídos.<br>- APIs documentadas no Swagger.<br>- Deploy validado em homologação. |
-| US303 - Disponibilidade dos técnicos em calendário | - Fluxo de agenda definido com o cliente.<br>- Protótipo do calendário validado.<br>- Estrutura de disponibilidade modelada no banco.<br>- APIs de agenda especificadas.<br>- Dados mockados preparados para testes. | - Calendário funcional implementado.<br>- Disponibilidade exibida corretamente.<br>- Backend integrado ao frontend.<br>- Regras de conflito de agenda testadas.<br>- Testes automatizados executados.<br>- Funcionalidade homologada. |
-| US304 - Rastreamento de técnicos no mapa | - Requisitos de localização definidos.<br>- Biblioteca de mapas selecionada.<br>- Modelo de dados geográficos definido.<br>- APIs de localização documentadas.<br>- Critérios de atualização de posição aprovados. | - Mapa exibindo técnicos em tempo real.<br>- Backend fornecendo localização corretamente.<br>- Integração frontend/backend concluída.<br>- Testes de atualização de localização realizados.<br>- Documentação técnica atualizada.<br>- Deploy validado. |
-| US305 - Visualização dos sistemas instalados no mapa | - Estrutura geográfica dos sistemas definida.<br>- Protótipo do mapa aprovado.<br>- Modelagem de coordenadas concluída.<br>- APIs REST descritas no Swagger.<br>- Dados de teste preparados. | - Sistemas exibidos corretamente no mapa.<br>- Backend integrado ao banco PostgreSQL.<br>- Interface responsiva implementada.<br>- Testes de carregamento e exibição realizados.<br>- Funcionalidade homologada.<br>- README/Wiki atualizados. |
+| US302 - Disponibilidade dos técnicos em calendário | - Fluxo de agenda definido com o cliente.<br>- Protótipo do calendário validado.<br>- Estrutura de disponibilidade modelada no banco.<br>- APIs de agenda especificadas.<br>- Dados mockados preparados para testes. | - Calendário funcional implementado.<br>- Disponibilidade exibida corretamente.<br>- Backend integrado ao frontend.<br>- Regras de conflito de agenda testadas.<br>- Testes automatizados executados.<br>- Funcionalidade homologada. |
+| US303 - Rastreamento de técnicos no mapa | - Requisitos de localização definidos.<br>- Biblioteca de mapas selecionada.<br>- Modelo de dados geográficos definido.<br>- APIs de localização documentadas.<br>- Critérios de atualização de posição aprovados. | - Mapa exibindo técnicos em tempo real.<br>- Backend fornecendo localização corretamente.<br>- Integração frontend/backend concluída.<br>- Testes de atualização de localização realizados.<br>- Documentação técnica atualizada.<br>- Deploy validado. |
+
 
 ## 🎓 Equipe <a id="equipe"></a>
 

@@ -540,7 +540,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario nao encontrado"));
         List<Tecnico> tecnicos = buscarTecnicosDaEquipe(dto, funcionario);
         for (Tecnico tecnico : tecnicos) {
-            validarTecnicoDisponivel(tecnico, ordemAtual, status);
+            validarTecnicoDisponivelParaAgendamento(tecnico, ordemAtual, status, dto.getDataAgendamento());
             validarTecnicoSemAusencia(tecnico, dto.getDataAgendamento(), status);
         }
 
@@ -720,6 +720,15 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "O tecnico selecionado nao esta disponivel");
+        }
+    }
+
+    private void validarTecnicoDisponivelParaAgendamento(Tecnico funcionario, OrdemServico ordemAtual, String statusOrdem, LocalDateTime dataAgendamento) {
+        // Para ordens futuras, o status atual do técnico é irrelevante — apenas ordens de hoje exigem que ele esteja disponível.
+        boolean agendadoParaHoje = dataAgendamento == null
+                || dataAgendamento.toLocalDate().equals(LocalDate.now());
+        if (agendadoParaHoje) {
+            validarTecnicoDisponivel(funcionario, ordemAtual, statusOrdem);
         }
     }
 

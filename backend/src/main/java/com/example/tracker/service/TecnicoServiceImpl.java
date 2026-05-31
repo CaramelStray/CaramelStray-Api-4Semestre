@@ -89,6 +89,15 @@ public class TecnicoServiceImpl implements TecnicoService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<TecnicoResponseDTO> listarSelecionaveis() {
+        return tecnicoRepository.findAllComPerfilTecnico()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<TecnicoResponseDTO> buscarPorId(Integer id) {
         if (id == null) {
             throw new IllegalArgumentException("O id do tecnico e obrigatorio.");

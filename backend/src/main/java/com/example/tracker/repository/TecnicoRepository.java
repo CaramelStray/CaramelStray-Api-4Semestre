@@ -18,4 +18,14 @@ public interface TecnicoRepository extends JpaRepository<Tecnico, Integer> {
     @Query("SELECT t FROM Tecnico t LEFT JOIN FETCH t.habilidades h LEFT JOIN FETCH h.habilidade")
     List<Tecnico> findAllComHabilidades();
 
+    @Query("""
+            SELECT DISTINCT t FROM Tecnico t
+            LEFT JOIN FETCH t.habilidades h
+            LEFT JOIN FETCH h.habilidade
+            JOIN t.usuario u
+            JOIN u.perfis p
+            WHERE p.nome = 'ROLE_TECNICO'
+            """)
+    List<Tecnico> findAllComPerfilTecnico();
+
 }

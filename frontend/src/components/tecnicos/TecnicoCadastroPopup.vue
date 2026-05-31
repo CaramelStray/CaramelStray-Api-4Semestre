@@ -78,7 +78,7 @@ const formSchema = toTypedSchema(z.object({
   cargo: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
   telefone: z.string({ required_error: 'Campo obrigatório' }).min(14, 'Telefone inválido'),
   estado: z.string({ required_error: 'Campo obrigatório' }).min(2, 'Campo obrigatório'),
-  disponibilidade: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
+
   habilidades: z.array(z.object({
     habilidadeId: z.string({ required_error: 'Campo obrigatório' }).min(1, 'Campo obrigatório'),
     nivel: z.number({ required_error: 'Campo obrigatório', invalid_type_error: 'Informe um número entre 1 e 5' }).min(1, 'Mínimo 1').max(5, 'Máximo 5'),
@@ -90,7 +90,7 @@ const form = useForm({
   validationSchema: formSchema,
   initialValues: {
     nome: '', cpf: '', email: '', senha: '',
-    cargo: '', telefone: '', estado: '', disponibilidade: '',
+    cargo: '', telefone: '', estado: '',
     habilidades: []
   }
 })
@@ -108,7 +108,6 @@ const popularFormEdicao = async (data: TecnicoResponseDTO) => {
       cargo: data.cargo || '',
       telefone: applyPhoneMask(data.telefone),
       estado: data.estado || '',
-      disponibilidade: data.disponibilidade || '',
       habilidades: (data.habilidades ?? []).map(h => ({
         habilidadeId: String(h.habilidadeId),
         nivel: h.nivel,
@@ -130,8 +129,8 @@ watch(() => props.initialData, (data) => {
 
 const nextStep = async () => {
   const step1Fields = isEditMode.value
-    ? ['nome', 'cpf', 'cargo', 'telefone', 'estado', 'disponibilidade']
-    : ['nome', 'cpf', 'email', 'cargo', 'telefone', 'estado', 'disponibilidade']
+    ? ['nome', 'cpf', 'cargo', 'telefone', 'estado']
+    : ['nome', 'cpf', 'email', 'cargo', 'telefone', 'estado']
   const results = await Promise.all(
     step1Fields.map(field => form.validateField(field as any))
   )
@@ -154,7 +153,9 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
       cargo: values.cargo,
       telefone: values.telefone.replace(/\D/g, ''),
       estado: values.estado,
-      disponibilidade: values.disponibilidade,
+      disponibilidade: isEditMode.value
+        ? (props.initialData?.disponibilidade ?? 'DISPONIVEL')
+        : 'DISPONIVEL',
       certificacao: 'NR 10 NR 12 NR 35',
       latitude: -23.223700,
       longitude: -45.900900
@@ -386,28 +387,6 @@ const onSubmit = form.handleSubmit(async (values, { resetForm }) => {
                   <SelectItem value="SP">São Paulo</SelectItem>
                   <SelectItem value="RJ">Rio de Janeiro</SelectItem>
                   <SelectItem value="MG">Minas Gerais</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-
-        <FormField v-slot="{ value, handleChange }" name="disponibilidade">
-          <FormItem>
-            <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-              Disponibilidade <span class="text-red-500 font-bold">*</span>
-            </FormLabel>
-            <Select :model-value="value" @update:model-value="handleChange">
-              <FormControl>
-                <SelectTrigger class="bg-muted/20 border-border hover:border-blue-500/50 transition-colors">
-                  <SelectValue placeholder="Selecione..." />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent class="z-[200]">
-                <SelectGroup>
-                  <SelectItem value="DISPONÍVEL">Disponível</SelectItem>
-                  <SelectItem value="EM MANUTENÇÃO">Em manutenção</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

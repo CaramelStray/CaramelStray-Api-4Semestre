@@ -139,19 +139,6 @@
         />
       </div>
 
-      <!-- Data de Agendamento -->
-      <FormField v-slot="{ value, handleChange }" name="dataAgendamento">
-        <FormItem>
-          <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-            Data de Agendamento <span class="text-red-500 font-bold">*</span>
-          </FormLabel>
-          <FormControl>
-            <DatePickerInput :model-value="value" @update:model-value="handleChange" :min-value="amanhaToCal" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-
       <!-- Observação Geral -->
       <FormField v-slot="{ componentField }" name="observacaoGeral">
         <FormItem class="md:col-span-2">
@@ -253,62 +240,251 @@
       </div>
     </div>
 
-    <!-- STEP 3: Técnico -->
-    <div v-show="step === 3" class="space-y-4">
+    <!-- STEP 3: Técnico e Agendamento -->
+    <div v-show="step === 3" class="space-y-5">
 
-      <div v-if="loadingTecnicos" class="flex items-center gap-3 text-sm text-muted-foreground p-4 border border-border rounded-lg bg-muted/10">
-        <Loader2 class="w-4 h-4 animate-spin text-blue-400" />
-        Carregando técnicos disponíveis...
-      </div>
+      <!-- Seção de Data/Período -->
+      <div class="space-y-3">
+        <div class="flex items-center gap-2">
+          <label class="text-sm font-semibold text-foreground">Agendamento</label>
+          <!-- Toggle modo -->
+          <div class="flex items-center gap-0.5 p-0.5 rounded-md bg-muted/40 border border-border ml-auto">
+            <button
+              type="button"
+              :class="['px-3 py-1 rounded text-xs font-semibold transition-all', modoAgendamento === 'data' ? 'bg-sidebar-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground']"
+              @click="modoAgendamento = 'data'"
+            >
+              Data específica
+            </button>
+            <button
+              type="button"
+              :class="['px-3 py-1 rounded text-xs font-semibold transition-all', modoAgendamento === 'periodo' ? 'bg-sidebar-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground']"
+              @click="modoAgendamento = 'periodo'"
+            >
+              Ver período
+            </button>
+          </div>
+        </div>
 
-      <div v-else-if="tecnicosDisponiveis.length === 0" class="text-center p-8 border border-dashed border-border rounded-lg bg-muted/5">
-        <UserX class="w-8 h-8 mx-auto text-muted-foreground/40 mb-3" />
-        <p class="text-sm font-medium text-foreground/70">Nenhum técnico disponível</p>
-        <p class="text-xs text-muted-foreground mt-1">Não há técnicos disponíveis no momento.</p>
-      </div>
+        <!-- Data específica -->
+        <div v-if="modoAgendamento === 'data'">
+          <FormField v-slot="{ value, handleChange }" name="dataAgendamento">
+            <FormItem>
+              <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
+                Data de Agendamento <span class="text-red-500 font-bold">*</span>
+              </FormLabel>
+              <FormControl>
+                <DatePickerInput :model-value="value" @update:model-value="handleChange" :min-value="amanhaToCal" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+        </div>
 
-      <div v-else>
-        <FormField v-slot="{ value, handleChange }" name="codigoFuncionario">
-          <FormItem>
-            <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-              Técnico Responsável <span class="text-red-500 font-bold">*</span>
-            </FormLabel>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-              <div
-                v-for="tec in tecnicosDisponiveis"
-                :key="tec.id"
+        <!-- Período -->
+        <div v-else class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Início <span class="text-red-500 font-bold">*</span>
+            </label>
+            <DatePickerInput :model-value="periodoInicio" @update:model-value="onPeriodoInicioChange" :min-value="amanhaToCal" />
+          </div>
+          <div>
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Fim <span class="text-red-500 font-bold">*</span>
+            </label>
+            <DatePickerInput :model-value="periodoFim" @update:model-value="v => periodoFim = v" :min-value="amanhaToCal" />
+          </div>
+          <!-- Chips de seleção do dia de agendamento -->
+          <div v-if="periodoFim && periodoInicio" class="col-span-2 space-y-2">
+            <p class="text-xs font-medium text-foreground/80">
+              Selecione o dia de agendamento: <span class="text-red-500 font-bold">*</span>
+            </p>
+            <div class="flex flex-wrap gap-1.5">
+              <button
+                v-for="dia in diasDoPeriodo(periodoInicio, periodoFim)"
+                :key="dia"
+                type="button"
                 :class="[
-                  'flex items-start gap-4 p-4 border rounded-lg cursor-pointer transition-all',
-                  value === tec.id.toString()
-                    ? 'border-blue-500/60 bg-blue-500/10 ring-1 ring-blue-500/40'
-                    : 'border-border bg-muted/10 hover:border-blue-500/30 hover:bg-muted/20'
+                  'px-3 py-1.5 rounded-lg text-sm font-bold border transition-all',
+                  form.values.dataAgendamento === dia
+                    ? 'bg-sidebar-primary text-white border-sidebar-primary shadow-md shadow-blue-900/20'
+                    : 'bg-muted/20 text-foreground border-border hover:border-blue-500/50 hover:bg-muted/30',
                 ]"
-                @click="handleChange(tec.id.toString())"
+                @click="form.setFieldValue('dataAgendamento', dia)"
               >
-                <div
-                  :class="[
-                    'flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm shrink-0 transition-all',
-                    value === tec.id.toString()
-                      ? 'bg-blue-500/30 text-blue-300'
-                      : 'bg-muted/40 text-foreground/70'
-                  ]"
-                >
-                  {{ getInitials(tec.nome) }}
+                {{ formatDayChip(dia) }}
+              </button>
+            </div>
+            <p v-if="!form.values.dataAgendamento" class="text-xs text-amber-400 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block shrink-0" />
+              Selecione um dia para definir o agendamento
+            </p>
+          </div>
+          <FormField name="dataAgendamento"><FormItem><FormMessage /></FormItem></FormField>
+        </div>
+      </div>
+
+      <!-- Lista de técnicos -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-sm font-semibold text-foreground">
+            Técnicos <span class="text-red-500 font-bold">*</span>
+          </label>
+          <span v-if="tecnicosSelecionados.size > 0" class="text-xs text-muted-foreground">
+            {{ tecnicosSelecionados.size }} selecionado(s)
+            <span v-if="tecnicoResponsavelId" class="text-blue-400"> · 1 responsável</span>
+          </span>
+        </div>
+
+        <FormField name="codigoFuncionario"><FormItem><FormMessage /></FormItem></FormField>
+
+        <div v-if="loadingTecnicos" class="flex items-center gap-3 text-sm text-muted-foreground p-4 border border-border rounded-lg bg-muted/10">
+          <Loader2 class="w-4 h-4 animate-spin text-blue-400" />
+          Carregando técnicos...
+        </div>
+
+        <div v-else-if="tecnicosDisponiveis.length === 0" class="text-center p-8 border border-dashed border-border rounded-lg bg-muted/5">
+          <UserX class="w-8 h-8 mx-auto text-muted-foreground/40 mb-3" />
+          <p class="text-sm font-medium text-foreground/70">Nenhum técnico disponível</p>
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div
+            v-for="tec in tecnicosDisponiveis"
+            :key="tec.id"
+            :class="[
+              'border rounded-lg p-4 transition-all select-none',
+              // Indisponível no dia selecionado → bloqueado
+              !tecnicoDisponivelNoDia(tec.id)
+                ? 'opacity-55 cursor-not-allowed border-red-500/30 bg-red-500/5'
+                : tecnicoResponsavelId === tec.id
+                  ? 'cursor-pointer border-blue-600 bg-blue-500/15 ring-2 ring-blue-500/40'
+                  : tecnicosSelecionados.has(tec.id)
+                    ? 'cursor-pointer border-blue-500/40 bg-blue-500/8 ring-1 ring-blue-500/20'
+                    : 'cursor-pointer border-border bg-muted/10 hover:border-blue-500/30 hover:bg-muted/20',
+            ]"
+            @click="tecnicoDisponivelNoDia(tec.id) ? toggleTecnico(tec.id) : undefined"
+          >
+            <!-- Cabeçalho do card -->
+            <div class="flex items-start gap-3">
+              <!-- Avatar -->
+              <div
+                :class="[
+                  'flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm shrink-0 transition-all',
+                  tecnicosSelecionados.has(tec.id) ? 'bg-blue-500/30 text-blue-300' : 'bg-muted/40 text-foreground/70',
+                ]"
+              >
+                {{ getInitials(tec.nome) }}
+              </div>
+              <!-- Info -->
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-sm text-foreground truncate">{{ tec.nome }}</p>
+                <p class="text-xs text-muted-foreground truncate">{{ tec.cargo || 'Técnico' }}</p>
+                <p class="text-xs text-muted-foreground/60 truncate">{{ tec.email }}</p>
+              </div>
+              <!-- Botão responsável (só aparece quando selecionado) -->
+              <button
+                v-if="tecnicosSelecionados.has(tec.id)"
+                type="button"
+                :title="tecnicoResponsavelId === tec.id ? 'Responsável' : 'Definir como responsável'"
+                :class="[
+                  'shrink-0 p-1.5 rounded-md transition-all',
+                  tecnicoResponsavelId === tec.id
+                    ? 'text-yellow-400 bg-yellow-400/10'
+                    : 'text-muted-foreground/50 hover:text-yellow-400 hover:bg-yellow-400/10',
+                ]"
+                @click.stop="setResponsavel(tec.id)"
+              >
+                <Star class="w-4 h-4" :fill="tecnicoResponsavelId === tec.id ? 'currentColor' : 'none'" />
+              </button>
+              <!-- Badge responsável -->
+              <span
+                v-if="tecnicoResponsavelId === tec.id"
+                class="text-[9px] font-bold uppercase tracking-wider bg-yellow-400/15 text-yellow-400 border border-yellow-400/30 px-1.5 py-0.5 rounded-full shrink-0"
+              >
+                Resp.
+              </span>
+              <!-- Badge indisponível -->
+              <span
+                v-if="!tecnicoDisponivelNoDia(tec.id)"
+                class="text-[9px] font-bold uppercase tracking-wider bg-red-500/15 text-red-400 border border-red-500/30 px-1.5 py-0.5 rounded-full shrink-0"
+              >
+                Indisponível
+              </span>
+            </div>
+
+            <!-- Seção de disponibilidade -->
+            <div v-if="form.values.dataAgendamento" class="mt-3 pt-3 border-t border-border/60">
+              <!-- Carregando -->
+              <template v-if="loadingAgenda">
+                <div class="animate-pulse flex gap-1.5">
+                  <div class="h-3 bg-muted/40 rounded w-1/2" />
                 </div>
-                <div class="min-w-0">
-                  <p class="font-semibold text-sm truncate text-foreground">{{ tec.nome }}</p>
-                  <p class="text-xs text-muted-foreground truncate">{{ tec.cargo || 'Técnico' }}</p>
-                  <p class="text-xs text-muted-foreground/70 truncate">{{ tec.email }}</p>
-                  <span class="inline-flex items-center gap-1.5 mt-1.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
-                    {{ tec.disponibilidade ?? 'Disponível' }}
+              </template>
+
+              <!-- Modo data única -->
+              <template v-else-if="modoAgendamento === 'data'">
+                <div class="flex items-center gap-2">
+                  <div
+                    :class="estaNoDia(tec.id, form.values.dataAgendamento) ? 'bg-blue-500' : 'bg-red-500'"
+                    class="w-2 h-2 rounded-full shrink-0"
+                  />
+                  <span :class="estaNoDia(tec.id, form.values.dataAgendamento) ? 'text-blue-400' : 'text-red-400'" class="text-xs font-semibold">
+                    {{ estaNoDia(tec.id, form.values.dataAgendamento) ? 'Disponível neste dia' : 'Ocupado neste dia' }}
                   </span>
                 </div>
-              </div>
+                <!-- Próximo disponível (data única — quando ocupado) -->
+                <div
+                  v-if="!estaNoDia(tec.id, form.values.dataAgendamento) && proximoDiaDisponivel.get(tec.id)"
+                  class="mt-1.5 flex items-center gap-1.5 text-xs text-amber-400"
+                >
+                  <CalendarClock class="w-3 h-3 shrink-0" />
+                  Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
+                </div>
+              </template>
+
+              <!-- Modo período — sempre mostra TODOS os dias do período -->
+              <template v-else-if="periodoFim && periodoInicio">
+                <div class="flex flex-wrap gap-1 mb-1.5">
+                  <div
+                    v-for="dia in diasDoPeriodo(periodoInicio, periodoFim)"
+                    :key="dia"
+                    :class="[
+                      'text-[10px] font-bold px-1.5 py-0.5 rounded border transition-all',
+                      // Dia selecionado como agendamento — destaca com sólido
+                      dia === form.values.dataAgendamento
+                        ? estaNoDia(tec.id, dia)
+                          ? 'bg-blue-500 text-white border-blue-600 ring-1 ring-blue-400/60'
+                          : 'bg-red-500 text-white border-red-600 ring-1 ring-red-400/60'
+                        : estaNoDia(tec.id, dia)
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                          : 'bg-red-500/20 text-red-300 border-red-500/30',
+                    ]"
+                    :title="dia"
+                  >
+                    {{ formatDayChip(dia) }}
+                  </div>
+                </div>
+                <p class="text-xs text-muted-foreground">
+                  Disponível em
+                  <span class="font-semibold text-foreground">{{ diasDisponiveis(tec.id) }}</span>
+                  de {{ diasDoPeriodo(periodoInicio, periodoFim).length }} dias
+                </p>
+                <!-- Próximo disponível (período — quando ocupado no dia selecionado ou todos os dias) -->
+                <div
+                  v-if="form.values.dataAgendamento
+                    && !estaNoDia(tec.id, form.values.dataAgendamento)
+                    && proximoDiaDisponivel.get(tec.id)"
+                  class="mt-1.5 flex items-center gap-1.5 text-xs text-amber-400"
+                >
+                  <CalendarClock class="w-3 h-3 shrink-0" />
+                  Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
+                </div>
+              </template>
             </div>
-            <FormMessage />
-          </FormItem>
-        </FormField>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -667,13 +843,14 @@ import { DatePickerInput } from '@/components/ui/date-picker'
 import {
   ChevronRight, FileText, Server, UserCheck, ArrowRight,
   Loader2, PackageCheck, PackageX, UserX, CheckCircle2,
-  ListChecks, Plus, Trash2, Search, X, Wrench, AlertTriangle,
+  ListChecks, Plus, Trash2, Search, X, Wrench, AlertTriangle, Star, CalendarClock,
 } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
 import { maquinaSoftwareInstaladoService } from '@/services/maquinaSoftwareInstaladoService'
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
 import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
+import type { TecnicoAgendaItem } from '@/services/ordemServicoService'
 import { ativoService, type AtivoResponseDTO } from '@/services/ativoService'
 import {
   catalogoMaquinaService,
@@ -713,6 +890,136 @@ const loadingSoftware = ref(false)
 const loadingTecnicos = ref(false)
 const loadingAtivos = ref(false)
 const checklistAtivosError = ref('')
+
+// ─── Seleção múltipla de técnicos ─────────────────────────────────────────────
+const tecnicosSelecionados = ref(new Set<number>())
+const tecnicoResponsavelId  = ref<number | null>(null)
+
+function toggleTecnico(id: number) {
+  const s = new Set(tecnicosSelecionados.value)
+  if (s.has(id)) {
+    s.delete(id)
+    if (tecnicoResponsavelId.value === id) tecnicoResponsavelId.value = null
+  } else {
+    s.add(id)
+    if (!tecnicoResponsavelId.value) tecnicoResponsavelId.value = id
+  }
+  tecnicosSelecionados.value = s
+  form.setFieldValue('codigoFuncionario', tecnicoResponsavelId.value?.toString() ?? '')
+}
+
+function setResponsavel(id: number) {
+  const s = new Set(tecnicosSelecionados.value)
+  s.add(id)
+  tecnicosSelecionados.value = s
+  tecnicoResponsavelId.value = id
+  form.setFieldValue('codigoFuncionario', id.toString())
+}
+
+// ─── Modo de agendamento: data específica ou período ─────────────────────────
+const modoAgendamento = ref<'data' | 'periodo'>('data')
+const periodoInicio   = ref<string>('')
+const periodoFim      = ref<string>('')
+
+function onPeriodoInicioChange(v: string) {
+  periodoInicio.value = v
+  form.setFieldValue('dataAgendamento', v)
+}
+
+// ─── Disponibilidade de técnicos ──────────────────────────────────────────────
+const diasOcupados         = ref(new Map<number, Set<string>>())
+const proximoDiaDisponivel = ref(new Map<number, string | null>())
+const loadingAgenda        = ref(false)
+
+function estaNoDia(tecId: number, dia: string): boolean {
+  return !(diasOcupados.value.get(tecId)?.has(dia) ?? false)
+}
+
+/** Retorna false quando o técnico está ocupado no dia de agendamento selecionado */
+function tecnicoDisponivelNoDia(tecId: number): boolean {
+  const dia = form.values.dataAgendamento
+  if (!dia || !diasOcupados.value.has(tecId)) return true
+  return estaNoDia(tecId, dia)
+}
+
+function diasDoPeriodo(inicio: string, fim: string): string[] {
+  const dias: string[] = []
+  const d = new Date(inicio + 'T00:00:00')
+  const f = new Date(fim + 'T00:00:00')
+  while (d <= f) {
+    dias.push(d.toISOString().slice(0, 10))
+    d.setDate(d.getDate() + 1)
+  }
+  return dias
+}
+
+function diasDisponiveis(tecId: number): number {
+  // Sempre usa os extremos reais do período, nunca o chip selecionado
+  const inicio = modoAgendamento.value === 'periodo' ? periodoInicio.value : form.values.dataAgendamento
+  const fim    = modoAgendamento.value === 'periodo' ? periodoFim.value    : form.values.dataAgendamento
+  if (!inicio || !fim) return 0
+  const todosDias = diasDoPeriodo(inicio, fim)
+  const ocupados  = [...(diasOcupados.value.get(tecId) ?? new Set())]
+    .filter(d => todosDias.includes(d)).length
+  return Math.max(0, todosDias.length - ocupados)
+}
+
+function formatDayChip(dia: string): string {
+  const partes = dia.split('-')
+  const m = partes[1] ?? ''
+  const d = partes[2] ?? ''
+  const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+  return `${d}/${nomes[Number(m) - 1] ?? m}`
+}
+
+async function carregarAgenda() {
+  // No modo período usa sempre o início do período — não o chip selecionado
+  const inicio = modoAgendamento.value === 'periodo'
+    ? periodoInicio.value
+    : form.values.dataAgendamento
+  if (!inicio || tecnicosDisponiveis.value.length === 0) return
+
+  // Sempre busca 30 dias para calcular "próximo disponível"
+  const d30 = new Date(inicio + 'T00:00:00')
+  d30.setDate(d30.getDate() + 30)
+  const fim30 = d30.toISOString().slice(0, 10)
+
+  loadingAgenda.value = true
+  const novoMapa    = new Map<number, Set<string>>()
+  const novoProximo = new Map<number, string | null>()
+
+  await Promise.all(
+    tecnicosDisponiveis.value.map(async (t) => {
+      try {
+        const agenda = await ordemServicoService.buscarAgenda(inicio, fim30, t.id)
+        const item: TecnicoAgendaItem | undefined = agenda.find(a => a.id === t.id)
+        const ocupados = new Set<string>(
+          (item?.ordens ?? [])
+            .map(o => o.dataAgendamento?.slice(0, 10))
+            .filter((d): d is string => !!d),
+        )
+        novoMapa.set(t.id, ocupados)
+
+        // Primeiro dia livre nos próximos 30 dias
+        const cursor = new Date(inicio + 'T00:00:00')
+        let proximo: string | null = null
+        while (cursor <= d30) {
+          const dStr = cursor.toISOString().slice(0, 10)
+          if (!ocupados.has(dStr)) { proximo = dStr; break }
+          cursor.setDate(cursor.getDate() + 1)
+        }
+        novoProximo.set(t.id, proximo)
+      } catch {
+        novoMapa.set(t.id, new Set())
+        novoProximo.set(t.id, null)
+      }
+    }),
+  )
+
+  diasOcupados.value         = novoMapa
+  proximoDiaDisponivel.value = novoProximo
+  loadingAgenda.value        = false
+}
 
 const clientes = ref<any[]>([])
 const tecnicosDisponiveis = ref<TecnicoResponseDTO[]>([])
@@ -928,14 +1235,32 @@ async function onMaquinaChange(val: string) {
   }
 }
 
+// Recarrega quando: período muda, modo muda, ou data muda no modo data-específica
+// Selecionar um chip (dataAgendamento) no modo período NÃO recarrega a agenda
+watch(
+  () => [periodoInicio.value, periodoFim.value, modoAgendamento.value] as const,
+  () => { if (step.value === 3) carregarAgenda() },
+)
+watch(
+  () => form.values.dataAgendamento,
+  (data) => {
+    if (step.value !== 3) return
+    // Desfaz seleções ao trocar o dia de agendamento
+    tecnicosSelecionados.value = new Set()
+    tecnicoResponsavelId.value = null
+    form.setFieldValue('codigoFuncionario', '')
+    if (data && modoAgendamento.value === 'data') carregarAgenda()
+  },
+)
+
 watch(step, async (newStep) => {
   if (newStep === 3 && tecnicosDisponiveis.value.length === 0) {
     loadingTecnicos.value = true
     try {
-      const todos = await tecnicoService.listar()
-      tecnicosDisponiveis.value = todos.filter(
-        t => t.disponibilidade !== null && t.disponibilidade !== undefined && t.disponibilidade !== ''
-      )
+      const todos = await tecnicoService.listarSelecionaveis()
+      tecnicosDisponiveis.value = todos
+      // Se já há data selecionada, carrega agenda imediatamente
+      if (form.values.dataAgendamento) carregarAgenda()
     } catch (error) {
       console.error('Erro ao carregar técnicos:', error)
     } finally {
@@ -979,9 +1304,9 @@ watch(step, async (newStep) => {
 })
 
 const STEP_FIELDS: Record<number, string[]> = {
-  1: ['codigoCliente', 'codigoContrato', 'criticidade', 'tipoOrdem', 'dataAgendamento', 'observacaoGeral'],
+  1: ['codigoCliente', 'codigoContrato', 'criticidade', 'tipoOrdem', 'observacaoGeral'],
   2: ['codigoMaquinaContrato'],
-  3: ['codigoFuncionario'],
+  3: ['codigoFuncionario', 'dataAgendamento'],
   4: [],
   5: [],
 }
@@ -1097,7 +1422,10 @@ const onSubmit = form.handleSubmit(async (values) => {
       codigoCliente:           Number(values.codigoCliente),
       codigoContrato:          Number(values.codigoContrato),
       codigoMaquinaContrato:   Number(values.codigoMaquinaContrato),
-      codigoFuncionario:       Number(values.codigoFuncionario),
+      codigoFuncionario:       tecnicoResponsavelId.value ?? Number(values.codigoFuncionario),
+      codigosFuncionarios:     tecnicosSelecionados.value.size > 0
+                                 ? [...tecnicosSelecionados.value]
+                                 : [Number(values.codigoFuncionario)],
       codigoSoftwareInstalado: softwareInstalado.value?.codigo ?? undefined,
       criticidade:             values.criticidade,
       tipoOrdem:               values.tipoOrdem || undefined,

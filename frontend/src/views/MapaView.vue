@@ -13,6 +13,7 @@ import {
   Layers,
   CheckCircle2,
   XCircle,
+  Filter,
 } from 'lucide-vue-next'
 
 import { clienteService, type ClienteResponseDTO } from '@/services/clienteService'
@@ -56,6 +57,9 @@ const erro = ref('')
 const tecnicoSelecionadoId = ref<number | null>(null)
 const mostrarClientes = ref(true)
 const mostrarTecnicos = ref(true)
+
+// Filtro de Status ('TODOS' ou um StatusTecnicoMapa específico)
+const statusFiltroSelecionado = ref<StatusTecnicoMapa | 'TODOS'>('TODOS')
 
 const segundosProximaAtualizacao = ref(POLLING_INTERVAL_SECONDS)
 const ultimaAtualizacaoMapa = ref<Date | null>(null)
@@ -348,7 +352,7 @@ async function adicionarMarcadoresClientes() {
 function adicionarMarcadoresTecnicos() {
   if (!map || !mostrarTecnicos.value) return
 
-  for (const t of tecnicos.value) {
+  for (const t of tecnicosFiltrados.value) {
     if (!t.latitude || !t.longitude) continue
 
     const selecionado = tecnicoSelecionadoId.value === t.id
@@ -381,6 +385,34 @@ function focarTecnico(t: TecnicoMapa) {
     map.once('moveend', () => marker.openPopup())
   }
 }
+
+// ─── Computados para Filtros e Stats ──────────────────────────────────────────
+const tecnicosComCoords = computed(() =>
+  tecnicos.value.filter(t => t.latitude && t.longitude),
+)
+
+// Filtra os técnicos baseado na seleção da caixinha de status
+const tecnicosFiltrados = computed(() => {
+  if (statusFiltroSelecionado.value === 'TODOS') return tecnicosComCoords.value
+  return tecnicosComCoords.value.filter(t => statusTecnicoMapa(t) === statusFiltroSelecionado.value)
+})
+
+// Opções para preencher o select de filtros
+const opcoesFiltroStatus = computed(() => [
+  { value: 'TODOS', label: 'Todos os status' },
+  { value: 'DISPONIVEL', label: 'Disponível' },
+  { value: 'EM_CAMPO', label: 'Em campo' },
+  { value: 'FOLGA', label: 'De folga' },
+  { value: 'SEM_SINAL', label: 'Sem sinal' },
+  { value: 'DESCONHECIDO', label: 'Desconhecido' },
+])
+
+// Gatilho para atualizar marcadores quando o filtro mudar
+watch(statusFiltroSelecionado, () => {
+  tecnicoSelecionadoId.value = null
+  limparMarcadoresTecnicos()
+  adicionarMarcadoresTecnicos()
+})
 
 // ─── Toggle de camadas ────────────────────────────────────────────────────────
 watch(mostrarClientes, (val) => {
@@ -483,10 +515,6 @@ function pararPolling() {
 }
 
 // ─── Computados para stats ────────────────────────────────────────────────────
-const tecnicosComCoords = computed(() =>
-  tecnicos.value.filter(t => t.latitude && t.longitude),
-)
-
 const stats = computed(() => [
   {
     label: 'Clientes no mapa',
@@ -556,7 +584,6 @@ onUnmounted(() => {
 <template>
   <div class="p-6 space-y-5 h-full flex flex-col">
 
-    <!-- Cabeçalho -->
     <div class="flex items-center justify-between shrink-0">
       <div>
         <h1 class="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
@@ -580,7 +607,6 @@ onUnmounted(() => {
       </Button>
     </div>
 
-    <!-- Cards de estatísticas -->
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 shrink-0">
       <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
         <CardHeader class="flex flex-row items-center justify-between pb-2">
@@ -600,13 +626,10 @@ onUnmounted(() => {
       </Card>
     </div>
 
-    <!-- Layout principal: Sidebar + Mapa -->
     <div class="flex gap-4 flex-1 min-h-0">
 
-      <!-- Painel lateral -->
       <div class="w-64 shrink-0 flex flex-col gap-3 min-h-0">
 
-        <!-- Toggle de camadas -->
         <Card class="bg-sidebar border-border shrink-0">
           <CardHeader class="pb-3">
             <CardTitle class="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
@@ -658,7 +681,29 @@ onUnmounted(() => {
           </CardContent>
         </Card>
 
-        <!-- Legenda -->
+        <Card class="bg-sidebar border-border shrink-0">
+          <CardHeader class="pb-2">
+            <CardTitle class="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Filter class="w-3.5 h-3.5" />
+              Filtrar Técnicos
+            </CardTitle>
+          </CardHeader>
+          <CardContent class="pt-0 pb-3">
+            <select
+              v-model="statusFiltroSelecionado"
+              class="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground cursor-pointer"
+            >
+              <option
+                v-for="opcao in opcoesFiltroStatus"
+                :key="opcao.value"
+                :value="opcao.value"
+              >
+                {{ opcao.label }}
+              </option>
+            </select>
+          </CardContent>
+        </Card>
+
         <Card class="bg-sidebar border-border shrink-0">
           <CardHeader class="pb-3">
             <CardTitle class="text-xs font-bold text-muted-foreground uppercase tracking-wider">
@@ -714,26 +759,25 @@ onUnmounted(() => {
           </CardContent>
         </Card>
 
-        <!-- Lista de técnicos -->
         <Card class="bg-sidebar border-border flex-1 overflow-hidden flex flex-col min-h-0">
           <CardHeader class="pb-3 shrink-0">
             <CardTitle class="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <UserCog class="w-3.5 h-3.5" />
-              Técnicos ({{ tecnicosComCoords.length }})
+              Técnicos ({{ tecnicosFiltrados.length }})
             </CardTitle>
           </CardHeader>
 
           <CardContent class="pt-0 overflow-y-auto flex-1 space-y-0.5 px-3 pb-3">
             <div
-              v-if="tecnicosComCoords.length === 0"
+              v-if="tecnicosFiltrados.length === 0"
               class="text-xs text-muted-foreground/60 text-center py-6"
             >
               Nenhum técnico<br>
-              com localização
+              para o filtro selecionado
             </div>
 
             <button
-              v-for="t in tecnicosComCoords"
+              v-for="t in tecnicosFiltrados"
               :key="t.id"
               class="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg transition-all text-left group"
               :class="[
@@ -766,10 +810,8 @@ onUnmounted(() => {
         </Card>
       </div>
 
-      <!-- Container do mapa -->
       <div class="flex-1 rounded-xl border border-border overflow-hidden relative min-h-0">
 
-        <!-- Loading overlay -->
         <Transition name="fade">
           <div
             v-if="loading"
@@ -785,7 +827,6 @@ onUnmounted(() => {
           </div>
         </Transition>
 
-        <!-- Erro -->
         <Transition name="fade">
           <div
             v-if="erro && !loading"
@@ -800,7 +841,6 @@ onUnmounted(() => {
           </div>
         </Transition>
 
-        <!-- Contador regressivo -->
         <div class="absolute bottom-3 left-3 z-[450] rounded-lg border border-border bg-sidebar/95 px-3 py-2 text-xs text-muted-foreground shadow-lg backdrop-blur">
           <div class="flex items-center gap-2">
             <RefreshCw class="w-3.5 h-3.5 text-blue-400" />
@@ -814,7 +854,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Div do mapa -->
         <div ref="mapContainer" class="w-full h-full" />
       </div>
     </div>

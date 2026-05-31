@@ -11,6 +11,7 @@ import com.example.tracker.dto.ordemservico.TecnicoAgendaResponseDTO;
 import com.example.tracker.dto.dashboard.DashboardCardDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoAtualizarStatusDTO;
+import com.example.tracker.dto.ordemservico.OrdemMapaResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
 import com.example.tracker.entity.OrdemServico;
 import com.example.tracker.entity.OrdemServicoChecklistAtivo;
@@ -84,6 +85,18 @@ public class OrdemServicoController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<DashboardCardDTO>> obterDashboardOrdens() {
         return ResponseEntity.ok(ordemServicoService.obterDashboardOrdens());
+    }
+
+    @GetMapping("/mapa")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<OrdemMapaResponseDTO>> listarMapaOrdens() {
+        List<OrdemServico> entidades = ordemServicoService.listarTodos();
+        List<OrdemMapaResponseDTO> mapa = entidades.stream()
+                .map(OrdemMapaResponseDTO::fromEntity)
+                .filter(d -> d.getLatitude() != null && d.getLongitude() != null)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(mapa);
     }
 
     @GetMapping("/{id}")

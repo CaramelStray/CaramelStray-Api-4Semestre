@@ -126,6 +126,15 @@ export interface DashboardCardDTO {
   icon?: string
 }
 
+export interface OrdemMapaDTO {
+  codigo: number
+  codigoCliente?: number
+  latitude?: number
+  longitude?: number
+  endereco?: string
+  status?: string
+}
+
 export const ordemServicoService = {
   listar: () =>
     apiFetch<OrdemServicoResponseDTO[]>('/ordens-servico'),
@@ -223,6 +232,10 @@ export const ordemServicoService = {
       `/maquinas-historicos-manutencao/${codigoHistoricoManutencao}/checklist`,
       { method: 'POST', body: JSON.stringify({ codigoTarefa }) },
     ),
+
+  // Endpoint to provide orders with geolocation for map display.
+  // Expected shape: [{ codigo, codigoCliente, latitude, longitude, endereco, status }, ...]
+  listarMapa: () => apiFetch<OrdemMapaDTO[]>('/ordens-servico/mapa'),
 
   atualizarChecklistMaquinaItem: (
     codigoHistoricoManutencao: number,

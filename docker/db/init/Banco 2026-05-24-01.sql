@@ -882,7 +882,8 @@ CREATE TABLE public.tb_srv_ordem_servico (
     data_agendamento timestamp without time zone,
     data_inicio_execucao timestamp without time zone,
     data_fim_execucao timestamp without time zone,
-    observacao_geral text
+    observacao_geral text,
+    previsao_manutencao integer
 );
 
 

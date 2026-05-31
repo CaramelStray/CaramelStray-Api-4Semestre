@@ -6,13 +6,16 @@ import com.example.tracker.dto.tecnico.TecnicoResponseDTO;
 import com.example.tracker.entity.Perfil;
 import com.example.tracker.entity.Tecnico;
 import com.example.tracker.entity.Usuario;
+import com.example.tracker.enums.StatusAusenciaTecnico;
 import com.example.tracker.enums.StatusTecnico;
 import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.PerfilRepository;
+import com.example.tracker.repository.TecnicoAusenciaRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.repository.UsuarioRepository;
 import com.example.tracker.repository.ViagemRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +39,7 @@ public class TecnicoServiceImpl implements TecnicoService {
     private final OrdemServicoRepository ordemServicoRepository;
     private final MaquinaHistoricoManutencaoRepository maquinaHistoricoManutencaoRepository;
     private final ViagemRepository viagemRepository;
+    private final TecnicoAusenciaRepository tecnicoAusenciaRepository;
 
     @Override
     @Transactional
@@ -209,6 +213,15 @@ public class TecnicoServiceImpl implements TecnicoService {
         if (ordemServicoRepository.existsManutencaoAtivaPorTecnico(codigoTecnico)
                 || maquinaHistoricoManutencaoRepository.existsHistoricoAtivoPorTecnico(codigoTecnico)) {
             return StatusTecnico.EM_ATENDIMENTO.name();
+        }
+
+        boolean possuiAusenciaAtiva = tecnicoAusenciaRepository.existsAusenciaAtivaNaData(
+                codigoTecnico,
+                LocalDate.now(),
+                StatusAusenciaTecnico.ATIVA);
+
+        if (possuiAusenciaAtiva) {
+            return StatusTecnico.INDISPONIVEL.name();
         }
 
         StatusTecnico disponibilidadeAtual = StatusTecnico.from(tecnico.getDisponibilidade());

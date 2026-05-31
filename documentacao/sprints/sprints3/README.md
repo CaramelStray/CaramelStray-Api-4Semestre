@@ -40,7 +40,7 @@ Desenvolver funcionalidades de visualização e planejamento operacional para ap
 |------|------------|-----------|------------------------|--------|-------|
 | 1 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 8 | 3 | ✅ |
 | 2 | Média | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 5 | 3 | ✅ |
-| 3 | Média | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 8 | 3 | ✅ |
+| 3 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 8 | 3 | ✅ |
 | 4 | Baixa | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 8 | 3 |  |
 | 5 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 8 | 3 |  |
 

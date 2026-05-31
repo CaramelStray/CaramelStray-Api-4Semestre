@@ -267,7 +267,7 @@
         </div>
 
         <!-- Data específica -->
-        <div v-if="modoAgendamento === 'data'">
+        <div v-if="modoAgendamento === 'data'" class="space-y-3">
           <FormField v-slot="{ value, handleChange }" name="dataAgendamento">
             <FormItem>
               <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
@@ -279,6 +279,71 @@
               <FormMessage />
             </FormItem>
           </FormField>
+
+          <!-- Horário -->
+          <div>
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Horário <span class="text-xs text-muted-foreground font-normal">(opcional)</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <select
+                v-model="horaHH"
+                class="h-9 w-20 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+              >
+                <option value="">--</option>
+                <option v-for="h in 24" :key="h - 1" :value="String(h - 1).padStart(2, '0')">
+                  {{ String(h - 1).padStart(2, '0') }}
+                </option>
+              </select>
+              <span class="font-bold text-muted-foreground text-lg leading-none">:</span>
+              <select
+                v-model="horaMM"
+                :disabled="horaHH === ''"
+                class="h-9 w-20 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-40"
+              >
+                <option value="00">00</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+              </select>
+              <span class="text-xs text-muted-foreground">h</span>
+              <button
+                v-if="horaHH !== ''"
+                type="button"
+                class="ml-auto text-xs text-muted-foreground/60 hover:text-red-400 transition-colors"
+                @click="limparHora"
+              >
+                Limpar
+              </button>
+            </div>
+          </div>
+
+          <!-- Previsão de Manutenção -->
+          <div>
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Previsão de Manutenção <span class="text-xs text-muted-foreground font-normal">(opcional)</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <select
+                v-model="previsaoHoras"
+                class="h-9 w-24 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+              >
+                <option v-for="h in 13" :key="h - 1" :value="h - 1">{{ h - 1 }}h</option>
+              </select>
+              <select
+                v-model="previsaoMinutos"
+                class="h-9 w-24 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+              >
+                <option :value="0">00 min</option>
+                <option :value="15">15 min</option>
+                <option :value="30">30 min</option>
+                <option :value="45">45 min</option>
+              </select>
+              <span v-if="previsaoTotalMinutos > 0" class="text-xs text-muted-foreground">
+                = {{ previsaoTotalMinutos }} min
+              </span>
+            </div>
+          </div>
         </div>
 
         <!-- Período -->
@@ -322,6 +387,71 @@
             </p>
           </div>
           <FormField name="dataAgendamento"><FormItem><FormMessage /></FormItem></FormField>
+
+          <!-- Horário (período) -->
+          <div v-if="form.values.dataAgendamento" class="col-span-2">
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Horário <span class="text-xs text-muted-foreground font-normal">(opcional)</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <select
+                v-model="horaHH"
+                class="h-9 w-20 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+              >
+                <option value="">--</option>
+                <option v-for="h in 24" :key="h - 1" :value="String(h - 1).padStart(2, '0')">
+                  {{ String(h - 1).padStart(2, '0') }}
+                </option>
+              </select>
+              <span class="font-bold text-muted-foreground text-lg leading-none">:</span>
+              <select
+                v-model="horaMM"
+                :disabled="horaHH === ''"
+                class="h-9 w-20 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-40"
+              >
+                <option value="00">00</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+              </select>
+              <span class="text-xs text-muted-foreground">h</span>
+              <button
+                v-if="horaHH !== ''"
+                type="button"
+                class="ml-auto text-xs text-muted-foreground/60 hover:text-red-400 transition-colors"
+                @click="limparHora"
+              >
+                Limpar
+              </button>
+            </div>
+          </div>
+
+          <!-- Previsão de Manutenção (período) -->
+          <div v-if="form.values.dataAgendamento" class="col-span-2">
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Previsão de Manutenção <span class="text-xs text-muted-foreground font-normal">(opcional)</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <select
+                v-model="previsaoHoras"
+                class="h-9 w-24 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+              >
+                <option v-for="h in 13" :key="h - 1" :value="h - 1">{{ h - 1 }}h</option>
+              </select>
+              <select
+                v-model="previsaoMinutos"
+                class="h-9 w-24 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+              >
+                <option :value="0">00 min</option>
+                <option :value="15">15 min</option>
+                <option :value="30">30 min</option>
+                <option :value="45">45 min</option>
+              </select>
+              <span v-if="previsaoTotalMinutos > 0" class="text-xs text-muted-foreground">
+                = {{ previsaoTotalMinutos }} min
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -425,23 +555,67 @@
 
               <!-- Modo data única -->
               <template v-else-if="modoAgendamento === 'data'">
-                <div class="flex items-center gap-2">
+                <!-- Disponível neste dia -->
+                <div v-if="estaNoDia(tec.id, form.values.dataAgendamento)">
+                  <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                    <span class="text-xs font-semibold text-blue-400">Disponível neste dia</span>
+                  </div>
+                  <!-- Info de ocupações existentes mas que não conflitam -->
                   <div
-                    :class="estaNoDia(tec.id, form.values.dataAgendamento) ? 'bg-blue-500' : 'bg-red-500'"
-                    class="w-2 h-2 rounded-full shrink-0"
-                  />
-                  <span :class="estaNoDia(tec.id, form.values.dataAgendamento) ? 'text-blue-400' : 'text-red-400'" class="text-xs font-semibold">
-                    {{ estaNoDia(tec.id, form.values.dataAgendamento) ? 'Disponível neste dia' : 'Ocupado neste dia' }}
-                  </span>
+                    v-for="ocup in ocupacoesParaTecnicoNoDia(tec.id, form.values.dataAgendamento)"
+                    :key="ocup.inicio"
+                    class="flex items-center gap-1.5 mt-1"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+                    <span class="text-xs text-muted-foreground/70">
+                      Ocupado das {{ ocup.inicio }}<template v-if="ocup.fim"> às {{ ocup.fim }}</template>
+                    </span>
+                  </div>
                 </div>
-                <!-- Próximo disponível (data única — quando ocupado) -->
-                <div
-                  v-if="!estaNoDia(tec.id, form.values.dataAgendamento) && proximoDiaDisponivel.get(tec.id)"
-                  class="mt-1.5 flex items-center gap-1.5 text-xs text-amber-400"
-                >
-                  <CalendarClock class="w-3 h-3 shrink-0" />
-                  Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
-                </div>
+
+                <!-- Ocupado mas tem horário livre no mesmo dia -->
+                <template v-else-if="horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento)">
+                  <!-- Janelas de ocupação -->
+                  <div
+                    v-for="ocup in ocupacoesParaTecnicoNoDia(tec.id, form.values.dataAgendamento)"
+                    :key="ocup.inicio"
+                    class="flex items-center gap-1.5 mb-1"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-400/80 shrink-0" />
+                    <span class="text-xs text-red-300/80">
+                      Ocupado das {{ ocup.inicio }}<template v-if="ocup.fim"> às {{ ocup.fim }}</template>
+                    </span>
+                  </div>
+                  <!-- Horário livre (com buffer) -->
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <div class="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                    <span class="text-xs font-semibold text-amber-400">
+                      Disponível neste dia a partir das {{ horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) }}
+                    </span>
+                  </div>
+                  <div
+                    v-if="!horaAgendamento || horaAgendamento < (horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) ?? '')"
+                    class="mt-1 text-xs text-muted-foreground"
+                  >
+                    Selecione um horário a partir das {{ horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) }} para este técnico
+                  </div>
+                </template>
+
+                <!-- Sem horário livre no dia (dia totalmente bloqueado) -->
+                <template v-else>
+                  <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                    <span class="text-xs font-semibold text-red-400">Ocupado neste dia</span>
+                  </div>
+                  <div
+                    v-if="proximoDiaDisponivel.get(tec.id)"
+                    class="mt-1.5 flex items-center gap-1.5 text-xs text-amber-400"
+                  >
+                    <CalendarClock class="w-3 h-3 shrink-0" />
+                    Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
+                  </div>
+                </template>
               </template>
 
               <!-- Modo período — sempre mostra TODOS os dias do período -->
@@ -471,16 +645,38 @@
                   <span class="font-semibold text-foreground">{{ diasDisponiveis(tec.id) }}</span>
                   de {{ diasDoPeriodo(periodoInicio, periodoFim).length }} dias
                 </p>
-                <!-- Próximo disponível (período — quando ocupado no dia selecionado ou todos os dias) -->
-                <div
-                  v-if="form.values.dataAgendamento
-                    && !estaNoDia(tec.id, form.values.dataAgendamento)
-                    && proximoDiaDisponivel.get(tec.id)"
-                  class="mt-1.5 flex items-center gap-1.5 text-xs text-amber-400"
-                >
-                  <CalendarClock class="w-3 h-3 shrink-0" />
-                  Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
-                </div>
+                <!-- Info do dia selecionado quando ocupado -->
+                <template v-if="form.values.dataAgendamento && !estaNoDia(tec.id, form.values.dataAgendamento)">
+                  <!-- Janelas de ocupação no dia selecionado -->
+                  <div
+                    v-for="ocup in ocupacoesParaTecnicoNoDia(tec.id, form.values.dataAgendamento)"
+                    :key="ocup.inicio"
+                    class="flex items-center gap-1.5 mt-1"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-400/80 shrink-0" />
+                    <span class="text-xs text-red-300/80">
+                      Ocupado das {{ ocup.inicio }}<template v-if="ocup.fim"> às {{ ocup.fim }}</template>
+                    </span>
+                  </div>
+                  <!-- Disponível mais tarde no mesmo dia -->
+                  <div
+                    v-if="horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento)"
+                    class="flex items-center gap-1.5 mt-1"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-amber-400/80 shrink-0" />
+                    <span class="text-xs font-semibold text-amber-400">
+                      Disponível neste dia a partir das {{ horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) }}
+                    </span>
+                  </div>
+                  <!-- Próximo dia livre (quando dia completamente bloqueado sem horário) -->
+                  <div
+                    v-else-if="proximoDiaDisponivel.get(tec.id)"
+                    class="flex items-center gap-1.5 mt-1 text-xs text-amber-400"
+                  >
+                    <CalendarClock class="w-3 h-3 shrink-0" />
+                    Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
+                  </div>
+                </template>
               </template>
             </div>
           </div>
@@ -881,7 +1077,7 @@ const step = ref(1)
 const stepsList = [
   { id: 1, name: 'Identificação', icon: FileText },
   { id: 2, name: 'Máquina', icon: Server },
-  { id: 3, name: 'Técnico', icon: UserCheck },
+  { id: 3, name: 'Agendamento', icon: UserCheck },
   { id: 4, name: 'Ativos', icon: ListChecks },
   { id: 5, name: 'Manutenção', icon: Wrench },
 ]
@@ -921,6 +1117,21 @@ const modoAgendamento = ref<'data' | 'periodo'>('data')
 const periodoInicio   = ref<string>('')
 const periodoFim      = ref<string>('')
 
+// ─── Horário e previsão de manutenção ────────────────────────────────────────
+const horaHH = ref<string>('')
+const horaMM = ref<string>('00')
+const horaAgendamento = computed<string>(() =>
+  horaHH.value !== '' ? `${horaHH.value}:${horaMM.value}` : ''
+)
+function limparHora() {
+  horaHH.value = ''
+  horaMM.value = '00'
+}
+
+const previsaoHoras   = ref<number>(0)
+const previsaoMinutos = ref<number>(0)
+const previsaoTotalMinutos = computed<number>(() => previsaoHoras.value * 60 + previsaoMinutos.value)
+
 function onPeriodoInicioChange(v: string) {
   periodoInicio.value = v
   form.setFieldValue('dataAgendamento', v)
@@ -928,11 +1139,52 @@ function onPeriodoInicioChange(v: string) {
 
 // ─── Disponibilidade de técnicos ──────────────────────────────────────────────
 const diasOcupados         = ref(new Map<number, Set<string>>())
+// Map<techId, Map<YYYY-MM-DD, 'HH:MM'>> — horário a partir do qual o técnico fica livre naquele dia
+const horaLivreNoDia       = ref(new Map<number, Map<string, string>>())
+// Map<techId, Map<YYYY-MM-DD, {inicio, fim}[]>> — janelas de ocupação (sem buffer)
+const ocupacaoNoDia        = ref(new Map<number, Map<string, Array<{inicio: string, fim: string}>>>())
 const proximoDiaDisponivel = ref(new Map<number, string | null>())
 const loadingAgenda        = ref(false)
 
+function horaLivreParaTecnicoNoDia(tecId: number, dia: string): string | null {
+  return horaLivreNoDia.value.get(tecId)?.get(dia) ?? null
+}
+
+function ocupacoesParaTecnicoNoDia(tecId: number, dia: string): Array<{inicio: string, fim: string}> {
+  return ocupacaoNoDia.value.get(tecId)?.get(dia) ?? []
+}
+
 function estaNoDia(tecId: number, dia: string): boolean {
-  return !(diasOcupados.value.get(tecId)?.has(dia) ?? false)
+  const diaOcupado = diasOcupados.value.get(tecId)?.has(dia) ?? false
+  if (!diaOcupado) return true
+
+  const ocupacoes = ocupacoesParaTecnicoNoDia(tecId, dia)
+
+  // Ordem sem horário → bloqueia o dia inteiro
+  if (ocupacoes.length === 0) return false
+
+  // Tem ordens com horário mas nenhum horário selecionado → indisponível
+  if (!horaAgendamento.value) return false
+
+  // Mesma lógica de sobreposição de janelas do backend: [A, A+durA+2h) vs [B, B+durB+2h)
+  const novaParts = horaAgendamento.value.split(':')
+  const novaInicioMin = Number(novaParts[0] ?? 0) * 60 + Number(novaParts[1] ?? 0)
+  const novaFimMin = novaInicioMin + previsaoTotalMinutos.value + 120
+
+  for (const ocup of ocupacoes) {
+    const oParts = ocup.inicio.split(':')
+    const oInicioMin = Number(oParts[0] ?? 0) * 60 + Number(oParts[1] ?? 0)
+    let oFimMin: number
+    if (ocup.fim) {
+      const fParts = ocup.fim.split(':')
+      oFimMin = Number(fParts[0] ?? 0) * 60 + Number(fParts[1] ?? 0) + 120
+    } else {
+      oFimMin = oInicioMin + 120
+    }
+    if (novaInicioMin < oFimMin && oInicioMin < novaFimMin) return false
+  }
+
+  return true
 }
 
 /** Retorna false quando o técnico está ocupado no dia de agendamento selecionado */
@@ -985,22 +1237,66 @@ async function carregarAgenda() {
   const fim30 = d30.toISOString().slice(0, 10)
 
   loadingAgenda.value = true
-  const novoMapa    = new Map<number, Set<string>>()
-  const novoProximo = new Map<number, string | null>()
+  const novoMapa      = new Map<number, Set<string>>()
+  const novoMapaHoras = new Map<number, Map<string, string>>()
+  const novoOcupacao  = new Map<number, Map<string, Array<{inicio: string, fim: string}>>>()
+  const novoProximo   = new Map<number, string | null>()
 
   await Promise.all(
     tecnicosDisponiveis.value.map(async (t) => {
       try {
         const agenda = await ordemServicoService.buscarAgenda(inicio, fim30, t.id)
         const item: TecnicoAgendaItem | undefined = agenda.find(a => a.id === t.id)
+        const ordens = item?.ordens ?? []
+
+        // Mapa de datas ocupadas (para compatibilidade com chips do período)
         const ocupados = new Set<string>(
-          (item?.ordens ?? [])
-            .map(o => o.dataAgendamento?.slice(0, 10))
-            .filter((d): d is string => !!d),
+          ordens.map(o => o.dataAgendamento?.slice(0, 10)).filter((d): d is string => !!d),
         )
         novoMapa.set(t.id, ocupados)
 
-        // Primeiro dia livre nos próximos 30 dias
+        // Mapa de hora livre por dia (considerando previsão + 2h de buffer)
+        const mapaHoras = new Map<string, string>()
+        for (const ordem of ordens) {
+          if (!ordem.dataAgendamento) continue
+          const date = ordem.dataAgendamento.slice(0, 10)
+          const timePart = ordem.dataAgendamento.slice(11, 16) // 'HH:MM'
+          if (!timePart || timePart === '00:00') continue
+          const parts = timePart.split(':')
+          const hh = Number(parts[0] ?? 0)
+          const mm = Number(parts[1] ?? 0)
+          const duracaoMin = ordem.previsaoManutencao ?? 0
+          const totalMin = hh * 60 + mm + duracaoMin + 120 // + 2h buffer
+          const livreHH = String(Math.floor(totalMin / 60)).padStart(2, '0')
+          const livreMM = String(totalMin % 60).padStart(2, '0')
+          const livreTime = `${livreHH}:${livreMM}`
+          const atual = mapaHoras.get(date)
+          if (!atual || livreTime > atual) mapaHoras.set(date, livreTime)
+        }
+        novoMapaHoras.set(t.id, mapaHoras)
+
+        // Janelas de ocupação por dia (início e fim natural da ordem, sem buffer)
+        const ocupacoes = new Map<string, Array<{inicio: string, fim: string}>>()
+        for (const ordem of ordens) {
+          if (!ordem.dataAgendamento) continue
+          const date = ordem.dataAgendamento.slice(0, 10)
+          const tp = ordem.dataAgendamento.slice(11, 16)
+          if (!tp || tp === '00:00') continue
+          const duracaoMin = ordem.previsaoManutencao ?? 0
+          const tParts = tp.split(':')
+          const tHH = Number(tParts[0] ?? 0)
+          const tMM = Number(tParts[1] ?? 0)
+          const fimMin = tHH * 60 + tMM + duracaoMin
+          const fimStr = duracaoMin > 0
+            ? `${String(Math.floor(fimMin / 60)).padStart(2, '0')}:${String(fimMin % 60).padStart(2, '0')}`
+            : ''
+          const lista = ocupacoes.get(date) ?? []
+          lista.push({ inicio: tp, fim: fimStr })
+          ocupacoes.set(date, lista)
+        }
+        novoOcupacao.set(t.id, ocupacoes)
+
+        // Próximo dia completamente livre (sem nenhuma ordem)
         const cursor = new Date(inicio + 'T00:00:00')
         let proximo: string | null = null
         while (cursor <= d30) {
@@ -1011,12 +1307,16 @@ async function carregarAgenda() {
         novoProximo.set(t.id, proximo)
       } catch {
         novoMapa.set(t.id, new Set())
+        novoMapaHoras.set(t.id, new Map())
+        novoOcupacao.set(t.id, new Map())
         novoProximo.set(t.id, null)
       }
     }),
   )
 
   diasOcupados.value         = novoMapa
+  horaLivreNoDia.value       = novoMapaHoras
+  ocupacaoNoDia.value        = novoOcupacao
   proximoDiaDisponivel.value = novoProximo
   loadingAgenda.value        = false
 }
@@ -1109,7 +1409,8 @@ const todayDisplayString = computed(() => {
 function toLocalDateTimeString(isoDate: string): string {
   if (!isoDate) return ''
   if (isoDate.includes('T')) return isoDate
-  return `${isoDate}T00:00:00`
+  const time = horaAgendamento.value ? `${horaAgendamento.value}:00` : '00:00:00'
+  return `${isoDate}T${time}`
 }
 
 function todayLocalDateTime(): string {
@@ -1180,6 +1481,19 @@ const popularFormEdicao = async (data: OrdemServicoResponseDTO) => {
       codigoFuncionario: data.codigoFuncionario ? String(data.codigoFuncionario) : '',
     }
   })
+
+  if (data.dataAgendamento && data.dataAgendamento.includes('T')) {
+    const timePart = data.dataAgendamento.slice(11, 16)
+    if (timePart && timePart !== '00:00') {
+      horaHH.value = timePart.slice(0, 2)
+      horaMM.value = timePart.slice(3, 5)
+    }
+  }
+
+  if (data.previsaoManutencao && data.previsaoManutencao > 0) {
+    previsaoHoras.value   = Math.floor(data.previsaoManutencao / 60)
+    previsaoMinutos.value = data.previsaoManutencao % 60
+  }
 
   if (data.codigoMaquinaContrato) {
     loadingSoftware.value = true
@@ -1431,6 +1745,7 @@ const onSubmit = form.handleSubmit(async (values) => {
       tipoOrdem:               values.tipoOrdem || undefined,
       dataAgendamento:         toLocalDateTimeString(values.dataAgendamento ?? ''),
       observacaoGeral:         values.observacaoGeral,
+      previsaoManutencao:      previsaoTotalMinutos.value > 0 ? previsaoTotalMinutos.value : undefined,
     }
 
     if (isEditMode.value && props.initialData) {

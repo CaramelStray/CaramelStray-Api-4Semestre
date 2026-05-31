@@ -14,6 +14,7 @@ public class AgendaOrdemResponseDTO {
     private LocalDateTime dataInicioExecucao;
     private LocalDateTime dataFimExecucao;
     private Boolean possuiConflito;
+    private Integer previsaoManutencao;
 
     public static AgendaOrdemResponseDTO fromEntity(OrdemServico os) {
         AgendaOrdemResponseDTO dto = new AgendaOrdemResponseDTO();
@@ -26,6 +27,7 @@ public class AgendaOrdemResponseDTO {
         dto.setDataInicioExecucao(os.getDataInicioExecucao());
         dto.setDataFimExecucao(os.getDataFimExecucao());
         dto.setPossuiConflito(false);
+        dto.setPrevisaoManutencao(os.getPrevisaoManutencao());
         return dto;
     }
 
@@ -99,5 +101,13 @@ public class AgendaOrdemResponseDTO {
 
     public void setPossuiConflito(Boolean possuiConflito) {
         this.possuiConflito = possuiConflito;
+    }
+
+    public Integer getPrevisaoManutencao() {
+        return previsaoManutencao;
+    }
+
+    public void setPrevisaoManutencao(Integer previsaoManutencao) {
+        this.previsaoManutencao = previsaoManutencao;
     }
 }

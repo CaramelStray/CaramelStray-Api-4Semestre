@@ -24,6 +24,7 @@ public class OrdemServicoResponseDTO {
     private LocalDateTime dataInicioExecucao;
     private LocalDateTime dataFimExecucao;
     private String observacaoGeral;
+    private Integer previsaoManutencao;
     private Integer quantidadeChecklistAtivos;
     private Integer codigoHistoricoManutencao;
     private List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos;
@@ -75,6 +76,7 @@ public class OrdemServicoResponseDTO {
     dto.setDataInicioExecucao(os.getDataInicioExecucao());
     dto.setDataFimExecucao(os.getDataFimExecucao());
     dto.setObservacaoGeral(os.getObservacaoGeral());
+    dto.setPrevisaoManutencao(os.getPrevisaoManutencao());
 
     List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos = os.getChecklistAtivos() == null
             ? List.of()
@@ -224,6 +226,14 @@ public class OrdemServicoResponseDTO {
 
     public void setObservacaoGeral(String observacaoGeral) {
         this.observacaoGeral = observacaoGeral;
+    }
+
+    public Integer getPrevisaoManutencao() {
+        return previsaoManutencao;
+    }
+
+    public void setPrevisaoManutencao(Integer previsaoManutencao) {
+        this.previsaoManutencao = previsaoManutencao;
     }
 
     public Integer getQuantidadeChecklistAtivos() {

@@ -45,17 +45,19 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Inte
             List<String> status);
 
     @Query("""
-        select case when count(distinct os.codigo) > 0 then true else false end
+        select distinct os
         from OrdemServico os
         left join os.tecnicos ost
         where (os.funcionario.id = :codigoFuncionario or ost.tecnico.id = :codigoFuncionario)
-          and os.dataAgendamento = :dataAgendamento
+          and os.dataAgendamento >= :inicio
+          and os.dataAgendamento < :fim
           and os.codigo <> :codigo
           and os.status not in :status
     """)
-    boolean existsByFuncionarioParticipanteIdAndDataAgendamentoAndCodigoNotAndStatusNotIn(
+    List<OrdemServico> findByFuncionarioParticipanteIdInDayAndCodigoNotAndStatusNotIn(
             @Param("codigoFuncionario") Integer codigoFuncionario,
-            @Param("dataAgendamento") LocalDateTime dataAgendamento,
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fim") LocalDateTime fim,
             @Param("codigo") Integer codigo,
             @Param("status") List<String> status);
 

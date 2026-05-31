@@ -29,6 +29,28 @@
   - [Cadastro e Edição de Ativos](#cadastro-e-edição-de-ativos)
 - [Módulo de Calendário / Mapa Operacional](#módulo-de-calendário--mapa-operacional)
 - [Módulo Minhas Ordens / Preparação de Viagem](#módulo-minhas-ordens--preparação-de-viagem)
+- - [Módulo de Mapa de Cobertura (GIS)](#módulo-de-mapa-de-cobertura-gis)
+  - [Indicadores](#indicadores)
+  - [Camadas](#camadas)
+  - [Legenda](#legenda)
+  - [Lista de Técnicos](#lista-de-técnicos)
+  - [Mapa](#mapa)
+  - [Atualização](#atualização)
+- [Módulo de Calendário](#módulo-de-calendário)
+  - [Calendário de Ordens](#calendário-de-ordens)
+  - [Calendário de Técnicos](#calendário-de-técnicos)
+  - [Filtros](#filtros)
+  - [Visualização Mensal](#visualização-mensal)
+  - [Visualização Semanal](#visualização-semanal)
+- [Preparação de Viagem – Resumo](#preparação-de-viagem--resumo)
+  - [Detalhes da Viagem](#detalhes-da-viagem-preparação)
+- [Preparação de Viagem – Cadastro](#preparação-de-viagem--cadastro)
+  - [Etapa 1 — Identificação](#etapa-1--identificação)
+  - [Etapa 2 — Deslocamento](#etapa-2--deslocamento)
+  - [Etapa 3 — Estimativas](#etapa-3--estimativas)
+  - [Etapa 4 — Paradas](#etapa-4--paradas)
+  - [Etapa 5 — Revisão](#etapa-5--revisão) 
+
 
 ---
 
@@ -528,6 +550,9 @@ Este módulo permite gerenciar o inventário completo de ativos utilizados nas o
 - Técnico responsável (quando aplicável)
 - Ações: editar ou atualizar cadastro
 
+
+
+
 ---
 
 ## Cadastro e Edição de Ativos
@@ -543,6 +568,9 @@ Estas telas permitem registrar novos ativos no sistema e atualizar informações
 - **Número de Série**: código único de rastreamento patrimonial
 - **Lote**: identificação de lote ou grupo de aquisição
 - **Status**: situação operacional (Disponível, Em Manutenção, Em Uso)
+
+
+
 
 ---
 
@@ -602,3 +630,272 @@ Ao selecionar uma ordem, o técnico acessa a visão operacional completa para ex
 - **Ativos a Levar**: lista de equipamentos necessários para o atendimento
 - **Checklist de Manutenção**: tarefas técnicas obrigatórias com status (Não feito / Concluído)
 - **Progresso**: acompanhamento percentual da preparação e execução
+
+
+
+
+---
+
+# Mapa de Cobertura (GIS)
+
+![imagem aqui](#)
+
+## Objetivo
+A tela **Mapa de Cobertura** permite visualizar a localização geográfica de clientes e técnicos, facilitando o acompanhamento das operações em campo.
+
+---
+
+## Indicadores
+
+| Indicador | Descrição |
+|------------|------------|
+| Clientes no Mapa | Quantidade de clientes cadastrados com localização. |
+| Técnicos em Campo | Técnicos atualmente em atendimento ou deslocamento. |
+| Técnicos Disponíveis | Técnicos aptos para acionamento. |
+| Total no Mapa | Total de clientes e técnicos exibidos. |
+
+---
+
+## Camadas
+
+Permite controlar a exibição dos elementos no mapa:
+
+- **Clientes**: Exibe ou oculta os clientes cadastrados.
+- **Técnicos**: Exibe ou oculta os técnicos cadastrados.
+
+---
+
+## Legenda
+
+### Clientes
+- 🔵 Cliente ativo
+- ⚪ Cliente inativo
+
+### Técnicos
+- 🟢 Disponível
+- 🔵 Em campo
+- ⚫ De folga
+- 🔴 Sem sinal
+- 🟠 Desconhecido
+
+---
+
+## Lista de Técnicos
+
+Exibe os técnicos cadastrados com:
+- Nome;
+- Função;
+- Status atual.
+
+---
+
+## Mapa
+
+O mapa apresenta marcadores geográficos de clientes e técnicos.
+
+### Funcionalidades
+- Navegação por zoom (+ e -);
+- Visualização da localização dos registros;
+- Atualização manual através do botão **Atualizar**.
+
+---
+
+## Atualização
+
+As informações do mapa são atualizadas periodicamente e podem ser sincronizadas manualmente pelo botão **Atualizar** localizado no canto superior direito.
+
+
+
+
+---
+
+# Módulo de Calendário
+
+![imagem1 aqui](#)
+![imagem2 aqui](#)
+
+## Objetivo
+
+O módulo de Calendário permite acompanhar a programação das ordens de serviço e a disponibilidade dos técnicos por meio de visualizações mensais e semanais.
+
+---
+
+## Calendário de Ordens
+
+Exibe as ordens de serviço agendadas em formato de calendário.
+
+As ordens são identificadas por cores de acordo com sua criticidade, facilitando a priorização das atividades.
+
+---
+
+## Calendário de Técnicos
+
+Exibe a agenda dos técnicos, permitindo visualizar períodos ocupados e disponibilidade para novos atendimentos.
+
+---
+
+## Filtros
+
+O calendário pode ser filtrado pelos seguintes critérios:
+
+### Criticidade
+- Crítica
+- Alta
+- Média
+- Baixa
+
+### Status da Ordem
+- Aguardando
+- Agendado
+- Em Execução
+- Concluída
+- Finalizada
+- Cancelada
+
+### Técnicos
+Permite visualizar todos os técnicos ou selecionar um técnico específico.
+
+---
+
+## Visualização Mensal
+
+Apresenta todas as ordens distribuídas ao longo do mês selecionado.
+
+### Funcionalidades
+- Navegação entre meses;
+- Visualização rápida das ordens agendadas;
+- Retorno ao período atual através do botão **Hoje**.
+
+---
+
+## Visualização Semanal
+
+Apresenta a programação detalhada da semana.
+
+### Funcionalidades
+- Visualização por dias e horários;
+- Navegação entre semanas;
+- Retorno à semana atual através do botão **Hoje**.
+
+---
+
+## Navegação
+
+Utilize os botões de seta para avançar ou retroceder entre períodos do calendário.
+
+O botão **Hoje** reposiciona a visualização para o período atual.
+
+
+
+
+---
+
+# Preparação de Viagem
+
+## Objetivo
+Cadastrar uma nova preparação de viagem para execução de serviços em campo.
+
+## Como cadastrar
+
+1. Acesse **Preparação de Viagem**.
+2. Clique em **Nova Preparação**.
+3. Preencha as etapas do assistente e clique em **Próximo** para avançar.
+
+---
+
+## Etapa 1 — Identificação
+
+![imagem1 aqui](#)
+
+Informe os dados básicos da viagem:
+
+- **Cliente** *(obrigatório)*
+- **Ordem de Serviço vinculada** *(opcional)*
+- **Tipo de Viagem** *(obrigatório)*
+- **Técnico Responsável** *(obrigatório)*
+
+Clique em **Próximo**.
+
+---
+
+## Etapa 2 — Deslocamento
+
+![imagem2 aqui](#)
+
+Informe os dados do trajeto:
+
+- **Origem**
+- **Destino**
+- **Km Previsto**
+- **Data de Saída Prevista**
+- **Data de Retorno Prevista**
+- **Observação**
+
+Clique em **Próximo**.
+
+---
+
+## Etapa 3 — Estimativas
+
+![imagem3 aqui](#)
+
+Informe o tempo previsto para execução da missão:
+
+### Duração da Manutenção
+- Horas
+- Minutos
+
+### Duração da Viagem
+- Horas
+- Minutos
+
+O sistema calcula automaticamente o **Tempo Total Estimado da Missão**.
+
+Clique em **Próximo**.
+
+---
+
+## Etapa 4 — Paradas
+
+![imagem4 aqui](#)
+
+Cadastre paradas previstas durante o deslocamento.
+
+Para adicionar uma parada, clique em **Adicionar parada**.
+
+Dados disponíveis:
+
+- Descrição
+- Endereço
+- Cidade
+- Estado/Região
+- Chegada Prevista
+- Saída Prevista
+- Observação
+
+Para remover uma parada, clique no ícone de **lixeira**.
+
+Clique em **Próximo**.
+
+---
+
+## Etapa 5 — Revisão
+
+![imagem5 aqui](#)
+
+Revise todas as informações informadas.
+
+Se necessário, utilize **Anterior** para realizar ajustes.
+
+Clique em **Salvar/Concluir** para finalizar o cadastro da preparação de viagem.
+
+---
+
+## Consulta
+
+As preparações cadastradas ficam disponíveis na listagem principal, onde é possível acompanhar seu status e visualizar os detalhes.
+
+
+
+
+

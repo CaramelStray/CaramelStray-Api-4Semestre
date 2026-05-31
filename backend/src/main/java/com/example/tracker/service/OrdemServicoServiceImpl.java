@@ -497,12 +497,9 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
                 requireId(dto.getCodigoContrato(), "Codigo do contrato e obrigatorio");
         Integer codigoMaquinaContratoNaoNulo =
                 requireId(dto.getCodigoMaquinaContrato(), "Codigo da maquina do contrato e obrigatorio");
-        Integer codigoFuncionarioNaoNulo =
-                requireId(dto.getCodigoFuncionario(), "Codigo do tecnico e obrigatorio");
-
         String status = normalizarStatusOrdem(dto.getStatus(), "Status da ordem de servico e obrigatorio");
-        String criticidade = normalizarObrigatorio(dto.getCriticidade(), "Criticidade e obrigatoria");
-        if (!CRITICIDADES_PERMITIDAS.contains(criticidade)) {
+        String criticidade = normalizarOpcional(dto.getCriticidade());
+        if (criticidade != null && !CRITICIDADES_PERMITIDAS.contains(criticidade)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Criticidade invalida. Permitidas: " + CRITICIDADES_PERMITIDAS);
         }
 
@@ -536,8 +533,11 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
                     "A maquina do contrato informada nao pertence ao contrato informado");
         }
 
-        Tecnico funcionario = tecnicoRepository.findById(codigoFuncionarioNaoNulo)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario nao encontrado"));
+        Tecnico funcionario = null;
+        if (dto.getCodigoFuncionario() != null) {
+            funcionario = tecnicoRepository.findById(dto.getCodigoFuncionario())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario nao encontrado"));
+        }
         List<Tecnico> tecnicos = buscarTecnicosDaEquipe(dto, funcionario);
         for (Tecnico tecnico : tecnicos) {
             validarTecnicoDisponivelParaAgendamento(tecnico, ordemAtual, status, dto.getDataAgendamento());
@@ -588,15 +588,34 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         if (dto.getDataAgendamento() != null
                 && !STATUS_FINALIZADA.equals(status)
                 && !STATUS_CANCELADA.equals(status)) {
+
+            java.time.LocalDate dia = dto.getDataAgendamento().toLocalDate();
+            java.time.LocalDateTime inicioDia = dia.atStartOfDay();
+            java.time.LocalDateTime fimDia = dia.plusDays(1).atStartOfDay();
+            int duracaoNova = dto.getPrevisaoManutencao() != null ? dto.getPrevisaoManutencao() : 0;
+            java.time.LocalDateTime fimNovaComBuffer = dto.getDataAgendamento().plusMinutes(duracaoNova).plusHours(2);
+
             for (Tecnico tecnico : tecnicos) {
-                if (ordemServicoRepository.existsByFuncionarioParticipanteIdAndDataAgendamentoAndCodigoNotAndStatusNotIn(
-                            tecnico.getId(),
-                            dto.getDataAgendamento(),
-                            codigoOrdemAtual,
-                            STATUS_ORDEM_BLOQUEADOS)) {
-                    throw new ResponseStatusException(
-                            HttpStatus.BAD_REQUEST,
-                            "O tecnico " + tecnico.getId() + " ja possui ordem de servico agendada para este horario");
+                List<OrdemServico> ordensNoDia = ordemServicoRepository
+                        .findByFuncionarioParticipanteIdInDayAndCodigoNotAndStatusNotIn(
+                                tecnico.getId(), inicioDia, fimDia, codigoOrdemAtual, STATUS_ORDEM_BLOQUEADOS);
+
+                for (OrdemServico ordemExistente : ordensNoDia) {
+                    int duracaoExistente = ordemExistente.getPrevisaoManutencao() != null
+                            ? ordemExistente.getPrevisaoManutencao() : 0;
+                    java.time.LocalDateTime inicioExistente = ordemExistente.getDataAgendamento();
+                    java.time.LocalDateTime fimExistenteComBuffer = inicioExistente.plusMinutes(duracaoExistente).plusHours(2);
+
+                    boolean conflito = dto.getDataAgendamento().isBefore(fimExistenteComBuffer)
+                            && inicioExistente.isBefore(fimNovaComBuffer);
+                    if (conflito) {
+                        String proxHorario = fimExistenteComBuffer.toLocalTime().toString().substring(0, 5);
+                        throw new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "O tecnico " + tecnico.getId()
+                                        + " ja possui ordem agendada neste horario. Proximo horario disponivel: "
+                                        + proxHorario);
+                    }
                 }
             }
         }
@@ -615,7 +634,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         entidade.setSoftwareInstalado(relacoes.softwareInstalado());
 
         entidade.setStatus(normalizarStatusOrdem(dto.getStatus(), "Status da ordem de servico e obrigatorio"));
-        entidade.setCriticidade(normalizarObrigatorio(dto.getCriticidade(), "Criticidade e obrigatoria"));
+        entidade.setCriticidade(normalizarOpcional(dto.getCriticidade()));
         entidade.setTipoOrdem(normalizarObrigatorio(dto.getTipoOrdem(), "Tipo da ordem e obrigatorio"));
         if (dto.getDataAbertura() != null) {
             entidade.setDataAbertura(dto.getDataAbertura());
@@ -626,6 +645,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         entidade.setDataInicioExecucao(dto.getDataInicioExecucao());
         entidade.setDataFimExecucao(dto.getDataFimExecucao());
         entidade.setObservacaoGeral(dto.getObservacaoGeral());
+        entidade.setPrevisaoManutencao(dto.getPrevisaoManutencao());
         aplicarDatasPorStatus(entidade);
     }
 
@@ -679,7 +699,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         }
 
         if (codigos.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ao menos um tecnico deve ser informado");
+            return List.of();
         }
 
         List<Tecnico> tecnicos = new ArrayList<>();

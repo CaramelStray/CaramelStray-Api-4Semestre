@@ -67,6 +67,9 @@ public class OrdemServico {
     @Column(name = "observacao_geral")
     private String observacaoGeral;
 
+    @Column(name = "previsao_manutencao")
+    private Integer previsaoManutencao;
+
     @OneToMany(mappedBy = "ordemServico")
     private List<OrdemServicoChecklistAtivo> checklistAtivos = new ArrayList<>();
 
@@ -202,6 +205,14 @@ public class OrdemServico {
 
     public void setTecnicos(List<OrdemServicoTecnico> tecnicos) {
         this.tecnicos = tecnicos;
+    }
+
+    public Integer getPrevisaoManutencao() {
+        return previsaoManutencao;
+    }
+
+    public void setPrevisaoManutencao(Integer previsaoManutencao) {
+        this.previsaoManutencao = previsaoManutencao;
     }
 
     public MaquinaHistoricoManutencao getHistoricoManutencao() {

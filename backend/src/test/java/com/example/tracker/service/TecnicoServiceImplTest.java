@@ -6,12 +6,15 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.example.tracker.dto.tecnico.TecnicoResponseDTO;
 import com.example.tracker.entity.Tecnico;
+import com.example.tracker.enums.StatusAusenciaTecnico;
 import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.PerfilRepository;
+import com.example.tracker.repository.TecnicoAusenciaRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.repository.UsuarioRepository;
 import com.example.tracker.repository.ViagemRepository;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,6 +51,9 @@ class TecnicoServiceImplTest {
 
     @Mock
     private ViagemRepository viagemRepository;
+
+    @Mock
+    private TecnicoAusenciaRepository tecnicoAusenciaRepository;
 
     @InjectMocks
     private TecnicoServiceImpl tecnicoService;
@@ -100,11 +106,29 @@ class TecnicoServiceImplTest {
         given(viagemRepository.existsRotaAtivaPorTecnico(1)).willReturn(false);
         given(ordemServicoRepository.existsManutencaoAtivaPorTecnico(1)).willReturn(false);
         given(maquinaHistoricoManutencaoRepository.existsHistoricoAtivoPorTecnico(1)).willReturn(false);
+        given(tecnicoAusenciaRepository.existsAusenciaAtivaNaData(1, LocalDate.now(), StatusAusenciaTecnico.ATIVA))
+                .willReturn(false);
 
         List<TecnicoResponseDTO> resposta = tecnicoService.listarTecnicos();
 
         assertThat(resposta).hasSize(1);
         assertThat(resposta.get(0).getDisponibilidade()).isEqualTo(STATUS_DISPONIVEL);
+    }
+
+    @Test
+    void listarTecnicosRetornaIndisponivelQuandoExisteAusenciaAtivaHoje() {
+        Tecnico tecnico = tecnico(1, STATUS_DISPONIVEL);
+        given(tecnicoRepository.findAllComHabilidades()).willReturn(List.of(tecnico));
+        given(viagemRepository.existsRotaAtivaPorTecnico(1)).willReturn(false);
+        given(ordemServicoRepository.existsManutencaoAtivaPorTecnico(1)).willReturn(false);
+        given(maquinaHistoricoManutencaoRepository.existsHistoricoAtivoPorTecnico(1)).willReturn(false);
+        given(tecnicoAusenciaRepository.existsAusenciaAtivaNaData(1, LocalDate.now(), StatusAusenciaTecnico.ATIVA))
+                .willReturn(true);
+
+        List<TecnicoResponseDTO> resposta = tecnicoService.listarTecnicos();
+
+        assertThat(resposta).hasSize(1);
+        assertThat(resposta.get(0).getDisponibilidade()).isEqualTo(STATUS_INDISPONIVEL);
     }
 
     @Test
@@ -114,6 +138,8 @@ class TecnicoServiceImplTest {
         given(viagemRepository.existsRotaAtivaPorTecnico(1)).willReturn(false);
         given(ordemServicoRepository.existsManutencaoAtivaPorTecnico(1)).willReturn(false);
         given(maquinaHistoricoManutencaoRepository.existsHistoricoAtivoPorTecnico(1)).willReturn(false);
+        given(tecnicoAusenciaRepository.existsAusenciaAtivaNaData(1, LocalDate.now(), StatusAusenciaTecnico.ATIVA))
+                .willReturn(false);
 
         List<TecnicoResponseDTO> resposta = tecnicoService.listarTecnicos();
 

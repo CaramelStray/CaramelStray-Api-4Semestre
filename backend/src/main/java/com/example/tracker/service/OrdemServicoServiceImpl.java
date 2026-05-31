@@ -15,6 +15,7 @@ import com.example.tracker.entity.OrdemServico;
 import com.example.tracker.entity.OrdemServicoChecklistAtivo;
 import com.example.tracker.entity.OrdemServicoTecnico;
 import com.example.tracker.entity.Tecnico;
+import com.example.tracker.enums.StatusAusenciaTecnico;
 import com.example.tracker.enums.StatusTecnico;
 import com.example.tracker.repository.ClienteRepository;
 import com.example.tracker.repository.ContratoRepository;
@@ -25,6 +26,7 @@ import com.example.tracker.repository.MaquinaSoftwareInstaladoRepository;
 import com.example.tracker.repository.OrdemServicoChecklistAtivoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.OrdemServicoTecnicoRepository;
+import com.example.tracker.repository.TecnicoAusenciaRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.dto.ordemservico.AgendaOrdemResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicoAgendaResponseDTO;
@@ -81,6 +83,7 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     private final OrdemServicoChecklistAtivoRepository ordemServicoChecklistAtivoRepository;
     private final MaquinaChecklistManutencaoRepository maquinaChecklistManutencaoRepository;
     private final OrdemServicoTecnicoRepository ordemServicoTecnicoRepository;
+    private final TecnicoAusenciaRepository tecnicoAusenciaRepository;
 
     public OrdemServicoServiceImpl(
             OrdemServicoRepository ordemServicoRepository,
@@ -94,7 +97,8 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
             MaquinaChecklistManutencaoService maquinaChecklistManutencaoService,
             OrdemServicoChecklistAtivoRepository ordemServicoChecklistAtivoRepository,
             MaquinaChecklistManutencaoRepository maquinaChecklistManutencaoRepository,
-            OrdemServicoTecnicoRepository ordemServicoTecnicoRepository) {
+            OrdemServicoTecnicoRepository ordemServicoTecnicoRepository,
+            TecnicoAusenciaRepository tecnicoAusenciaRepository) {
         this.ordemServicoRepository = ordemServicoRepository;
         this.clienteRepository = clienteRepository;
         this.tecnicoRepository = tecnicoRepository;
@@ -107,6 +111,7 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         this.ordemServicoChecklistAtivoRepository = ordemServicoChecklistAtivoRepository;
         this.maquinaChecklistManutencaoRepository = maquinaChecklistManutencaoRepository;
         this.ordemServicoTecnicoRepository = ordemServicoTecnicoRepository;
+        this.tecnicoAusenciaRepository = tecnicoAusenciaRepository;
     }
 
     @Override
@@ -536,6 +541,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         List<Tecnico> tecnicos = buscarTecnicosDaEquipe(dto, funcionario);
         for (Tecnico tecnico : tecnicos) {
             validarTecnicoDisponivel(tecnico, ordemAtual, status);
+            validarTecnicoSemAusencia(tecnico, dto.getDataAgendamento(), status);
         }
 
         MaquinaSoftwareInstalado softwareInstalado = null;
@@ -717,6 +723,27 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         }
     }
 
+    private void validarTecnicoSemAusencia(Tecnico tecnico, LocalDateTime dataAgendamento, String statusOrdem) {
+        if (tecnico == null
+                || tecnico.getId() == null
+                || dataAgendamento == null
+                || STATUS_FINALIZADA.equals(statusOrdem)
+                || STATUS_CANCELADA.equals(statusOrdem)) {
+            return;
+        }
+
+        boolean ausente = tecnicoAusenciaRepository.existsAusenciaAtivaNaData(
+                tecnico.getId(),
+                dataAgendamento.toLocalDate(),
+                StatusAusenciaTecnico.ATIVA);
+
+        if (ausente) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "O tecnico selecionado possui ausencia ativa na data agendada");
+        }
+    }
+
     private void validarTransicaoStatus(String statusAtual, String statusNovo) {
         String atual = normalizarStatusOrdem(statusAtual, "Status atual da ordem e obrigatorio");
         if (STATUS_ORDEM_BLOQUEADOS.contains(atual)) {
@@ -777,6 +804,16 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         }
 
         Integer codigoIgnorado = ordemReferencia == null || ordemReferencia.getCodigo() == null ? -1 : ordemReferencia.getCodigo();
+        boolean possuiAusenciaAtiva = tecnicoAusenciaRepository.existsAusenciaAtivaNaData(
+                tecnico.getId(),
+                LocalDate.now(),
+                StatusAusenciaTecnico.ATIVA);
+        if (possuiAusenciaAtiva) {
+            tecnico.setDisponibilidade(StatusTecnico.INDISPONIVEL.name());
+            tecnicoRepository.save(tecnico);
+            return;
+        }
+
         boolean temAtendimento = ordemServicoRepository.existsByFuncionarioParticipanteIdAndStatusInAndCodigoNot(
                 tecnico.getId(),
                 STATUS_ORDEM_TECNICO_EM_ATENDIMENTO,

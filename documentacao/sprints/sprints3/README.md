@@ -13,6 +13,8 @@
 <p align="center">
   | <a href ="#desafio"> Desafio</a>  |
   <a href ="#backlog"> Backlog</a>  |
+ <a href ="#aceite"> Critérios de aceite</a>  |
+ <a href ="#dor"> DOR e DOD da Sprint</a>  |
   <a href ="#equipe"> Equipe</a>  |
 </p>
 
@@ -46,17 +48,12 @@ Desenvolver funcionalidades de visualização e planejamento operacional para ap
 
 ---
 
-# Critérios de Aceitação
+# Critérios de Aceitação <a id="aceite"></a>
 
 ## Dashboard de Ordens
 - O gestor deve visualizar a quantidade de ordens por status.
 - O dashboard deve apresentar atualização correta das informações.
 - Os gráficos devem ser responsivos e legíveis.
-
-## Ciclo de Embarcações
-- Deve ser possível cadastrar período de atracação e saída.
-- O sistema deve permitir edição dos ciclos cadastrados.
-- As informações devem ficar disponíveis para planejamento de manutenção.
 
 ## Disponibilidade dos Técnicos
 - O calendário deve exibir horários disponíveis e ocupados.
@@ -65,12 +62,11 @@ Desenvolver funcionalidades de visualização e planejamento operacional para ap
 ## Localização dos Técnicos
 - O mapa deve exibir técnicos em campo e em terra.
 - As localizações devem ser atualizadas corretamente.
+- 
 
-## Localização dos Sistemas
-- O mapa deve apresentar todos os sistemas instalados.
-- Os marcadores devem representar corretamente os locais monitorados.
+---
 
-# DoR e DoD - Sprint 3
+# DoR e DoD - Sprint 3 <a id="dor"></a>
 
 | User Story | Definition of Ready (DoR) | Definition of Done (DoD) |
 |---|---|---|

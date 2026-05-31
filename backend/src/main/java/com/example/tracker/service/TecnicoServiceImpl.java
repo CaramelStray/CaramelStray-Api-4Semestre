@@ -7,9 +7,12 @@ import com.example.tracker.entity.Perfil;
 import com.example.tracker.entity.Tecnico;
 import com.example.tracker.entity.Usuario;
 import com.example.tracker.enums.StatusTecnico;
+import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
+import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.PerfilRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.repository.UsuarioRepository;
+import com.example.tracker.repository.ViagemRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +33,9 @@ public class TecnicoServiceImpl implements TecnicoService {
     private final UsuarioRepository usuarioRepository;
     private final PerfilRepository perfilRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OrdemServicoRepository ordemServicoRepository;
+    private final MaquinaHistoricoManutencaoRepository maquinaHistoricoManutencaoRepository;
+    private final ViagemRepository viagemRepository;
 
     @Override
     @Transactional
@@ -167,7 +173,7 @@ public class TecnicoServiceImpl implements TecnicoService {
         dto.setTelefone(tecnico.getTelefone());
         dto.setCertificacao(tecnico.getCertificacao());
         dto.setEstado(tecnico.getEstado());
-        dto.setDisponibilidade(tecnico.getDisponibilidade());
+        dto.setDisponibilidade(calcularDisponibilidade(tecnico));
         dto.setLatitude(tecnico.getLatitude());
         dto.setLongitude(tecnico.getLongitude());
         dto.setUltimaAtualizacaoLocalizacao(tecnico.getUltimaAtualizacaoLocalizacao());
@@ -188,6 +194,29 @@ public class TecnicoServiceImpl implements TecnicoService {
         }
 
         return dto;
+    }
+
+    private String calcularDisponibilidade(Tecnico tecnico) {
+        if (tecnico == null || tecnico.getId() == null) {
+            return DISPONIBILIDADE_PADRAO.name();
+        }
+
+        Integer codigoTecnico = tecnico.getId();
+        if (viagemRepository.existsRotaAtivaPorTecnico(codigoTecnico)) {
+            return StatusTecnico.EM_ROTA.name();
+        }
+
+        if (ordemServicoRepository.existsManutencaoAtivaPorTecnico(codigoTecnico)
+                || maquinaHistoricoManutencaoRepository.existsHistoricoAtivoPorTecnico(codigoTecnico)) {
+            return StatusTecnico.EM_ATENDIMENTO.name();
+        }
+
+        StatusTecnico disponibilidadeAtual = StatusTecnico.from(tecnico.getDisponibilidade());
+        if (disponibilidadeAtual == StatusTecnico.INDISPONIVEL) {
+            return disponibilidadeAtual.name();
+        }
+
+        return DISPONIBILIDADE_PADRAO.name();
     }
 
     private void validarTecnico(TecnicoCreateDTO dto) {

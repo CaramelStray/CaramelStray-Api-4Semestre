@@ -1,0 +1,43 @@
+Tipo de item,Resumo,Responsável,ID do responsável,Status,Criado,Atualizado(a)
+Subtask,Adicionar o vídeo,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Aguardando resposta,31/mai/26 4:26 PM,31/mai/26 4:26 PM
+Subtask,[FIX/FRONT] Ajustes lógicos ,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,31/mai/26 3:43 PM,31/mai/26 6:22 PM
+Subtask,[fix] Arrumar conflito da DTO,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,30/mai/26 6:04 PM,30/mai/26 7:45 PM
+Subtask,arrumar o link do top da sprint 3 dor e dod,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,24/mai/26 10:05 PM,31/mai/26 4:13 PM
+Subtask,[FRONT] Fazer a tela de cadastro de preparação de viagens,Guilherme Bezerra Junqueira,62ba30ab268cac6e31c3c22f,Concluído,17/mai/26 9:31 PM,31/mai/26 4:48 PM
+Subtask,[BACK] validação de lógica da ordem ,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,17/mai/26 8:55 PM,31/mai/26 4:48 PM
+Subtask,[FRONT] Adicionar campo tipo da ordem na hora de criar uma nova ordem,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,17/mai/26 8:51 PM,30/mai/26 1:56 PM
+Subtask,"[FRONT] Criação da tela ""Minha Conta""",Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,17/mai/26 3:31 PM,24/mai/26 8:17 PM
+Subtask,[BD] Ajustes no banco ,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,17/mai/26 3:29 PM,24/mai/26 3:38 AM
+Subtask,ATUALIZAR A TABELA DE SPRINTS PLANEJADAS,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,16/mai/26 8:18 PM,31/mai/26 4:23 PM
+Subtask,ALOCAR TASKS POR SEMANA ,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Aguardando resposta,16/mai/26 8:15 PM,31/mai/26 4:23 PM
+Subtask,ARRUMAR A EQUIPE,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,16/mai/26 8:12 PM,24/mai/26 9:57 PM
+Subtask,COLOCAR LINK DO DOR E DOD NO CAMPO DE SPRINT3,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,16/mai/26 8:09 PM,24/mai/26 10:15 PM
+Subtask,BACKLOG DA 3 SPRINT,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,16/mai/26 8:08 PM,24/mai/26 9:56 PM
+Subtask,FAZER O MANUAL DO USUÁRIO,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Aguardando resposta,16/mai/26 8:07 PM,31/mai/26 4:04 PM
+Subtask,FAZER O DOR E DOD DE CADA ITEM POR HISTÓRIA ,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,16/mai/26 8:07 PM,24/mai/26 9:56 PM
+Subtask,FAZER O BURN DOWN,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Aguardando resposta,16/mai/26 8:06 PM,31/mai/26 4:04 PM
+Subtask,[QA] Teste de performance com 30 técnicos simultâneos,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,16/mai/26 5:15 PM,31/mai/26 5:56 PM
+Subtask,"[FRONT] Implementar filtro por status de em manutenção, disponível, em rota no mapa",Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,16/mai/26 5:14 PM,31/mai/26 6:21 PM
+Subtask,"[FRONT] Componente MapaControles — polling automático + lógica de ""sem sinal"" + estado visual do marcador desconhecido",Guilherme Bezerra Junqueira,62ba30ab268cac6e31c3c22f,Concluído,16/mai/26 5:08 PM,30/mai/26 10:06 PM
+Subtask,"[FRONT] Componente MarkerTecnico - renderizar o pino, aplica cor por status e abre o popup ao clicar",Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,16/mai/26 5:07 PM,31/mai/26 1:08 PM
+Subtask,[FRONT] Integrar biblioteca de mapa (ex: Leaflet/Mapbox),Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,16/mai/26 5:04 PM,30/mai/26 1:38 PM
+Subtask,"[BACK] Criar lógica de status em manutenção, disponível, em rota ",William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,16/mai/26 5:03 PM,30/mai/26 10:06 PM
+Subtask,[BACK] Criar endpoint de localização atual dos técnicos,Guilherme Bezerra Junqueira,62ba30ab268cac6e31c3c22f,Concluído,16/mai/26 5:02 PM,30/mai/26 10:06 PM
+Subtask,[FRONT] Exibir modal com detalhe ao clicar no evento,Guilherme Bezerra Junqueira,62ba30ab268cac6e31c3c22f,Concluído,13/mai/26 6:12 PM,31/mai/26 4:38 PM
+Subtask,[FRONT] Filtro por técnico + alternância semana/mês,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,13/mai/26 6:08 PM,31/mai/26 4:39 PM
+Subtask,[FRONT] Destaque de conflitos + bloqueio de ausências,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,13/mai/26 6:07 PM,31/mai/26 6:21 PM
+Subtask,[FRONT] Integração do calendário + renderização de eventos,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,13/mai/26 6:05 PM,30/mai/26 4:37 PM
+Subtask,[BACK] Detectar e retornar conflitos de agendamento,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,13/mai/26 6:03 PM,29/mai/26 11:26 PM
+Subtask,[BD/BACK] Criar modelo de ausências/folgas do técnico,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,13/mai/26 6:02 PM,31/mai/26 4:39 PM
+Subtask,[BACK] Criar endpoint de agenda por técnico e período,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,13/mai/26 5:58 PM,30/mai/26 2:59 PM
+Subtask,[BACK] Adicionar filtro por período no endpoint,William Honda,712020:824a5ef7-1adb-4c5b-94d5-d78f0ae7374d,Concluído,13/mai/26 3:11 PM,26/mai/26 8:30 PM
+Subtask,[UX] Design da interface do dashboard,Patricia Viegas,712020:96377b47-d404-480a-915c-529a5c57d4dc,Concluído,13/mai/26 2:51 PM,30/mai/26 6:03 PM
+Subtask,[FRONT] Validar responsividade da tela,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,13/mai/26 2:26 PM,31/mai/26 5:55 PM
+Subtask,[BACK] Realizar testes do endpoint,Daniel Lima,712020:fd6cfe7d-d83a-47df-8a50-b178d62cc901,Concluído,13/mai/26 2:26 PM,31/mai/26 5:55 PM
+Subtask,[FRONT] Criar estilização da tela e unir todos os componentes,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,13/mai/26 2:24 PM,31/mai/26 4:39 PM
+Subtask,[FRONT] Consumir endpoint do dashboard,Pedro Henrique Ribeiro,712020:32fcc351-eb14-45ad-afa1-ec038a5cb5bb,Concluído,13/mai/26 2:22 PM,31/mai/26 5:19 PM
+Subtask,[FRONT] Implementar gráfico de status das ordens,Giovana Zucareli,712020:58e9eb6c-3f13-4bb4-846e-a9ae31c360b1,Concluído,13/mai/26 2:22 PM,31/mai/26 4:39 PM
+Subtask,[FRONT]Criar componente de cards do dashboard,Guilherme Bezerra Junqueira,62ba30ab268cac6e31c3c22f,Concluído,13/mai/26 2:21 PM,30/mai/26 6:03 PM
+Subtask,[BACK] Implementar regra de contagem de ordens,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,13/mai/26 2:21 PM,24/mai/26 6:54 PM
+Subtask,[BACK]Criar DTO para retorno dos dados do dashboard,Thomas Gustavo Heinrich,712020:df72e204-1c03-410a-891c-93749b6646c8,Concluído,13/mai/26 2:20 PM,29/mai/26 10:26 PM
+Subtask,[BACK] Criar endpoint para listar ordens por status,Thor Lyndgaard,712020:68b8f015-def6-4ddd-a1a5-f7ab75270c22,Concluído,13/mai/26 2:20 PM,24/mai/26 4:50 PM

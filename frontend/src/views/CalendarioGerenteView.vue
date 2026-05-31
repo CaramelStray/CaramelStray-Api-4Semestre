@@ -5,12 +5,11 @@ import FullCalendar from '@fullcalendar/vue3'
 import type { CalendarOptions, EventInput, EventClickArg, DatesSetArg } from '@fullcalendar/core'
 import type { DateClickArg } from '@fullcalendar/interaction'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import ptBrLocale from '@fullcalendar/core/locales/pt-br'
 
 import { Button } from '@/components/ui/button'
-import { Loader2, X, ChevronRight, ClipboardList, ChevronDown, LayoutGrid, CalendarRange } from 'lucide-vue-next'
+import { CalendarDays, Loader2, X, ChevronRight, ClipboardList } from 'lucide-vue-next'
 
 import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
 import { clienteService } from '@/services/clienteService'
@@ -25,22 +24,9 @@ const clienteMap = ref(new Map<number, string>())
 const tecnicoMap = ref(new Map<number, string>())
 const loading    = ref(true)
 
-// ─── Ref ao calendário ────────────────────────────────────────────────────────
-const calRef = ref<InstanceType<typeof FullCalendar> | null>(null)
-
-// ─── Visualização ─────────────────────────────────────────────────────────────
-type ViewMode = 'dayGridMonth' | 'timeGridWeek'
-const viewAtual = ref<ViewMode>('dayGridMonth')
-
-function setView(v: ViewMode) {
-  viewAtual.value = v
-  calRef.value?.getApi().changeView(v)
-}
-
 // ─── Filtros ──────────────────────────────────────────────────────────────────
-const filtroCrit    = ref<string[]>([])
-const filtroStatus  = ref<string[]>([])
-const filtroTecnico = ref<number | ''>('')
+const filtroCrit   = ref<string[]>([])
+const filtroStatus = ref<string[]>([])
 
 const CRIT_OPTS = ['CRITICA', 'ALTA', 'MEDIA', 'BAIXA'] as const
 const STATUS_OPTS = [
@@ -72,23 +58,22 @@ const CRIT_COLOR: Record<string, string> = {
 }
 
 const crit: Record<string, { dot: string; label: string; pill: string; chipActive: string }> = {
-  CRITICA: { dot: 'bg-red-500',    label: 'Crítica', pill: 'bg-red-500/20 text-red-300 border border-red-500/40',         chipActive: 'bg-red-500/25 text-red-300 border-red-500/50 ring-1 ring-red-500/50' },
+  CRITICA: { dot: 'bg-red-500',    label: 'Crítica', pill: 'bg-red-500/20 text-red-300 border border-red-500/40',       chipActive: 'bg-red-500/25 text-red-300 border-red-500/50 ring-1 ring-red-500/50' },
   ALTA:    { dot: 'bg-orange-500', label: 'Alta',    pill: 'bg-orange-500/20 text-orange-300 border border-orange-500/40', chipActive: 'bg-orange-500/25 text-orange-300 border-orange-500/50 ring-1 ring-orange-500/50' },
-  MEDIA:   { dot: 'bg-amber-500',  label: 'Média',   pill: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',   chipActive: 'bg-amber-500/25 text-amber-300 border-amber-500/50 ring-1 ring-amber-500/50' },
-  BAIXA:   { dot: 'bg-blue-500',   label: 'Baixa',   pill: 'bg-blue-500/20 text-blue-300 border border-blue-500/40',     chipActive: 'bg-blue-500/25 text-blue-300 border-blue-500/50 ring-1 ring-blue-500/50' },
+  MEDIA:   { dot: 'bg-amber-500',  label: 'Média',   pill: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',  chipActive: 'bg-amber-500/25 text-amber-300 border-amber-500/50 ring-1 ring-amber-500/50' },
+  BAIXA:   { dot: 'bg-blue-500',   label: 'Baixa',   pill: 'bg-blue-500/20 text-blue-300 border border-blue-500/40',    chipActive: 'bg-blue-500/25 text-blue-300 border-blue-500/50 ring-1 ring-blue-500/50' },
 }
 
 // ─── Ordens filtradas ─────────────────────────────────────────────────────────
 const ordensFiltradas = computed(() =>
   ordens.value.filter(o => {
-    const okCrit    = filtroCrit.value.length   === 0 || filtroCrit.value.includes(o.criticidade)
-    const okStatus  = filtroStatus.value.length === 0 || filtroStatus.value.includes(o.status)
-    const okTecnico = filtroTecnico.value === '' || o.codigoFuncionario === filtroTecnico.value
-    return okCrit && okStatus && okTecnico
+    const okCrit   = filtroCrit.value.length   === 0 || filtroCrit.value.includes(o.criticidade)
+    const okStatus = filtroStatus.value.length === 0 || filtroStatus.value.includes(o.status)
+    return okCrit && okStatus
   }),
 )
 
-// ─── Eventos FullCalendar ─────────────────────────────────────────────────────
+// ─── Eventos FullCalendar — técnico principal + cliente no título ─────────────
 const events = computed((): EventInput[] =>
   ordensFiltradas.value
     .filter(o => o.dataAgendamento)
@@ -109,8 +94,9 @@ const events = computed((): EventInput[] =>
     }),
 )
 
-// ─── Bottom-sheet ─────────────────────────────────────────────────────────────
-const sheetDay      = ref<string | null>(null)
+// ─── Bottom-sheet (clique no dia) ─────────────────────────────────────────────
+const sheetDay     = ref<string | null>(null)
+// Técnicos por ordem (codigo → lista de IDs): inclui todos do historico
 const tecnicosOrdem = ref(new Map<number, number[]>())
 
 const sheetOrdens = computed(() =>
@@ -127,6 +113,7 @@ const sheetLabel = computed(() => {
   })
 })
 
+// Ao mudar o dia, busca todos os técnicos de cada ordem via historico
 watch(sheetDay, async (dia) => {
   if (!dia) return
   for (const o of sheetOrdens.value) {
@@ -136,6 +123,7 @@ watch(sheetDay, async (dia) => {
         const ids = await manutencaoService.listarFuncionarios(o.codigoHistoricoManutencao)
         tecnicosOrdem.value.set(o.codigo, ids)
       } catch {
+        // fallback: mostra apenas o técnico principal
         if (o.codigoFuncionario) tecnicosOrdem.value.set(o.codigo, [o.codigoFuncionario])
       }
     } else if (o.codigoFuncionario) {
@@ -157,7 +145,7 @@ function abrirModal(o: OrdemServicoResponseDTO) {
 const currentDate = ref(new Date())
 
 const calendarOptions = computed((): CalendarOptions => ({
-  plugins:     [dayGridPlugin, timeGridPlugin, interactionPlugin],
+  plugins:     [dayGridPlugin, interactionPlugin],
   locale:      ptBrLocale,
   initialView: 'dayGridMonth',
   headerToolbar: {
@@ -213,70 +201,19 @@ onMounted(async () => {
 <template>
   <div class="p-3 sm:p-6 space-y-4">
 
-    <!-- Linha superior: toggles + combobox de técnico -->
-    <div class="flex flex-wrap items-center gap-2">
-
-      <!-- Toggle tipo de calendário -->
-      <div class="flex items-center gap-1 p-1 rounded-lg bg-sidebar border border-border">
-        <button
-          class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-sidebar-primary text-white shadow-sm"
-        >
-          Calendário de Ordens
-        </button>
-        <button
-          class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-muted-foreground hover:text-foreground hover:bg-muted/40"
-          @click="router.push('/calendario-tecnicos')"
-        >
-          Calendário de Técnicos
-        </button>
-      </div>
-
-      <!-- Toggle mensal / semanal -->
-      <div class="flex items-center gap-1 p-1 rounded-lg bg-sidebar border border-border">
-        <button
-          :class="[
-            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold transition-all',
-            viewAtual === 'dayGridMonth'
-              ? 'bg-sidebar-primary text-white shadow-sm'
-              : 'text-muted-foreground hover:text-foreground hover:bg-muted/40',
-          ]"
-          @click="setView('dayGridMonth')"
-        >
-          <LayoutGrid class="size-3.5" />
-          Mensal
-        </button>
-        <button
-          :class="[
-            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold transition-all',
-            viewAtual === 'timeGridWeek'
-              ? 'bg-sidebar-primary text-white shadow-sm'
-              : 'text-muted-foreground hover:text-foreground hover:bg-muted/40',
-          ]"
-          @click="setView('timeGridWeek')"
-        >
-          <CalendarRange class="size-3.5" />
-          Semanal
-        </button>
-      </div>
-
-      <!-- Combobox de técnico -->
-      <div class="relative">
-        <select
-          v-model="filtroTecnico"
-          class="appearance-none pl-3 pr-8 py-1.5 rounded-lg border border-border bg-sidebar text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-sidebar-primary/60 focus:border-sidebar-primary/60 transition-all w-60 cursor-pointer"
-        >
-          <option value="">Todos os técnicos</option>
-          <option
-            v-for="[id, nome] in [...tecnicoMap.entries()].sort((a, b) => a[1].localeCompare(b[1]))"
-            :key="id"
-            :value="id"
-          >
-            {{ nome }}
-          </option>
-        </select>
-        <ChevronDown class="absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
-      </div>
-
+    <!-- Toggle de calendários -->
+    <div class="flex items-center gap-1 p-1 rounded-lg bg-sidebar border border-border w-fit">
+      <button
+        class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all bg-sidebar-primary text-white shadow-sm"
+      >
+        Calendário de Ordens
+      </button>
+      <button
+        class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-muted-foreground hover:text-foreground hover:bg-muted/40"
+        @click="router.push('/calendario-tecnicos')"
+      >
+        Calendário de Técnicos
+      </button>
     </div>
 
     <!-- Loading -->
@@ -332,7 +269,7 @@ onMounted(async () => {
 
       <!-- FullCalendar -->
       <div class="rounded-xl border border-border overflow-hidden">
-        <FullCalendar ref="calRef" :options="calendarOptions" />
+        <FullCalendar :options="calendarOptions" />
       </div>
 
     </template>
@@ -470,6 +407,7 @@ onMounted(async () => {
             <div class="flex-1 min-w-0">
               <p class="font-mono font-bold text-foreground text-sm">#{{ o.codigo }}</p>
               <p class="text-xs text-muted-foreground truncate">{{ nomeCliente(o.codigoCliente) }}</p>
+              <!-- Todos os técnicos da ordem -->
               <div v-if="tecnicosOrdem.get(o.codigo)?.length" class="flex flex-wrap gap-1 mt-1">
                 <span
                   v-for="id in tecnicosOrdem.get(o.codigo)"
@@ -498,7 +436,7 @@ onMounted(async () => {
 </template>
 
 <style>
-/* ─── FullCalendar — variáveis do sistema ───── */
+/* ─── FullCalendar — variáveis do sistema (reagem ao toggle dark/light) ───── */
 .fc {
   --fc-border-color:               hsl(var(--border));
   --fc-button-bg-color:            hsl(var(--sidebar-background));
@@ -663,14 +601,5 @@ onMounted(async () => {
 }
 .fc-popover-body {
   padding: 8px !important;
-}
-
-/* ─── View semanal ───── */
-.fc-timegrid-slot {
-  height: 40px !important;
-}
-.fc-timegrid-axis {
-  color: hsl(var(--muted-foreground)) !important;
-  font-size: 11px !important;
 }
 </style>

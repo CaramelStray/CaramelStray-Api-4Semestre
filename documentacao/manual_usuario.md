@@ -638,7 +638,7 @@ Ao selecionar uma ordem, o técnico acessa a visão operacional completa para ex
 
 # Mapa de Cobertura (GIS)
 
-![imagem aqui](#)
+![imagem aqui](../assets/Mapa.png)
 
 ## Objetivo
 A tela **Mapa de Cobertura** permite visualizar a localização geográfica de clientes e técnicos, facilitando o acompanhamento das operações em campo.
@@ -711,8 +711,8 @@ As informações do mapa são atualizadas periodicamente e podem ser sincronizad
 
 # Módulo de Calendário
 
-![imagem1 aqui](#)
-![imagem2 aqui](#)
+![imagem1 aqui](../assets/calendario.png)
+
 
 ## Objetivo
 
@@ -805,7 +805,7 @@ Cadastrar uma nova preparação de viagem para execução de serviços em campo.
 
 ## Etapa 1 — Identificação
 
-![imagem1 aqui](#)
+![imagem1 aqui](../assets/preparacao_viagem1.png)
 
 Informe os dados básicos da viagem:
 
@@ -820,7 +820,7 @@ Clique em **Próximo**.
 
 ## Etapa 2 — Deslocamento
 
-![imagem2 aqui](#)
+![imagem2 aqui](../assets/preparacao_viagem2.png)
 
 Informe os dados do trajeto:
 
@@ -837,7 +837,7 @@ Clique em **Próximo**.
 
 ## Etapa 3 — Estimativas
 
-![imagem3 aqui](#)
+![imagem3 aqui](../assets/preparacao_viagem3.png)
 
 Informe o tempo previsto para execução da missão:
 
@@ -857,7 +857,7 @@ Clique em **Próximo**.
 
 ## Etapa 4 — Paradas
 
-![imagem4 aqui](#)
+![imagem4 aqui](../assets/preparacao_viagem4.png)
 
 Cadastre paradas previstas durante o deslocamento.
 
@@ -881,7 +881,7 @@ Clique em **Próximo**.
 
 ## Etapa 5 — Revisão
 
-![imagem5 aqui](#)
+![imagem5 aqui](../assets/preparacao_viagem5.png)
 
 Revise todas as informações informadas.
 

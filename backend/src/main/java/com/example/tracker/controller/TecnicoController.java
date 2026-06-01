@@ -30,6 +30,11 @@ public class TecnicoController {
         return ResponseEntity.ok(tecnicoService.listarTecnicos());
     }
 
+    @GetMapping("/selecionaveis")
+    public ResponseEntity<List<TecnicoResponseDTO>> listarSelecionaveis() {
+        return ResponseEntity.ok(tecnicoService.listarSelecionaveis());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TecnicoResponseDTO> buscarPorId(@PathVariable Integer id) {
         return tecnicoService.buscarPorId(id)

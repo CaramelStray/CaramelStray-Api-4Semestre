@@ -11,6 +11,8 @@ public interface TecnicoService {
 
     List<TecnicoResponseDTO> listarTecnicos();
 
+    List<TecnicoResponseDTO> listarSelecionaveis();
+
     Optional<TecnicoResponseDTO> buscarPorId(Integer id);
 
     TecnicoResponseDTO atualizar(Integer id, TecnicoCreateDTO dto);

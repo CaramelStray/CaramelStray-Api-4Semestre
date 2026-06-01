@@ -20,7 +20,7 @@
     </template>
   </div>
 
-  <form @submit="onSubmit">
+  <form @submit="onSubmit" class="relative">
 
     <!-- STEP 1: Identificação -->
     <div v-show="step === 1" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
@@ -139,19 +139,6 @@
         />
       </div>
 
-      <!-- Data de Agendamento -->
-      <FormField v-slot="{ value, handleChange }" name="dataAgendamento">
-        <FormItem>
-          <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-            Data de Agendamento <span class="text-red-500 font-bold">*</span>
-          </FormLabel>
-          <FormControl>
-            <DatePickerInput :model-value="value" @update:model-value="handleChange" :min-value="amanhaToCal" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-
       <!-- Observação Geral -->
       <FormField v-slot="{ componentField }" name="observacaoGeral">
         <FormItem class="md:col-span-2">
@@ -253,62 +240,447 @@
       </div>
     </div>
 
-    <!-- STEP 3: Técnico -->
-    <div v-show="step === 3" class="space-y-4">
+    <!-- STEP 3: Técnico e Agendamento -->
+    <div v-show="step === 3" class="space-y-5">
 
-      <div v-if="loadingTecnicos" class="flex items-center gap-3 text-sm text-muted-foreground p-4 border border-border rounded-lg bg-muted/10">
-        <Loader2 class="w-4 h-4 animate-spin text-blue-400" />
-        Carregando técnicos disponíveis...
-      </div>
+      <!-- Seção de Data/Período -->
+      <div class="space-y-3">
+        <div class="flex items-center gap-2">
+          <label class="text-sm font-semibold text-foreground">Agendamento</label>
+          <!-- Toggle modo -->
+          <div class="flex items-center gap-0.5 p-0.5 rounded-md bg-muted/40 border border-border ml-auto">
+            <button
+              type="button"
+              :class="['px-3 py-1 rounded text-xs font-semibold transition-all', modoAgendamento === 'data' ? 'bg-sidebar-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground']"
+              @click="modoAgendamento = 'data'"
+            >
+              Data específica
+            </button>
+            <button
+              type="button"
+              :class="['px-3 py-1 rounded text-xs font-semibold transition-all', modoAgendamento === 'periodo' ? 'bg-sidebar-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground']"
+              @click="modoAgendamento = 'periodo'"
+            >
+              Ver período
+            </button>
+          </div>
+        </div>
 
-      <div v-else-if="tecnicosDisponiveis.length === 0" class="text-center p-8 border border-dashed border-border rounded-lg bg-muted/5">
-        <UserX class="w-8 h-8 mx-auto text-muted-foreground/40 mb-3" />
-        <p class="text-sm font-medium text-foreground/70">Nenhum técnico disponível</p>
-        <p class="text-xs text-muted-foreground mt-1">Não há técnicos disponíveis no momento.</p>
-      </div>
+        <!-- Data específica -->
+        <div v-if="modoAgendamento === 'data'" class="space-y-3">
+          <FormField v-slot="{ value, handleChange }" name="dataAgendamento">
+            <FormItem>
+              <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
+                Data de Agendamento <span class="text-red-500 font-bold">*</span>
+              </FormLabel>
+              <FormControl>
+                <DatePickerInput :model-value="value" @update:model-value="handleChange" :min-value="amanhaToCal" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
 
-      <div v-else>
-        <FormField v-slot="{ value, handleChange }" name="codigoFuncionario">
-          <FormItem>
-            <FormLabel class="flex items-center gap-1 text-sm font-medium text-foreground/80">
-              Técnico Responsável <span class="text-red-500 font-bold">*</span>
-            </FormLabel>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-              <div
-                v-for="tec in tecnicosDisponiveis"
-                :key="tec.id"
-                :class="[
-                  'flex items-start gap-4 p-4 border rounded-lg cursor-pointer transition-all',
-                  value === tec.id.toString()
-                    ? 'border-blue-500/60 bg-blue-500/10 ring-1 ring-blue-500/40'
-                    : 'border-border bg-muted/10 hover:border-blue-500/30 hover:bg-muted/20'
-                ]"
-                @click="handleChange(tec.id.toString())"
+          <!-- Horário -->
+          <div>
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Horário <span class="text-xs text-muted-foreground font-normal">(opcional)</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <select
+                v-model="horaHH"
+                class="h-9 w-20 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
               >
-                <div
-                  :class="[
-                    'flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm shrink-0 transition-all',
-                    value === tec.id.toString()
-                      ? 'bg-blue-500/30 text-blue-300'
-                      : 'bg-muted/40 text-foreground/70'
-                  ]"
-                >
-                  {{ getInitials(tec.nome) }}
-                </div>
-                <div class="min-w-0">
-                  <p class="font-semibold text-sm truncate text-foreground">{{ tec.nome }}</p>
-                  <p class="text-xs text-muted-foreground truncate">{{ tec.cargo || 'Técnico' }}</p>
-                  <p class="text-xs text-muted-foreground/70 truncate">{{ tec.email }}</p>
-                  <span class="inline-flex items-center gap-1.5 mt-1.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
-                    {{ tec.disponibilidade ?? 'Disponível' }}
-                  </span>
-                </div>
-              </div>
+                <option value="">--</option>
+                <option v-for="h in 24" :key="h - 1" :value="String(h - 1).padStart(2, '0')">
+                  {{ String(h - 1).padStart(2, '0') }}
+                </option>
+              </select>
+              <span class="font-bold text-muted-foreground text-lg leading-none">:</span>
+              <select
+                v-model="horaMM"
+                :disabled="horaHH === ''"
+                class="h-9 w-20 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-40 dark:[color-scheme:dark]"
+              >
+                <option value="00">00</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+              </select>
+              <span class="text-xs text-muted-foreground">h</span>
+              <button
+                v-if="horaHH !== ''"
+                type="button"
+                class="ml-auto text-xs text-muted-foreground/60 hover:text-red-400 transition-colors"
+                @click="limparHora"
+              >
+                Limpar
+              </button>
             </div>
-            <FormMessage />
-          </FormItem>
-        </FormField>
+          </div>
+
+          <!-- Previsão de Manutenção -->
+          <div>
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Previsão de Manutenção <span class="text-xs text-muted-foreground font-normal">(opcional)</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <select
+                v-model="previsaoHoras"
+                class="h-9 w-24 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
+              >
+                <option v-for="h in 13" :key="h - 1" :value="h - 1">{{ h - 1 }}h</option>
+              </select>
+              <select
+                v-model="previsaoMinutos"
+                class="h-9 w-24 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
+              >
+                <option :value="0">00 min</option>
+                <option :value="15">15 min</option>
+                <option :value="30">30 min</option>
+                <option :value="45">45 min</option>
+              </select>
+              <span v-if="previsaoTotalMinutos > 0" class="text-xs text-muted-foreground">
+                = {{ previsaoTotalMinutos }} min
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Período -->
+        <div v-else class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Início <span class="text-red-500 font-bold">*</span>
+            </label>
+            <DatePickerInput :model-value="periodoInicio" @update:model-value="onPeriodoInicioChange" :min-value="amanhaToCal" />
+          </div>
+          <div>
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Fim <span class="text-red-500 font-bold">*</span>
+            </label>
+            <DatePickerInput :model-value="periodoFim" @update:model-value="v => periodoFim = v" :min-value="amanhaToCal" />
+          </div>
+          <!-- Chips de seleção do dia de agendamento -->
+          <div v-if="periodoFim && periodoInicio" class="col-span-2 space-y-2">
+            <p class="text-xs font-medium text-foreground/80">
+              Selecione o dia de agendamento: <span class="text-red-500 font-bold">*</span>
+            </p>
+            <div class="flex flex-wrap gap-1.5">
+              <button
+                v-for="dia in diasDoPeriodo(periodoInicio, periodoFim)"
+                :key="dia"
+                type="button"
+                :class="[
+                  'px-3 py-1.5 rounded-lg text-sm font-bold border transition-all',
+                  form.values.dataAgendamento === dia
+                    ? 'bg-sidebar-primary text-white border-sidebar-primary shadow-md shadow-blue-900/20'
+                    : 'bg-muted/20 text-foreground border-border hover:border-blue-500/50 hover:bg-muted/30',
+                ]"
+                @click="form.setFieldValue('dataAgendamento', dia)"
+              >
+                {{ formatDayChip(dia) }}
+              </button>
+            </div>
+            <p v-if="!form.values.dataAgendamento" class="text-xs text-amber-400 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block shrink-0" />
+              Selecione um dia para definir o agendamento
+            </p>
+          </div>
+          <FormField name="dataAgendamento"><FormItem><FormMessage /></FormItem></FormField>
+
+          <!-- Horário (período) -->
+          <div v-if="form.values.dataAgendamento" class="col-span-2">
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Horário <span class="text-xs text-muted-foreground font-normal">(opcional)</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <select
+                v-model="horaHH"
+                class="h-9 w-20 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
+              >
+                <option value="">--</option>
+                <option v-for="h in 24" :key="h - 1" :value="String(h - 1).padStart(2, '0')">
+                  {{ String(h - 1).padStart(2, '0') }}
+                </option>
+              </select>
+              <span class="font-bold text-muted-foreground text-lg leading-none">:</span>
+              <select
+                v-model="horaMM"
+                :disabled="horaHH === ''"
+                class="h-9 w-20 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-40 dark:[color-scheme:dark]"
+              >
+                <option value="00">00</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+              </select>
+              <span class="text-xs text-muted-foreground">h</span>
+              <button
+                v-if="horaHH !== ''"
+                type="button"
+                class="ml-auto text-xs text-muted-foreground/60 hover:text-red-400 transition-colors"
+                @click="limparHora"
+              >
+                Limpar
+              </button>
+            </div>
+          </div>
+
+          <!-- Previsão de Manutenção (período) -->
+          <div v-if="form.values.dataAgendamento" class="col-span-2">
+            <label class="flex items-center gap-1 text-sm font-medium text-foreground/80 mb-1.5">
+              Previsão de Manutenção <span class="text-xs text-muted-foreground font-normal">(opcional)</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <select
+                v-model="previsaoHoras"
+                class="h-9 w-24 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
+              >
+                <option v-for="h in 13" :key="h - 1" :value="h - 1">{{ h - 1 }}h</option>
+              </select>
+              <select
+                v-model="previsaoMinutos"
+                class="h-9 w-24 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
+              >
+                <option :value="0">00 min</option>
+                <option :value="15">15 min</option>
+                <option :value="30">30 min</option>
+                <option :value="45">45 min</option>
+              </select>
+              <span v-if="previsaoTotalMinutos > 0" class="text-xs text-muted-foreground">
+                = {{ previsaoTotalMinutos }} min
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de técnicos -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-sm font-semibold text-foreground">
+            Técnicos <span class="text-red-500 font-bold">*</span>
+          </label>
+          <span v-if="tecnicosSelecionados.size > 0" class="text-xs text-muted-foreground">
+            {{ tecnicosSelecionados.size }} selecionado(s)
+            <span v-if="tecnicoResponsavelId" class="text-blue-400"> · 1 responsável</span>
+          </span>
+        </div>
+
+        <FormField name="codigoFuncionario"><FormItem><FormMessage /></FormItem></FormField>
+
+        <div v-if="loadingTecnicos" class="flex items-center gap-3 text-sm text-muted-foreground p-4 border border-border rounded-lg bg-muted/10">
+          <Loader2 class="w-4 h-4 animate-spin text-blue-400" />
+          Carregando técnicos...
+        </div>
+
+        <div v-else-if="tecnicosDisponiveis.length === 0" class="text-center p-8 border border-dashed border-border rounded-lg bg-muted/5">
+          <UserX class="w-8 h-8 mx-auto text-muted-foreground/40 mb-3" />
+          <p class="text-sm font-medium text-foreground/70">Nenhum técnico disponível</p>
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div
+            v-for="tec in tecnicosDisponiveis"
+            :key="tec.id"
+            :class="[
+              'border rounded-lg p-4 transition-all select-none',
+              // Indisponível no dia selecionado → bloqueado
+              !tecnicoDisponivelNoDia(tec.id)
+                ? 'cursor-not-allowed border-red-500/40 bg-red-500/8 dark:bg-red-500/5'
+                : tecnicoResponsavelId === tec.id
+                  ? 'cursor-pointer border-blue-600 bg-blue-500/15 ring-2 ring-blue-500/40'
+                  : tecnicosSelecionados.has(tec.id)
+                    ? 'cursor-pointer border-blue-500/40 bg-blue-500/8 ring-1 ring-blue-500/20'
+                    : 'cursor-pointer border-border bg-muted/10 hover:border-blue-500/30 hover:bg-muted/20',
+            ]"
+            @click="tecnicoDisponivelNoDia(tec.id) ? toggleTecnico(tec.id) : undefined"
+          >
+            <!-- Cabeçalho do card -->
+            <div class="flex items-start gap-3">
+              <!-- Avatar -->
+              <div
+                :class="[
+                  'flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm shrink-0 transition-all',
+                  tecnicosSelecionados.has(tec.id) ? 'bg-blue-500/30 text-blue-300' : 'bg-muted/40 text-foreground/70',
+                ]"
+              >
+                {{ getInitials(tec.nome) }}
+              </div>
+              <!-- Info -->
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-sm text-foreground truncate">{{ tec.nome }}</p>
+                <p class="text-xs text-muted-foreground truncate">{{ tec.cargo || 'Técnico' }}</p>
+                <p class="text-xs text-muted-foreground/60 truncate">{{ tec.email }}</p>
+              </div>
+              <!-- Botão responsável (só aparece quando selecionado) -->
+              <button
+                v-if="tecnicosSelecionados.has(tec.id)"
+                type="button"
+                :title="tecnicoResponsavelId === tec.id ? 'Responsável' : 'Definir como responsável'"
+                :class="[
+                  'shrink-0 p-1.5 rounded-md transition-all',
+                  tecnicoResponsavelId === tec.id
+                    ? 'text-yellow-400 bg-yellow-400/10'
+                    : 'text-muted-foreground/50 hover:text-yellow-400 hover:bg-yellow-400/10',
+                ]"
+                @click.stop="setResponsavel(tec.id)"
+              >
+                <Star class="w-4 h-4" :fill="tecnicoResponsavelId === tec.id ? 'currentColor' : 'none'" />
+              </button>
+              <!-- Badge responsável -->
+              <span
+                v-if="tecnicoResponsavelId === tec.id"
+                class="text-[9px] font-bold uppercase tracking-wider bg-yellow-400/15 text-yellow-400 border border-yellow-400/30 px-1.5 py-0.5 rounded-full shrink-0"
+              >
+                Resp.
+              </span>
+              <!-- Badge indisponível -->
+              <span
+                v-if="!tecnicoDisponivelNoDia(tec.id)"
+                class="text-[9px] font-bold uppercase tracking-wider bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/40 dark:border-red-500/30 px-1.5 py-0.5 rounded-full shrink-0"
+              >
+                Indisponível
+              </span>
+            </div>
+
+            <!-- Seção de disponibilidade -->
+            <div v-if="form.values.dataAgendamento" class="mt-3 pt-3 border-t border-border/60">
+              <!-- Carregando -->
+              <template v-if="loadingAgenda">
+                <div class="animate-pulse flex gap-1.5">
+                  <div class="h-3 bg-muted/40 rounded w-1/2" />
+                </div>
+              </template>
+
+              <!-- Modo data única -->
+              <template v-else-if="modoAgendamento === 'data'">
+                <!-- Disponível neste dia -->
+                <div v-if="estaNoDia(tec.id, form.values.dataAgendamento)">
+                  <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                    <span class="text-xs font-semibold text-blue-400">Disponível neste dia</span>
+                  </div>
+                  <!-- Info de ocupações existentes mas que não conflitam -->
+                  <div
+                    v-for="ocup in ocupacoesParaTecnicoNoDia(tec.id, form.values.dataAgendamento)"
+                    :key="ocup.inicio"
+                    class="flex items-center gap-1.5 mt-1"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+                    <span class="text-xs text-muted-foreground/70">
+                      Ocupado das {{ ocup.inicio }}<template v-if="ocup.fim"> às {{ ocup.fim }}</template>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Ocupado mas tem horário livre no mesmo dia -->
+                <template v-else-if="horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento)">
+                  <!-- Janelas de ocupação -->
+                  <div
+                    v-for="ocup in ocupacoesParaTecnicoNoDia(tec.id, form.values.dataAgendamento)"
+                    :key="ocup.inicio"
+                    class="flex items-center gap-1.5 mb-1"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-400/80 shrink-0" />
+                    <span class="text-xs text-red-500/80 dark:text-red-300/80">
+                      Ocupado das {{ ocup.inicio }}<template v-if="ocup.fim"> às {{ ocup.fim }}</template>
+                    </span>
+                  </div>
+                  <!-- Horário livre (com buffer) -->
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <div class="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                    <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                      Disponível neste dia a partir das {{ horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) }}
+                    </span>
+                  </div>
+                  <div
+                    v-if="!horaAgendamento || horaAgendamento < (horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) ?? '')"
+                    class="mt-1 text-xs text-muted-foreground"
+                  >
+                    Selecione um horário a partir das {{ horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) }} para este técnico
+                  </div>
+                </template>
+
+                <!-- Sem horário livre no dia (dia totalmente bloqueado) -->
+                <template v-else>
+                  <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                    <span class="text-xs font-semibold text-red-600 dark:text-red-400">Ocupado neste dia</span>
+                  </div>
+                  <div
+                    v-if="proximoDiaDisponivel.get(tec.id)"
+                    class="mt-1.5 flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400"
+                  >
+                    <CalendarClock class="w-3 h-3 shrink-0" />
+                    Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
+                  </div>
+                </template>
+              </template>
+
+              <!-- Modo período — sempre mostra TODOS os dias do período -->
+              <template v-else-if="periodoFim && periodoInicio">
+                <div class="flex flex-wrap gap-1 mb-1.5">
+                  <div
+                    v-for="dia in diasDoPeriodo(periodoInicio, periodoFim)"
+                    :key="dia"
+                    :class="[
+                      'text-[10px] font-bold px-1.5 py-0.5 rounded border transition-all',
+                      // Dia selecionado como agendamento — destaca com sólido
+                      dia === form.values.dataAgendamento
+                        ? estaNoDia(tec.id, dia)
+                          ? 'bg-blue-500 text-white border-blue-600 ring-1 ring-blue-400/60'
+                          : 'bg-red-500 text-white border-red-600 ring-1 ring-red-400/60'
+                        : estaNoDia(tec.id, dia)
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                          : 'bg-red-500/20 text-red-300 border-red-500/30',
+                    ]"
+                    :title="dia"
+                  >
+                    {{ formatDayChip(dia) }}
+                  </div>
+                </div>
+                <p class="text-xs text-muted-foreground">
+                  Disponível em
+                  <span class="font-semibold text-foreground">{{ diasDisponiveis(tec.id) }}</span>
+                  de {{ diasDoPeriodo(periodoInicio, periodoFim).length }} dias
+                </p>
+                <!-- Info do dia selecionado quando ocupado -->
+                <template v-if="form.values.dataAgendamento && !estaNoDia(tec.id, form.values.dataAgendamento)">
+                  <!-- Janelas de ocupação no dia selecionado -->
+                  <div
+                    v-for="ocup in ocupacoesParaTecnicoNoDia(tec.id, form.values.dataAgendamento)"
+                    :key="ocup.inicio"
+                    class="flex items-center gap-1.5 mt-1"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-400/80 shrink-0" />
+                    <span class="text-xs text-red-500/80 dark:text-red-300/80">
+                      Ocupado das {{ ocup.inicio }}<template v-if="ocup.fim"> às {{ ocup.fim }}</template>
+                    </span>
+                  </div>
+                  <!-- Disponível mais tarde no mesmo dia -->
+                  <div
+                    v-if="horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento)"
+                    class="flex items-center gap-1.5 mt-1"
+                  >
+                    <div class="w-1.5 h-1.5 rounded-full bg-amber-400/80 shrink-0" />
+                    <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                      Disponível neste dia a partir das {{ horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) }}
+                    </span>
+                  </div>
+                  <!-- Próximo dia livre (quando dia completamente bloqueado sem horário) -->
+                  <div
+                    v-else-if="proximoDiaDisponivel.get(tec.id)"
+                    class="flex items-center gap-1.5 mt-1 text-xs text-amber-600 dark:text-amber-400"
+                  >
+                    <CalendarClock class="w-3 h-3 shrink-0" />
+                    Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
+                  </div>
+                </template>
+              </template>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -648,11 +1020,42 @@
       </div>
     </div>
 
+  <!-- Confirmação de preparações de viagem criadas -->
+  <div
+    v-if="confirmacaoViagem"
+    class="absolute inset-0 z-10 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center gap-6 p-8 rounded-xl"
+  >
+    <div class="flex items-center justify-center w-16 h-16 rounded-full bg-cyan-500/15 border border-cyan-500/30">
+      <Route class="w-8 h-8 text-cyan-400" />
+    </div>
+    <div class="text-center space-y-2 max-w-sm">
+      <h3 class="text-xl font-bold text-foreground">Ordem #{{ confirmacaoViagem.codigoOrdem }} criada!</h3>
+      <p class="text-sm text-muted-foreground">
+        {{
+          confirmacaoViagem.qtdTecnicos === 1
+            ? 'Uma preparação de viagem foi criada automaticamente para o técnico.'
+            : `${confirmacaoViagem.qtdTecnicos} preparações de viagem foram criadas automaticamente, uma para cada técnico.`
+        }}
+      </p>
+      <p class="text-sm font-medium text-cyan-500 dark:text-cyan-400">
+        Acesse a área de Preparação de Viagem para preencher os detalhes.
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <Button variant="outline" class="border-border hover:bg-muted/30" @click="fecharConfirmacao">
+        Fechar
+      </Button>
+      <Button class="bg-cyan-600 hover:bg-cyan-700 text-white px-6" @click="irParaViagens">
+        Ver Preparações de Viagem
+      </Button>
+    </div>
+  </div>
   </form>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -667,13 +1070,14 @@ import { DatePickerInput } from '@/components/ui/date-picker'
 import {
   ChevronRight, FileText, Server, UserCheck, ArrowRight,
   Loader2, PackageCheck, PackageX, UserX, CheckCircle2,
-  ListChecks, Plus, Trash2, Search, X, Wrench, AlertTriangle,
+  ListChecks, Plus, Trash2, Search, X, Wrench, AlertTriangle, Star, CalendarClock, Route,
 } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
 import { maquinaSoftwareInstaladoService } from '@/services/maquinaSoftwareInstaladoService'
 import { tecnicoService, type TecnicoResponseDTO } from '@/services/tecnicoService'
 import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/ordemServicoService'
+import type { TecnicoAgendaItem } from '@/services/ordemServicoService'
 import { ativoService, type AtivoResponseDTO } from '@/services/ativoService'
 import {
   catalogoMaquinaService,
@@ -700,11 +1104,26 @@ const maxStep = computed(() => 5)
 
 const emit = defineEmits(['fechar', 'success'])
 
+const router = useRouter()
+
+const confirmacaoViagem = ref<{ codigoOrdem: number; qtdTecnicos: number } | null>(null)
+
+function fecharConfirmacao() {
+  confirmacaoViagem.value = null
+  emit('fechar')
+}
+
+function irParaViagens() {
+  confirmacaoViagem.value = null
+  emit('fechar')
+  router.push('/viagem-preparacao')
+}
+
 const step = ref(1)
 const stepsList = [
   { id: 1, name: 'Identificação', icon: FileText },
   { id: 2, name: 'Máquina', icon: Server },
-  { id: 3, name: 'Técnico', icon: UserCheck },
+  { id: 3, name: 'Agendamento', icon: UserCheck },
   { id: 4, name: 'Ativos', icon: ListChecks },
   { id: 5, name: 'Manutenção', icon: Wrench },
 ]
@@ -713,6 +1132,240 @@ const loadingSoftware = ref(false)
 const loadingTecnicos = ref(false)
 const loadingAtivos = ref(false)
 const checklistAtivosError = ref('')
+
+// ─── Seleção múltipla de técnicos ─────────────────────────────────────────────
+const tecnicosSelecionados = ref(new Set<number>())
+const tecnicoResponsavelId  = ref<number | null>(null)
+
+function toggleTecnico(id: number) {
+  const s = new Set(tecnicosSelecionados.value)
+  if (s.has(id)) {
+    s.delete(id)
+    if (tecnicoResponsavelId.value === id) tecnicoResponsavelId.value = null
+  } else {
+    s.add(id)
+    if (!tecnicoResponsavelId.value) tecnicoResponsavelId.value = id
+  }
+  tecnicosSelecionados.value = s
+  form.setFieldValue('codigoFuncionario', tecnicoResponsavelId.value?.toString() ?? '')
+}
+
+function setResponsavel(id: number) {
+  const s = new Set(tecnicosSelecionados.value)
+  s.add(id)
+  tecnicosSelecionados.value = s
+  tecnicoResponsavelId.value = id
+  form.setFieldValue('codigoFuncionario', id.toString())
+}
+
+// ─── Modo de agendamento: data específica ou período ─────────────────────────
+const modoAgendamento = ref<'data' | 'periodo'>('data')
+const periodoInicio   = ref<string>('')
+const periodoFim      = ref<string>('')
+
+// ─── Horário e previsão de manutenção ────────────────────────────────────────
+const horaHH = ref<string>('')
+const horaMM = ref<string>('00')
+const horaAgendamento = computed<string>(() =>
+  horaHH.value !== '' ? `${horaHH.value}:${horaMM.value}` : ''
+)
+function limparHora() {
+  horaHH.value = ''
+  horaMM.value = '00'
+}
+
+const previsaoHoras   = ref<number>(0)
+const previsaoMinutos = ref<number>(0)
+const previsaoTotalMinutos = computed<number>(() => previsaoHoras.value * 60 + previsaoMinutos.value)
+
+function onPeriodoInicioChange(v: string) {
+  periodoInicio.value = v
+  form.setFieldValue('dataAgendamento', v)
+}
+
+// ─── Disponibilidade de técnicos ──────────────────────────────────────────────
+const diasOcupados         = ref(new Map<number, Set<string>>())
+// Map<techId, Map<YYYY-MM-DD, 'HH:MM'>> — horário a partir do qual o técnico fica livre naquele dia
+const horaLivreNoDia       = ref(new Map<number, Map<string, string>>())
+// Map<techId, Map<YYYY-MM-DD, {inicio, fim}[]>> — janelas de ocupação (sem buffer)
+const ocupacaoNoDia        = ref(new Map<number, Map<string, Array<{inicio: string, fim: string}>>>())
+const proximoDiaDisponivel = ref(new Map<number, string | null>())
+const loadingAgenda        = ref(false)
+
+function horaLivreParaTecnicoNoDia(tecId: number, dia: string): string | null {
+  return horaLivreNoDia.value.get(tecId)?.get(dia) ?? null
+}
+
+function ocupacoesParaTecnicoNoDia(tecId: number, dia: string): Array<{inicio: string, fim: string}> {
+  return ocupacaoNoDia.value.get(tecId)?.get(dia) ?? []
+}
+
+function estaNoDia(tecId: number, dia: string): boolean {
+  const diaOcupado = diasOcupados.value.get(tecId)?.has(dia) ?? false
+  if (!diaOcupado) return true
+
+  const ocupacoes = ocupacoesParaTecnicoNoDia(tecId, dia)
+
+  // Ordem sem horário → bloqueia o dia inteiro
+  if (ocupacoes.length === 0) return false
+
+  // Tem ordens com horário mas nenhum horário selecionado → indisponível
+  if (!horaAgendamento.value) return false
+
+  // Mesma lógica de sobreposição de janelas do backend: [A, A+durA+2h) vs [B, B+durB+2h)
+  const novaParts = horaAgendamento.value.split(':')
+  const novaInicioMin = Number(novaParts[0] ?? 0) * 60 + Number(novaParts[1] ?? 0)
+  const novaFimMin = novaInicioMin + previsaoTotalMinutos.value + 120
+
+  for (const ocup of ocupacoes) {
+    const oParts = ocup.inicio.split(':')
+    const oInicioMin = Number(oParts[0] ?? 0) * 60 + Number(oParts[1] ?? 0)
+    let oFimMin: number
+    if (ocup.fim) {
+      const fParts = ocup.fim.split(':')
+      oFimMin = Number(fParts[0] ?? 0) * 60 + Number(fParts[1] ?? 0) + 120
+    } else {
+      oFimMin = oInicioMin + 120
+    }
+    if (novaInicioMin < oFimMin && oInicioMin < novaFimMin) return false
+  }
+
+  return true
+}
+
+/** Retorna false quando o técnico está ocupado no dia de agendamento selecionado */
+function tecnicoDisponivelNoDia(tecId: number): boolean {
+  const dia = form.values.dataAgendamento
+  if (!dia || !diasOcupados.value.has(tecId)) return true
+  return estaNoDia(tecId, dia)
+}
+
+function diasDoPeriodo(inicio: string, fim: string): string[] {
+  const dias: string[] = []
+  const d = new Date(inicio + 'T00:00:00')
+  const f = new Date(fim + 'T00:00:00')
+  while (d <= f) {
+    dias.push(d.toISOString().slice(0, 10))
+    d.setDate(d.getDate() + 1)
+  }
+  return dias
+}
+
+function diasDisponiveis(tecId: number): number {
+  // Sempre usa os extremos reais do período, nunca o chip selecionado
+  const inicio = modoAgendamento.value === 'periodo' ? periodoInicio.value : form.values.dataAgendamento
+  const fim    = modoAgendamento.value === 'periodo' ? periodoFim.value    : form.values.dataAgendamento
+  if (!inicio || !fim) return 0
+  const todosDias = diasDoPeriodo(inicio, fim)
+  const ocupados  = [...(diasOcupados.value.get(tecId) ?? new Set())]
+    .filter(d => todosDias.includes(d)).length
+  return Math.max(0, todosDias.length - ocupados)
+}
+
+function formatDayChip(dia: string): string {
+  const partes = dia.split('-')
+  const m = partes[1] ?? ''
+  const d = partes[2] ?? ''
+  const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+  return `${d}/${nomes[Number(m) - 1] ?? m}`
+}
+
+async function carregarAgenda() {
+  // No modo período usa sempre o início do período — não o chip selecionado
+  const inicio = modoAgendamento.value === 'periodo'
+    ? periodoInicio.value
+    : form.values.dataAgendamento
+  if (!inicio || tecnicosDisponiveis.value.length === 0) return
+
+  // Sempre busca 30 dias para calcular "próximo disponível"
+  const d30 = new Date(inicio + 'T00:00:00')
+  d30.setDate(d30.getDate() + 30)
+  const fim30 = d30.toISOString().slice(0, 10)
+
+  loadingAgenda.value = true
+  const novoMapa      = new Map<number, Set<string>>()
+  const novoMapaHoras = new Map<number, Map<string, string>>()
+  const novoOcupacao  = new Map<number, Map<string, Array<{inicio: string, fim: string}>>>()
+  const novoProximo   = new Map<number, string | null>()
+
+  await Promise.all(
+    tecnicosDisponiveis.value.map(async (t) => {
+      try {
+        const agenda = await ordemServicoService.buscarAgenda(inicio, fim30, t.id)
+        const item: TecnicoAgendaItem | undefined = agenda.find(a => a.id === t.id)
+        const ordens = item?.ordens ?? []
+
+        // Mapa de datas ocupadas (para compatibilidade com chips do período)
+        const ocupados = new Set<string>(
+          ordens.map(o => o.dataAgendamento?.slice(0, 10)).filter((d): d is string => !!d),
+        )
+        novoMapa.set(t.id, ocupados)
+
+        // Mapa de hora livre por dia (considerando previsão + 2h de buffer)
+        const mapaHoras = new Map<string, string>()
+        for (const ordem of ordens) {
+          if (!ordem.dataAgendamento) continue
+          const date = ordem.dataAgendamento.slice(0, 10)
+          const timePart = ordem.dataAgendamento.slice(11, 16) // 'HH:MM'
+          if (!timePart || timePart === '00:00') continue
+          const parts = timePart.split(':')
+          const hh = Number(parts[0] ?? 0)
+          const mm = Number(parts[1] ?? 0)
+          const duracaoMin = ordem.previsaoManutencao ?? 0
+          const totalMin = hh * 60 + mm + duracaoMin + 120 // + 2h buffer
+          const livreHH = String(Math.floor(totalMin / 60)).padStart(2, '0')
+          const livreMM = String(totalMin % 60).padStart(2, '0')
+          const livreTime = `${livreHH}:${livreMM}`
+          const atual = mapaHoras.get(date)
+          if (!atual || livreTime > atual) mapaHoras.set(date, livreTime)
+        }
+        novoMapaHoras.set(t.id, mapaHoras)
+
+        // Janelas de ocupação por dia (início e fim natural da ordem, sem buffer)
+        const ocupacoes = new Map<string, Array<{inicio: string, fim: string}>>()
+        for (const ordem of ordens) {
+          if (!ordem.dataAgendamento) continue
+          const date = ordem.dataAgendamento.slice(0, 10)
+          const tp = ordem.dataAgendamento.slice(11, 16)
+          if (!tp || tp === '00:00') continue
+          const duracaoMin = ordem.previsaoManutencao ?? 0
+          const tParts = tp.split(':')
+          const tHH = Number(tParts[0] ?? 0)
+          const tMM = Number(tParts[1] ?? 0)
+          const fimMin = tHH * 60 + tMM + duracaoMin
+          const fimStr = duracaoMin > 0
+            ? `${String(Math.floor(fimMin / 60)).padStart(2, '0')}:${String(fimMin % 60).padStart(2, '0')}`
+            : ''
+          const lista = ocupacoes.get(date) ?? []
+          lista.push({ inicio: tp, fim: fimStr })
+          ocupacoes.set(date, lista)
+        }
+        novoOcupacao.set(t.id, ocupacoes)
+
+        // Próximo dia completamente livre (sem nenhuma ordem)
+        const cursor = new Date(inicio + 'T00:00:00')
+        let proximo: string | null = null
+        while (cursor <= d30) {
+          const dStr = cursor.toISOString().slice(0, 10)
+          if (!ocupados.has(dStr)) { proximo = dStr; break }
+          cursor.setDate(cursor.getDate() + 1)
+        }
+        novoProximo.set(t.id, proximo)
+      } catch {
+        novoMapa.set(t.id, new Set())
+        novoMapaHoras.set(t.id, new Map())
+        novoOcupacao.set(t.id, new Map())
+        novoProximo.set(t.id, null)
+      }
+    }),
+  )
+
+  diasOcupados.value         = novoMapa
+  horaLivreNoDia.value       = novoMapaHoras
+  ocupacaoNoDia.value        = novoOcupacao
+  proximoDiaDisponivel.value = novoProximo
+  loadingAgenda.value        = false
+}
 
 const clientes = ref<any[]>([])
 const tecnicosDisponiveis = ref<TecnicoResponseDTO[]>([])
@@ -802,7 +1455,8 @@ const todayDisplayString = computed(() => {
 function toLocalDateTimeString(isoDate: string): string {
   if (!isoDate) return ''
   if (isoDate.includes('T')) return isoDate
-  return `${isoDate}T00:00:00`
+  const time = horaAgendamento.value ? `${horaAgendamento.value}:00` : '00:00:00'
+  return `${isoDate}T${time}`
 }
 
 function todayLocalDateTime(): string {
@@ -874,6 +1528,19 @@ const popularFormEdicao = async (data: OrdemServicoResponseDTO) => {
     }
   })
 
+  if (data.dataAgendamento && data.dataAgendamento.includes('T')) {
+    const timePart = data.dataAgendamento.slice(11, 16)
+    if (timePart && timePart !== '00:00') {
+      horaHH.value = timePart.slice(0, 2)
+      horaMM.value = timePart.slice(3, 5)
+    }
+  }
+
+  if (data.previsaoManutencao && data.previsaoManutencao > 0) {
+    previsaoHoras.value   = Math.floor(data.previsaoManutencao / 60)
+    previsaoMinutos.value = data.previsaoManutencao % 60
+  }
+
   if (data.codigoMaquinaContrato) {
     loadingSoftware.value = true
     try {
@@ -928,14 +1595,32 @@ async function onMaquinaChange(val: string) {
   }
 }
 
+// Recarrega quando: período muda, modo muda, ou data muda no modo data-específica
+// Selecionar um chip (dataAgendamento) no modo período NÃO recarrega a agenda
+watch(
+  () => [periodoInicio.value, periodoFim.value, modoAgendamento.value] as const,
+  () => { if (step.value === 3) carregarAgenda() },
+)
+watch(
+  () => form.values.dataAgendamento,
+  (data) => {
+    if (step.value !== 3) return
+    // Desfaz seleções ao trocar o dia de agendamento
+    tecnicosSelecionados.value = new Set()
+    tecnicoResponsavelId.value = null
+    form.setFieldValue('codigoFuncionario', '')
+    if (data && modoAgendamento.value === 'data') carregarAgenda()
+  },
+)
+
 watch(step, async (newStep) => {
   if (newStep === 3 && tecnicosDisponiveis.value.length === 0) {
     loadingTecnicos.value = true
     try {
-      const todos = await tecnicoService.listar()
-      tecnicosDisponiveis.value = todos.filter(
-        t => t.disponibilidade !== null && t.disponibilidade !== undefined && t.disponibilidade !== ''
-      )
+      const todos = await tecnicoService.listarSelecionaveis()
+      tecnicosDisponiveis.value = todos
+      // Se já há data selecionada, carrega agenda imediatamente
+      if (form.values.dataAgendamento) carregarAgenda()
     } catch (error) {
       console.error('Erro ao carregar técnicos:', error)
     } finally {
@@ -979,9 +1664,9 @@ watch(step, async (newStep) => {
 })
 
 const STEP_FIELDS: Record<number, string[]> = {
-  1: ['codigoCliente', 'codigoContrato', 'criticidade', 'tipoOrdem', 'dataAgendamento', 'observacaoGeral'],
+  1: ['codigoCliente', 'codigoContrato', 'criticidade', 'tipoOrdem', 'observacaoGeral'],
   2: ['codigoMaquinaContrato'],
-  3: ['codigoFuncionario'],
+  3: ['codigoFuncionario', 'dataAgendamento'],
   4: [],
   5: [],
 }
@@ -1013,7 +1698,7 @@ const nextStep = async () => {
 }
 
 function getInitials(nome: string): string {
-  return nome.split(' ').filter(Boolean).slice(0, 2).map(n => n[0].toUpperCase()).join('')
+  return nome.split(' ').filter(Boolean).slice(0, 2).map(n => n[0]?.toUpperCase() ?? '').join('')
 }
 
 function onAtivoSelect(val: string) {
@@ -1097,12 +1782,16 @@ const onSubmit = form.handleSubmit(async (values) => {
       codigoCliente:           Number(values.codigoCliente),
       codigoContrato:          Number(values.codigoContrato),
       codigoMaquinaContrato:   Number(values.codigoMaquinaContrato),
-      codigoFuncionario:       Number(values.codigoFuncionario),
+      codigoFuncionario:       tecnicoResponsavelId.value ?? Number(values.codigoFuncionario),
+      codigosFuncionarios:     tecnicosSelecionados.value.size > 0
+                                 ? [...tecnicosSelecionados.value]
+                                 : [Number(values.codigoFuncionario)],
       codigoSoftwareInstalado: softwareInstalado.value?.codigo ?? undefined,
       criticidade:             values.criticidade,
       tipoOrdem:               values.tipoOrdem || undefined,
       dataAgendamento:         toLocalDateTimeString(values.dataAgendamento ?? ''),
       observacaoGeral:         values.observacaoGeral,
+      previsaoManutencao:      previsaoTotalMinutos.value > 0 ? previsaoTotalMinutos.value : undefined,
     }
 
     if (isEditMode.value && props.initialData) {
@@ -1150,6 +1839,13 @@ const onSubmit = form.handleSubmit(async (values) => {
         for (const codigoTarefa of todasSelecionadas) {
           await ordemServicoService.adicionarChecklistMaquinaItem(historicoId, codigoTarefa)
         }
+      }
+
+      if (ordemCriada && horaAgendamento.value !== '') {
+        const qtdTecnicos = tecnicosSelecionados.value.size || 1
+        emit('success')
+        confirmacaoViagem.value = { codigoOrdem: ordemCriada.codigo, qtdTecnicos }
+        return
       }
     }
 

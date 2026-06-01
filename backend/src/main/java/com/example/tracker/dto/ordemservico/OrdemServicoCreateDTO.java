@@ -39,6 +39,8 @@ public class OrdemServicoCreateDTO {
 
     private String observacaoGeral;
 
+    private Integer previsaoManutencao;
+
     @Valid
     private List<OrdemServicoChecklistAtivoCreateDTO> checklistAtivos;
 }

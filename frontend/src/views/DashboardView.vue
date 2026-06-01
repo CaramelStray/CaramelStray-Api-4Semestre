@@ -71,27 +71,92 @@ const upcomingOrders = computed(() => {
     .slice(0, 6)
 })
 
-const chartEndDate = ref(new Date().toISOString().slice(0, 10))
+type ChartMode = 'semanal' | 'mensal' | 'anual'
+const chartMode = ref<ChartMode>('semanal')
 
-const ordersByDayAndStatus = computed(() => {
-  const points = []
-  const end = new Date(chartEndDate.value + 'T12:00:00') // evita fuso
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(end)
-    d.setDate(end.getDate() - i)
-    const key = d.toISOString().slice(0, 10)
-    const dayOrders = orders.value.filter(o => o.dataAgendamento?.slice(0, 10) === key)
-    points.push({
-      label: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+function getMondayOf(d: Date): Date {
+  const r = new Date(d)
+  const day = r.getDay()
+  r.setDate(r.getDate() - day + (day === 0 ? -6 : 1))
+  r.setHours(0, 0, 0, 0)
+  return r
+}
+const chartDate = ref(getMondayOf(new Date()))
+
+const MESES_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+const MESES_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+
+const chartPoints = computed(() => {
+  const base = chartDate.value
+
+  const makePoint = (key: string, label: string) => {
+    const isMonth = key.length === 7
+    const dayOrders = isMonth
+      ? orders.value.filter(o => o.dataAgendamento?.slice(0, 7) === key)
+      : orders.value.filter(o => o.dataAgendamento?.slice(0, 10) === key)
+    return {
+      label,
       key,
-      aguardando: dayOrders.filter(o => o.status === 'AGUARDANDO' || o.status === 'ABERTA').length,
-      agendado: dayOrders.filter(o => o.status === 'AGENDADO' || o.status === 'AGENDADA').length,
-      emExecucao: dayOrders.filter(o => o.status === 'EM_EXECUCAO').length,
+      aguardando:  dayOrders.filter(o => o.status === 'AGUARDANDO' || o.status === 'ABERTA').length,
+      agendado:    dayOrders.filter(o => o.status === 'AGENDADO' || o.status === 'AGENDADA').length,
+      emExecucao:  dayOrders.filter(o => o.status === 'EM_EXECUCAO').length,
       finalizadas: dayOrders.filter(o => o.status === 'FINALIZADA' || o.status === 'CONCLUIDA').length,
+    }
+  }
+
+  if (chartMode.value === 'semanal') {
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(base)
+      d.setDate(base.getDate() + i)
+      const key = d.toISOString().slice(0, 10)
+      return makePoint(key, d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }))
     })
   }
-  return points
+
+  if (chartMode.value === 'mensal') {
+    const yr = base.getFullYear(), mo = base.getMonth()
+    const days = new Date(yr, mo + 1, 0).getDate()
+    return Array.from({ length: days }, (_, i) => {
+      const day = i + 1
+      const key = `${yr}-${String(mo + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+      return makePoint(key, String(day).padStart(2, '0'))
+    })
+  }
+
+  // anual
+  const yr = base.getFullYear()
+  return Array.from({ length: 12 }, (_, mo) => {
+    const key = `${yr}-${String(mo + 1).padStart(2, '0')}`
+    return makePoint(key, MESES_SHORT[mo])
+  })
 })
+
+const chartPeriodLabel = computed(() => {
+  const d = chartDate.value
+  if (chartMode.value === 'semanal') {
+    const end = new Date(d)
+    end.setDate(d.getDate() + 6)
+    return `${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} – ${end.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
+  }
+  if (chartMode.value === 'mensal') return `${MESES_FULL[d.getMonth()]} ${d.getFullYear()}`
+  return `${d.getFullYear()}`
+})
+
+function prevPeriod() {
+  const d = new Date(chartDate.value)
+  if (chartMode.value === 'semanal') d.setDate(d.getDate() - 7)
+  else if (chartMode.value === 'mensal') d.setMonth(d.getMonth() - 1)
+  else d.setFullYear(d.getFullYear() - 1)
+  chartDate.value = d
+}
+
+function nextPeriod() {
+  const d = new Date(chartDate.value)
+  if (chartMode.value === 'semanal') d.setDate(d.getDate() + 7)
+  else if (chartMode.value === 'mensal') d.setMonth(d.getMonth() + 1)
+  else d.setFullYear(d.getFullYear() + 1)
+  chartDate.value = d
+}
 
 const calendarDate = ref(new Date())
 
@@ -205,11 +270,11 @@ function buildStatusChart() {
   lineChartInstance = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ordersByDayAndStatus.value.map(p => p.label),
+      labels: chartPoints.value.map(p => p.label),
       datasets: [
         {
           label: 'Aguardando',
-          data: ordersByDayAndStatus.value.map(p => p.aguardando),
+          data: chartPoints.value.map(p => p.aguardando),
           borderColor: '#F59E0B',
           backgroundColor: gradAguardando,
           borderWidth: 2,
@@ -220,7 +285,7 @@ function buildStatusChart() {
         },
         {
           label: 'Agendado',
-          data: ordersByDayAndStatus.value.map(p => p.agendado),
+          data: chartPoints.value.map(p => p.agendado),
           borderColor: '#3B82F6',
           backgroundColor: gradAgendado,
           borderWidth: 2,
@@ -231,7 +296,7 @@ function buildStatusChart() {
         },
         {
           label: 'Em Execução',
-          data: ordersByDayAndStatus.value.map(p => p.emExecucao),
+          data: chartPoints.value.map(p => p.emExecucao),
           borderColor: '#10B981',
           backgroundColor: gradExecucao,
           borderWidth: 2,
@@ -242,7 +307,7 @@ function buildStatusChart() {
         },
         {
           label: 'Finalizadas',
-          data: ordersByDayAndStatus.value.map(p => p.finalizadas),
+          data: chartPoints.value.map(p => p.finalizadas),
           borderColor: '#8B5CF6',
           backgroundColor: gradFinalizada,
           borderWidth: 2,
@@ -283,7 +348,7 @@ function buildStatusChart() {
   })
 }
 
-watch([orders, chartEndDate], () => { buildStatusChart() })
+watch([orders, chartMode, chartDate], () => { buildStatusChart() })
 
 // ─── Load ─────────────────────────────────────────────────────────────────────
 const loadDashboard = async () => {
@@ -381,9 +446,22 @@ onMounted(loadDashboard)
       <div class="panel">
         <div class="panel-header">
           <span class="panel-title"><TrendingUp class="w-4 h-4" />Status ao Longo do Tempo</span>
-          <div class="flex items-center gap-2">
-            <span class="panel-meta">até</span>
-            <input type="date" v-model="chartEndDate" class="text-[11px] bg-muted border border-border rounded px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-blue-500" />
+          <div class="flex items-center gap-2 flex-wrap">
+            <!-- Mode toggle -->
+            <div class="flex rounded-md border border-border overflow-hidden text-[11px]">
+              <button
+                v-for="mode in (['semanal', 'mensal', 'anual'] as const)"
+                :key="mode"
+                :class="['px-2.5 py-1 capitalize font-medium transition-colors', chartMode === mode ? 'bg-blue-500/20 text-blue-400' : 'text-muted-foreground hover:text-foreground']"
+                @click="chartMode = mode"
+              >{{ mode }}</button>
+            </div>
+            <!-- Navigation -->
+            <div class="flex items-center gap-1">
+              <Button variant="outline" size="icon" class="h-6 w-6" @click="prevPeriod"><ChevronLeft class="w-3 h-3" /></Button>
+              <span class="text-[11px] font-medium text-foreground min-w-[130px] text-center select-none">{{ chartPeriodLabel }}</span>
+              <Button variant="outline" size="icon" class="h-6 w-6" @click="nextPeriod"><ChevronRight class="w-3 h-3" /></Button>
+            </div>
           </div>
         </div>
         <div class="panel-body">

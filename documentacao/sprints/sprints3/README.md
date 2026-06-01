@@ -13,6 +13,8 @@
 <p align="center">
   | <a href ="#desafio"> Desafio</a>  |
   <a href ="#backlog"> Backlog</a>  |
+ <a href ="#aceite"> Critérios de aceite</a>  |
+ <a href ="#dor"> DOR e DOD da Sprint</a>  |
   <a href ="#equipe"> Equipe</a>  |
 </p>
 
@@ -25,21 +27,53 @@ A empresa opera cerca de 100 sistemas distribuídos mundialmente, cada um exigin
 horas de uso. Essas intervenções variam em duração conforme a localização - por exemplo, manutenções próximas, como em sistemas 
 no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distantes, como na Ásia, demandam mais tempo.
 
-## 📋 Backlog da Sprint 2 <a id="backlog"></a>
+## 📋 Backlog da Sprint 3 <a id="backlog"></a>
 
-## Backlog
+# Sprint 3 - Backlog
 
-# Backlog Sprint 2 — Sistema de Gestão de Manutenções
+## Objetivo da Sprint
+Desenvolver funcionalidades de visualização e planejamento operacional para apoiar gestores no acompanhamento das ordens de manutenção, disponibilidade de técnicos e localização geográfica das operações.
 
-| Rank | Prioridade | User Story | Estimativa | Sprint | Meta da Sprint |
-|------|------------|-----------|-----------|--------|-------|
-| 1 | Alta | Como técnico, quero registrar os dados da execução da manutenção para documentar o que foi realizado na visita | 30 | 2 | ✅ |
-| 2 | Alta | Como gestor, quero registrar viagens de manutenção associadas a ordens para planejar o deslocamento dos técnicos | 50 | 2 | ✅ |
-| 2 | Alta | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | 50 | 2 | ✅ |
-| 4 | Alta | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | 40 | 2 | ✅ |
-| 5 | Média | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | 40 | 2 |  |
-| 6 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 40 | 2 |  |
-| 7 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 40 | 2 |
+---
+
+# Backlog Sprint 3 — Sistema de Gestão de Manutenções
+
+| Rank | Prioridade | User Story | Estimativa (Fibonacci) | Sprint | Meta da Sprint |
+|------|------------|-----------|------------------------|--------|-------|
+| 1 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 8 | 3 | ✅ |
+| 2 | Média | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 5 | 3 | ✅ |
+| 3 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 8 | 3 | ✅ |
+| 4 | Baixa | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 8 | 3 |  |
+| 5 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 8 | 3 |  |
+
+---
+
+# Critérios de Aceitação <a id="aceite"></a>
+
+## Dashboard de Ordens
+- O gestor deve visualizar a quantidade de ordens por status.
+- O dashboard deve apresentar atualização correta das informações.
+- Os gráficos devem ser responsivos e legíveis.
+
+## Disponibilidade dos Técnicos
+- O calendário deve exibir horários disponíveis e ocupados.
+- O gestor deve conseguir visualizar conflitos de agenda.
+
+## Localização dos Técnicos
+- O mapa deve exibir técnicos em campo e em terra.
+- As localizações devem ser atualizadas corretamente.
+- 
+
+---
+
+# DoR e DoD - Sprint 3 <a id="dor"></a>
+
+| User Story | Definition of Ready (DoR) | Definition of Done (DoD) |
+|---|---|---|
+| US301 - Dashboard de ordens de manutenção | - User Story refinada e aprovada pelo cliente.<br>- Protótipo do dashboard validado no Figma.<br>- Definição dos indicadores e métricas necessárias.<br>- Estrutura das APIs de dashboard documentadas no Swagger.<br>- Dados de exemplo preparados para testes dos gráficos. | - Dashboard implementado em Vue.js + Vuetify.<br>- Endpoints desenvolvidos em Spring Boot.<br>- Dados integrados corretamente ao PostgreSQL.<br>- APIs documentadas no Swagger.<br>- Testes unitários e de integração realizados.<br>- Funcionalidade validada em homologação. |
+| US302 - Disponibilidade dos técnicos em calendário | - Fluxo de agenda definido com o cliente.<br>- Protótipo do calendário validado.<br>- Estrutura de disponibilidade modelada no banco.<br>- APIs de agenda especificadas.<br>- Dados mockados preparados para testes. | - Calendário funcional implementado.<br>- Disponibilidade exibida corretamente.<br>- Backend integrado ao frontend.<br>- Regras de conflito de agenda testadas.<br>- Testes automatizados executados.<br>- Funcionalidade homologada. |
+| US303 - Rastreamento de técnicos no mapa | - Requisitos de localização definidos.<br>- Biblioteca de mapas selecionada.<br>- Modelo de dados geográficos definido.<br>- APIs de localização documentadas.<br>- Critérios de atualização de posição aprovados. | - Mapa exibindo técnicos em tempo real.<br>- Backend fornecendo localização corretamente.<br>- Integração frontend/backend concluída.<br>- Testes de atualização de localização realizados.<br>- Documentação técnica atualizada.<br>- Deploy validado. |
+
 
 ## 🎓 Equipe <a id="equipe"></a>
 

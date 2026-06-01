@@ -89,10 +89,10 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 | S2-1 | Como técnico, quero registrar os dados da execução da manutenção para documentar o que foi realizado na visita | Alta | ✅ Concluída | ✅ | ✅ | ✅ | [6] Registro de execução da manutenção |
 | S2-2 | Como gestor, quero definir a criticidade de uma ordem de manutenção para organizar os atendimentos por impacto | Alta | ✅ Concluída | ✅ | ✅ | ✅ | [7] Criticidade de ordem de manutenção |
 | S2-3 | Como gestor, quero registrar viagens de manutenção associadas a ordens para planejar o deslocamento dos técnicos | Alta | ✅ Concluída | ✅ | ✅ | ✅ | [8] Registro de viagens de manutenção |
-| S2-4 | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | Média | ⏳ Em andamento | ✅ | ✅ | ❌ | [9] Dashboard de ordens |
-| S2-5 | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | Média | ⏳ Em andamento | ✅ | ✅ | ✅ | [10] Checklist de preparação |
-| S2-6 | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | Média | ⏳ Em andamento | ✅ | ✅ | ✅ | [11] Checklist da manutenção |
-| S2-7 | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | Baixa | 🔜 Planejada | ✅ | ✅ | ❌ | [12] Calendário de disponibilidade |
+| S2-4 | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | Média | Concluída | ✅ | ✅ | ✅ | [9] Dashboard de ordens |
+| S2-5 | Como gestor, quero aplicar um checklist de preparação antes da viagem para garantir que ferramentas e equipamentos corretos sejam levados | Média | Concluída | ✅ | ✅ | ✅ | [10] Checklist de preparação |
+| S2-6 | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | Média | Concluída | ✅ | ✅ | ✅ | [11] Checklist da manutenção |
+| S2-7 | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | Baixa | Concluída | ✅ | ✅ | ✅ | [12] Calendário de disponibilidade |
 
 ---
 
@@ -100,13 +100,13 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
 
 | ID   | User Story | Prioridade | Status | Backlog Completo | DoR Atendido | DoD Atendido | Requisito Referenciado |
 |------|------------|------------|--------|------------------|--------------|--------------|------------------------|
-| S3-1 | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | Alta | 🔜 Planejada | ✅ | ✅ | ✅ | [13] Histórico de manutenções |
-| S3-2 | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | Alta | 🔜 Planejada | ✅ | ✅ | ✅ | [14] Relatório de manutenções |
-| S3-3 | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | Média | 🔜 Planejada | ✅ | ✅ | ✅ | [15] Cadastro de máquinas |
+| S3-1 | Como gestor, quero acessar o histórico de manutenções de um sistema para rastrear todas as intervenções realizadas | Alta | Concluída | ✅ | ✅ | ✅ | [13] Histórico de manutenções |
+| S3-2 | Como gestor, quero visualizar um relatório de manutenções vencidas e próximas do vencimento para evitar descumprimento de contratos | Alta | Concluída | ✅ | ✅ | ✅ | [14] Relatório de manutenções |
+| S3-3 | Como gestor, quero cadastrar as máquinas da empresa para ter um controle centralizado do inventário próprio | Média | Concluída | ✅ | ✅ | ✅ | [15] Cadastro de máquinas |
 | S3-4 | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | Média | 🔜 Planejada | ✅ | ✅ | ❌ | [16] Registro de ciclo de embarcações |
-| S3-5 | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | Média | 🔜 Planejada | ✅ | ✅ | ✅ | [17] Cadastro de ativos |
+| S3-5 | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | Média | Concluída | ✅ | ✅ | ✅ | [17] Cadastro de ativos |
 | S3-6 | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | Baixa | 🔜 Planejada | ✅ | ✅ | ❌ | [18] Mapa de sistemas instalados |
-| S3-7 | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | Baixa | 🔜 Planejada | ✅ | ✅ | ❌ | [19] Rastreamento de técnicos no mapa |
+| S3-7 | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | Baixa | Concluída | ✅ | ✅ | ✅ | [19] Rastreamento de técnicos no mapa |
 
 ## 🎓 Equipe <a id="equipe"></a>
 
@@ -160,6 +160,10 @@ no Rio de Janeiro levam apenas um dia, enquanto operações em regiões distante
       <td><a href="https://github.com/thorlyndgaard"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/thor-lyndgaard-b2155826b/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
     </tr>
+      <td>Guilherme Bezerra</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/GuilhermebJunqueira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/guilherme-bezerra-a01035170/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td> 
   </table>
 </div>
 

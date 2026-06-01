@@ -4,15 +4,16 @@ import { useRoute, useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
-  ArrowLeft, Boxes, CalendarClock, CheckCircle2, ChevronRight, ClipboardCheck,
-  Clock, FileText, Loader2, MapPinned, Milestone, Route, ShipWheel, Truck,
+  ArrowLeft, Boxes, CalendarClock, ChevronRight, ClipboardCheck,
+  FileText, Loader2, MapPinned, Milestone, Pencil, Route, Truck,
 } from 'lucide-vue-next'
-import { viagemService, type ViagemCreateDTO, type ViagemResponseDTO } from '@/services/viagemService'
+import { viagemService, type ViagemResponseDTO } from '@/services/viagemService'
 import {
   ordemServicoService,
   type OrdemServicoChecklistAtivoResponseDTO,
   type OrdemServicoResponseDTO,
 } from '@/services/ordemServicoService'
+import ViagemPreparacaoEdicaoModal from '@/components/viagem/ViagemPreparacaoEdicaoModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -22,8 +23,10 @@ const viagem = ref<ViagemResponseDTO | null>(null)
 const ordem = ref<OrdemServicoResponseDTO | null>(null)
 const checklistAtivos = ref<OrdemServicoChecklistAtivoResponseDTO[]>([])
 const loading = ref(true)
+const starting = ref(false)
 const finishing = ref(false)
 const erro = ref('')
+const editModalOpen = ref(false)
 
 const statusConfig: Record<string, { dot: string; badge: string; label: string }> = {
   ABERTA: {
@@ -48,133 +51,86 @@ const statusConfig: Record<string, { dot: string; badge: string; label: string }
   },
 }
 
-const paradasOrdenadas = computed(() =>
-  [...(viagem.value?.paradas ?? [])].sort((a, b) => a.ordem - b.ordem)
-)
-
-const distancia = computed(() => viagem.value?.kmReal ?? viagem.value?.kmPrevisto ?? null)
-
-const dataInicioBase = computed(() =>
-  viagem.value?.dataSaidaReal ?? viagem.value?.dataSaidaPrevista ?? null
-)
-
-const dataFimBase = computed(() =>
-  viagem.value?.dataRetornoReal ?? viagem.value?.dataRetornoPrevisto ?? null
-)
-
-const duracaoTotal = computed(() => {
-  if (!dataInicioBase.value || !dataFimBase.value) return null
-  const inicio = new Date(dataInicioBase.value)
-  const fim = new Date(dataFimBase.value)
-  const diff = fim.getTime() - inicio.getTime()
-  if (Number.isNaN(diff) || diff <= 0) return null
-
-  const horas = Math.floor(diff / 3_600_000)
-  const minutos = Math.floor((diff % 3_600_000) / 60_000)
-  if (horas > 0) return `${horas}h ${String(minutos).padStart(2, '0')}m`
-  return `${minutos}m`
-})
-
 const checklistConferidos = computed(() =>
   checklistAtivos.value.filter(item => item.levado).length
 )
 
-const origemDestino = computed(() => {
-  const origem = viagem.value?.origem ?? 'Origem nao informada'
-  const destino = viagem.value?.destino ?? 'Destino nao informado'
-  return `${origem} -> ${destino}`
-})
+const podeEditar = computed(() =>
+  viagem.value?.status === 'ABERTA' || viagem.value?.status === 'EM_ANDAMENTO'
+)
 
 const formatDateTime = (dt?: string | null) => {
   if (!dt) return '-'
   const d = new Date(dt)
   if (Number.isNaN(d.getTime())) return '-'
-  return d.toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
-const formatTime = (dt?: string | null) => {
-  if (!dt) return '-'
-  const d = new Date(dt)
-  if (Number.isNaN(d.getTime())) return '-'
-  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-}
-
-const getParadaSaida = () => {
-  const ultimaParada = paradasOrdenadas.value[paradasOrdenadas.value.length - 1]
-  return ultimaParada?.dataSaidaPrevista ?? ultimaParada?.dataSaidaReal ?? null
-}
-
-const montarUpdateDTO = (status: string): ViagemCreateDTO | null => {
-  if (!viagem.value) return null
-
-  return {
-    codigoTipoViagem: viagem.value.codigoTipoViagem,
-    codigoCliente: viagem.value.codigoCliente,
-    codigoFuncionarioResponsavel: viagem.value.codigoFuncionarioResponsavel,
-    codigoOrdemServico: viagem.value.codigoOrdemServico,
-    status,
-    dataSaidaPrevista: viagem.value.dataSaidaPrevista,
-    dataSaidaReal: viagem.value.dataSaidaReal,
-    dataRetornoPrevisto: viagem.value.dataRetornoPrevisto,
-    dataRetornoReal: viagem.value.dataRetornoReal,
-    origem: viagem.value.origem,
-    destino: viagem.value.destino,
-    kmPrevisto: viagem.value.kmPrevisto,
-    kmReal: viagem.value.kmReal,
-    observacao: viagem.value.observacao,
-    paradas: paradasOrdenadas.value.map(parada => ({
-      ordem: parada.ordem,
-      descricaoLocal: parada.descricaoLocal,
-      endereco: parada.endereco,
-      cidade: parada.cidade,
-      estadoRegiao: parada.estadoRegiao,
-      latitude: parada.latitude,
-      longitude: parada.longitude,
-      dataChegadaPrevista: parada.dataChegadaPrevista,
-      dataChegadaReal: parada.dataChegadaReal,
-      dataSaidaPrevista: parada.dataSaidaPrevista,
-      dataSaidaReal: parada.dataSaidaReal,
-      observacao: parada.observacao,
-    })),
+async function iniciarViagem() {
+  if (!viagem.value) return
+  starting.value = true
+  erro.value = ''
+  try {
+    viagem.value = await viagemService.atualizar(viagem.value.codigo, {
+      codigoTipoViagem: viagem.value.codigoTipoViagem,
+      codigoCliente: viagem.value.codigoCliente,
+      codigoFuncionarioResponsavel: viagem.value.codigoFuncionarioResponsavel,
+      codigoOrdemServico: viagem.value.codigoOrdemServico,
+      status: 'EM_ANDAMENTO',
+      origem: viagem.value.origem ?? undefined,
+      destino: viagem.value.destino ?? undefined,
+      kmPrevisto: viagem.value.kmPrevisto ?? undefined,
+      dataSaidaPrevista: viagem.value.dataSaidaPrevista ?? undefined,
+      dataRetornoPrevisto: viagem.value.dataRetornoPrevisto ?? undefined,
+      observacao: viagem.value.observacao ?? undefined,
+    })
+  } catch (e: any) {
+    erro.value = e.message ?? 'Erro ao iniciar viagem.'
+  } finally {
+    starting.value = false
   }
 }
 
-async function finalizarViagemPreparacao() {
-  const dto = montarUpdateDTO('FINALIZADA')
-  if (!dto || !viagem.value) return
-
+async function finalizarViagem() {
+  if (!viagem.value) return
   finishing.value = true
   erro.value = ''
   try {
-    viagem.value = await viagemService.atualizar(viagem.value.codigo, dto)
+    viagem.value = await viagemService.atualizar(viagem.value.codigo, {
+      codigoTipoViagem: viagem.value.codigoTipoViagem,
+      codigoCliente: viagem.value.codigoCliente,
+      codigoFuncionarioResponsavel: viagem.value.codigoFuncionarioResponsavel,
+      codigoOrdemServico: viagem.value.codigoOrdemServico,
+      status: 'FINALIZADA',
+      origem: viagem.value.origem ?? undefined,
+      destino: viagem.value.destino ?? undefined,
+      kmPrevisto: viagem.value.kmPrevisto ?? undefined,
+      dataSaidaPrevista: viagem.value.dataSaidaPrevista ?? undefined,
+      dataRetornoPrevisto: viagem.value.dataRetornoPrevisto ?? undefined,
+      observacao: viagem.value.observacao ?? undefined,
+    })
   } catch (e: any) {
-    erro.value = e.message ?? 'Erro ao finalizar preparacao de viagem'
+    erro.value = e.message ?? 'Erro ao finalizar preparação.'
   } finally {
     finishing.value = false
   }
 }
 
+function onViagemAtualizada(atualizada: ViagemResponseDTO) {
+  viagem.value = atualizada
+}
+
 async function carregar() {
   loading.value = true
   erro.value = ''
-
   try {
     viagem.value = await viagemService.buscarPorId(viagemId)
-
     if (viagem.value.codigoOrdemServico) {
       await Promise.all([
         ordemServicoService.buscarPorId(viagem.value.codigoOrdemServico)
-          .then(response => { ordem.value = response })
-          .catch(() => {}),
+          .then(r => { ordem.value = r }).catch(() => {}),
         ordemServicoService.listarChecklistAtivos(viagem.value.codigoOrdemServico)
-          .then(response => { checklistAtivos.value = response })
-          .catch(() => {}),
+          .then(r => { checklistAtivos.value = r }).catch(() => {}),
       ])
     }
   } catch (e: any) {
@@ -189,6 +145,7 @@ onMounted(carregar)
 
 <template>
   <div class="p-6 space-y-6">
+    <!-- Breadcrumb -->
     <div class="flex items-center gap-2 text-sm text-muted-foreground">
       <button
         class="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer"
@@ -198,7 +155,9 @@ onMounted(carregar)
         Preparação de Viagem
       </button>
       <ChevronRight class="size-3.5" />
-      <span class="text-foreground font-medium">{{ viagem ? `Viagem #${viagem.codigo}` : 'Preparacao' }}</span>
+      <span class="text-foreground font-medium">
+        {{ viagem ? `Viagem #${viagem.codigo}` : 'Carregando...' }}
+      </span>
     </div>
 
     <div v-if="loading" class="flex items-center justify-center py-24 text-muted-foreground gap-3">
@@ -208,13 +167,14 @@ onMounted(carregar)
     <div v-else-if="erro && !viagem" class="py-24 text-center text-red-400">{{ erro }}</div>
 
     <template v-else-if="viagem">
+      <!-- Header -->
       <div class="rounded-xl border border-border bg-sidebar p-6 flex flex-col lg:flex-row items-start lg:items-center gap-5">
         <div class="flex items-center justify-center size-16 rounded-xl bg-cyan-500/10 border border-cyan-500/20 shrink-0">
           <Route class="size-8 text-cyan-400" />
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center flex-wrap gap-3">
-            <h1 class="text-2xl font-bold text-foreground">Preparação de Viagem</h1>
+            <h1 class="text-2xl font-bold text-foreground">Preparação de Viagem #{{ viagem.codigo }}</h1>
             <span
               :class="['inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold uppercase tracking-wide', statusConfig[viagem.status]?.badge ?? 'bg-muted/30 text-muted-foreground border-border']"
             >
@@ -222,134 +182,181 @@ onMounted(carregar)
               {{ statusConfig[viagem.status]?.label ?? viagem.status }}
             </span>
           </div>
-          <p class="text-sm text-muted-foreground mt-1 truncate">
+          <p class="text-sm text-muted-foreground mt-1">
             {{ viagem.nomeCliente ?? `Cliente #${viagem.codigoCliente}` }}
-            <span v-if="viagem.descricaoTipoViagem"> - {{ viagem.descricaoTipoViagem }}</span>
+            <span v-if="viagem.descricaoTipoViagem"> — {{ viagem.descricaoTipoViagem }}</span>
           </p>
-          <p class="text-xs text-muted-foreground mt-0.5 truncate">
-            {{ origemDestino }}
+          <p v-if="viagem.nomeFuncionarioResponsavel" class="text-xs text-muted-foreground mt-0.5">
+            Técnico: {{ viagem.nomeFuncionarioResponsavel }}
           </p>
         </div>
-        <Button
-          class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white border-none"
-          :disabled="viagem.status === 'FINALIZADA' || finishing"
-          @click="finalizarViagemPreparacao"
-        >
-          <Loader2 v-if="finishing" class="size-4 mr-2 animate-spin" />
-          <CheckCircle2 v-else class="size-4 mr-2" />
-          Finalizar Preparacao
-        </Button>
+        <div class="flex items-center gap-2 shrink-0 flex-wrap">
+          <Button
+            v-if="podeEditar"
+            variant="outline"
+            @click="editModalOpen = true"
+          >
+            <Pencil class="size-4 mr-2" />
+            Editar
+          </Button>
+          <Button
+            v-if="viagem.status === 'ABERTA'"
+            class="bg-blue-600 hover:bg-blue-700 text-white border-none"
+            :disabled="starting"
+            @click="iniciarViagem"
+          >
+            <Loader2 v-if="starting" class="size-4 mr-2 animate-spin" />
+            <Truck v-else class="size-4 mr-2" />
+            Iniciar Viagem
+          </Button>
+          <Button
+            v-if="viagem.status === 'ABERTA' || viagem.status === 'EM_ANDAMENTO'"
+            class="bg-emerald-600 hover:bg-emerald-700 text-white border-none"
+            :disabled="finishing"
+            @click="finalizarViagem"
+          >
+            <Loader2 v-if="finishing" class="size-4 mr-2 animate-spin" />
+            Finalizar
+          </Button>
+        </div>
       </div>
 
       <div v-if="erro" class="rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
         {{ erro }}
       </div>
 
-      <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] gap-6">
+      <!-- Main content -->
+      <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-6">
+        <!-- Left: details -->
         <div class="space-y-5">
+
+          <!-- Identificação -->
           <Card class="bg-sidebar border-border">
             <CardHeader class="pb-3 border-b border-border">
-              <CardTitle class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                <Truck class="size-4 text-cyan-400" /> Deslocamento terrestre
+              <CardTitle class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Identificação
               </CardTitle>
             </CardHeader>
             <CardContent class="p-5">
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="rounded-lg border border-border bg-muted/20 p-4">
-                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Distancia</p>
-                  <p class="text-lg font-semibold text-foreground mt-1">
-                    {{ distancia ?? '-' }}<span v-if="distancia !== null" class="text-xs text-muted-foreground ml-1">km</span>
-                  </p>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Cliente</p>
+                  <p class="text-sm font-semibold text-foreground">{{ viagem.nomeCliente ?? `#${viagem.codigoCliente}` }}</p>
                 </div>
-                <div class="rounded-lg border border-border bg-muted/20 p-4">
-                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tempo estimado</p>
-                  <p class="text-lg font-semibold text-foreground mt-1">{{ duracaoTotal ?? '-' }}</p>
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Técnico</p>
+                  <p class="text-sm font-semibold text-foreground">{{ viagem.nomeFuncionarioResponsavel ?? 'Não atribuído' }}</p>
                 </div>
-                <div class="rounded-lg border border-border bg-muted/20 p-4">
-                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Responsavel</p>
-                  <p class="text-sm font-semibold text-foreground mt-1 truncate">
-                    {{ viagem.nomeFuncionarioResponsavel ?? 'Nao atribuido' }}
-                  </p>
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Ordem de Serviço</p>
+                  <p class="text-sm font-semibold text-foreground font-mono">{{ viagem.codigoOrdemServico ? `#${viagem.codigoOrdemServico}` : '-' }}</p>
                 </div>
-              </div>
-
-              <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="rounded-lg border border-border bg-muted/20 p-4">
-                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Saida</p>
-                  <p class="text-sm text-foreground mt-1">{{ formatDateTime(viagem.dataSaidaReal ?? viagem.dataSaidaPrevista) }}</p>
-                </div>
-                <div class="rounded-lg border border-border bg-muted/20 p-4">
-                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Retorno</p>
-                  <p class="text-sm text-foreground mt-1">{{ formatDateTime(viagem.dataRetornoReal ?? viagem.dataRetornoPrevisto) }}</p>
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tipo de Viagem</p>
+                  <p class="text-sm font-semibold text-foreground">{{ viagem.descricaoTipoViagem ?? '-' }}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          <!-- Rota -->
           <Card class="bg-sidebar border-border">
             <CardHeader class="pb-3 border-b border-border">
               <CardTitle class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                <ShipWheel class="size-4 text-blue-400" /> Travessia / paradas
+                <Truck class="size-4 text-cyan-400" /> Deslocamento
               </CardTitle>
             </CardHeader>
-            <CardContent class="p-5 space-y-4">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="rounded-lg border border-border bg-muted/20 p-4">
-                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Horario da ultima saida</p>
-                  <p class="text-lg font-semibold text-foreground mt-1">{{ formatTime(getParadaSaida()) }}</p>
+            <CardContent class="p-5">
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Origem</p>
+                  <p class="text-sm text-foreground">{{ viagem.origem ?? '-' }}</p>
                 </div>
-                <div class="rounded-lg border border-border bg-muted/20 p-4">
-                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Paradas planejadas</p>
-                  <p class="text-lg font-semibold text-foreground mt-1">{{ paradasOrdenadas.length }}</p>
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Destino</p>
+                  <p class="text-sm text-foreground">{{ viagem.destino ?? '-' }}</p>
+                </div>
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Km Previsto</p>
+                  <p class="text-sm text-foreground">{{ viagem.kmPrevisto ? `${viagem.kmPrevisto} km` : '-' }}</p>
+                </div>
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Saída Prevista</p>
+                  <p class="text-sm text-foreground">{{ formatDateTime(viagem.dataSaidaPrevista) }}</p>
+                </div>
+                <div class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Retorno Previsto</p>
+                  <p class="text-sm text-foreground">{{ formatDateTime(viagem.dataRetornoPrevisto) }}</p>
+                </div>
+                <div v-if="viagem.kmReal" class="space-y-1">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Km Real</p>
+                  <p class="text-sm text-foreground">{{ viagem.kmReal }} km</p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
 
-              <div v-if="paradasOrdenadas.length" class="rounded-md border border-border overflow-hidden">
+          <!-- Paradas -->
+          <Card v-if="viagem.paradas?.length" class="bg-sidebar border-border">
+            <CardHeader class="pb-3 border-b border-border">
+              <CardTitle class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                <MapPinned class="size-4 text-cyan-400" /> Paradas ({{ viagem.paradas.length }})
+              </CardTitle>
+            </CardHeader>
+            <CardContent class="p-0">
+              <div class="divide-y divide-border">
                 <div
-                  v-for="parada in paradasOrdenadas"
-                  :key="parada.codigo"
-                  class="p-4 border-b border-border last:border-b-0 bg-muted/10"
+                  v-for="parada in [...viagem.paradas].sort((a, b) => a.ordem - b.ordem)"
+                  :key="parada.ordem"
+                  class="p-5"
                 >
-                  <div class="flex items-start gap-3">
-                    <div class="flex items-center justify-center size-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold text-cyan-300 shrink-0">
+                  <div class="flex items-center gap-3 mb-3">
+                    <div class="flex size-7 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10 text-xs font-bold text-cyan-300">
                       {{ parada.ordem }}
                     </div>
-                    <div class="min-w-0 flex-1">
-                      <p class="text-sm font-semibold text-foreground truncate">{{ parada.descricaoLocal }}</p>
-                      <p class="text-xs text-muted-foreground truncate">
-                        {{ [parada.endereco, parada.cidade, parada.estadoRegiao].filter(Boolean).join(', ') || 'Endereco nao informado' }}
-                      </p>
-                      <p class="text-xs text-muted-foreground mt-1">
-                        Chegada: {{ formatDateTime(parada.dataChegadaReal ?? parada.dataChegadaPrevista) }}
-                        <span class="mx-2">-</span>
-                        Saida: {{ formatDateTime(parada.dataSaidaReal ?? parada.dataSaidaPrevista) }}
-                      </p>
+                    <p class="text-sm font-semibold text-foreground">
+                      {{ parada.descricaoLocal || `Parada ${parada.ordem}` }}
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    <div v-if="parada.endereco" class="space-y-0.5">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Endereço</p>
+                      <p class="text-foreground">{{ parada.endereco }}</p>
+                    </div>
+                    <div v-if="parada.cidade" class="space-y-0.5">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Cidade</p>
+                      <p class="text-foreground">{{ parada.cidade }}</p>
+                    </div>
+                    <div v-if="parada.estadoRegiao" class="space-y-0.5">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Estado</p>
+                      <p class="text-foreground">{{ parada.estadoRegiao }}</p>
+                    </div>
+                    <div v-if="parada.dataChegadaPrevista" class="space-y-0.5">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Chegada prevista</p>
+                      <p class="text-foreground">{{ formatDateTime(parada.dataChegadaPrevista) }}</p>
                     </div>
                   </div>
+                  <p v-if="parada.observacao" class="mt-2 text-xs text-muted-foreground">{{ parada.observacao }}</p>
                 </div>
-              </div>
-
-              <div v-else class="rounded-md border border-border bg-muted/10 p-5 text-sm text-muted-foreground">
-                Nenhuma parada cadastrada para esta viagem.
               </div>
             </CardContent>
           </Card>
         </div>
 
+        <!-- Right sidebar -->
         <div class="space-y-5">
           <Card class="bg-sidebar border-border">
-            <CardContent class="p-5 space-y-5">
+            <CardContent class="p-5 space-y-4">
               <div>
-                <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tempo total da viagem</p>
-                <p class="text-3xl font-bold text-foreground mt-1">{{ duracaoTotal ?? '-' }}</p>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Saída prevista</p>
+                <p class="text-sm text-foreground mt-1">{{ formatDateTime(viagem.dataSaidaPrevista) }}</p>
               </div>
               <div class="h-px bg-border" />
               <div>
-                <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Ordem de servico</p>
-                <p class="text-sm font-mono text-foreground mt-1">
-                  {{ viagem.codigoOrdemServico ? `#${viagem.codigoOrdemServico}` : '-' }}
-                </p>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Retorno previsto</p>
+                <p class="text-sm text-foreground mt-1">{{ formatDateTime(viagem.dataRetornoPrevisto) }}</p>
               </div>
+              <div class="h-px bg-border" />
               <div class="space-y-3">
                 <div class="flex items-center gap-2 text-xs text-muted-foreground">
                   <ClipboardCheck class="size-4 text-emerald-400" />
@@ -361,7 +368,7 @@ onMounted(carregar)
                 </div>
                 <div class="flex items-center gap-2 text-xs text-muted-foreground">
                   <Milestone class="size-4 text-cyan-400" />
-                  {{ viagem.descricaoTipoViagem ?? 'Tipo nao informado' }}
+                  {{ viagem.descricaoTipoViagem ?? 'Tipo não informado' }}
                 </div>
               </div>
             </CardContent>
@@ -370,7 +377,7 @@ onMounted(carregar)
           <Card class="bg-sidebar border-border">
             <CardHeader class="pb-3 border-b border-border">
               <CardTitle class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                <Boxes class="size-4 text-emerald-400" /> Equipamentos tecnicos
+                <Boxes class="size-4 text-emerald-400" /> Equipamentos técnicos
               </CardTitle>
             </CardHeader>
             <CardContent class="p-0">
@@ -382,30 +389,13 @@ onMounted(carregar)
                       {{ item.descricaoAtivo || item.descricaoProduto || `Ativo #${item.codigoAtivo}` }}
                     </p>
                     <p class="text-xs text-muted-foreground truncate">
-                      {{ [item.marca, item.modelo, item.numeroSerie].filter(Boolean).join(' - ') || 'Detalhes nao informados' }}
+                      {{ [item.marca, item.modelo, item.numeroSerie].filter(Boolean).join(' - ') || 'Detalhes não informados' }}
                     </p>
                   </div>
                 </div>
               </div>
               <div v-else class="p-5 text-sm text-muted-foreground">
-                Nenhum equipamento vinculado a ordem.
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card class="bg-sidebar border-border">
-            <CardHeader class="pb-3 border-b border-border">
-              <CardTitle class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                <MapPinned class="size-4 text-cyan-400" /> Rota estimada
-              </CardTitle>
-            </CardHeader>
-            <CardContent class="p-4">
-              <div class="aspect-[4/3] rounded-md border border-dashed border-border bg-muted/20 flex flex-col items-center justify-center text-center px-6">
-                <MapPinned class="size-9 text-muted-foreground/60 mb-3" />
-                <p class="text-sm font-semibold text-foreground">Mapa reservado</p>
-                <p class="text-xs text-muted-foreground mt-1">
-                  A integracao de mapa sera implementada futuramente.
-                </p>
+                Nenhum equipamento vinculado à ordem.
               </div>
             </CardContent>
           </Card>
@@ -413,7 +403,7 @@ onMounted(carregar)
           <Card v-if="viagem.observacao || ordem?.observacaoGeral" class="bg-sidebar border-border">
             <CardHeader class="pb-3 border-b border-border">
               <CardTitle class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                <FileText class="size-4 text-blue-400" /> Observacoes
+                <FileText class="size-4 text-blue-400" /> Observações
               </CardTitle>
             </CardHeader>
             <CardContent class="p-5 space-y-3 text-sm text-muted-foreground">
@@ -424,5 +414,14 @@ onMounted(carregar)
         </div>
       </div>
     </template>
+
+    <!-- Edit modal -->
+    <ViagemPreparacaoEdicaoModal
+      v-if="viagem"
+      :open="editModalOpen"
+      :codigoViagem="viagem.codigo"
+      @close="editModalOpen = false"
+      @updated="onViagemAtualizada"
+    />
   </div>
 </template>

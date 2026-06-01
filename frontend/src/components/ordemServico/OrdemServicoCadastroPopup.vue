@@ -20,7 +20,7 @@
     </template>
   </div>
 
-  <form @submit="onSubmit">
+  <form @submit="onSubmit" class="relative">
 
     <!-- STEP 1: Identificação -->
     <div v-show="step === 1" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
@@ -288,7 +288,7 @@
             <div class="flex items-center gap-2">
               <select
                 v-model="horaHH"
-                class="h-9 w-20 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+                class="h-9 w-20 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
               >
                 <option value="">--</option>
                 <option v-for="h in 24" :key="h - 1" :value="String(h - 1).padStart(2, '0')">
@@ -299,7 +299,7 @@
               <select
                 v-model="horaMM"
                 :disabled="horaHH === ''"
-                class="h-9 w-20 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-40"
+                class="h-9 w-20 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-40 dark:[color-scheme:dark]"
               >
                 <option value="00">00</option>
                 <option value="15">15</option>
@@ -326,13 +326,13 @@
             <div class="flex items-center gap-2">
               <select
                 v-model="previsaoHoras"
-                class="h-9 w-24 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+                class="h-9 w-24 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
               >
                 <option v-for="h in 13" :key="h - 1" :value="h - 1">{{ h - 1 }}h</option>
               </select>
               <select
                 v-model="previsaoMinutos"
-                class="h-9 w-24 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+                class="h-9 w-24 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
               >
                 <option :value="0">00 min</option>
                 <option :value="15">15 min</option>
@@ -396,7 +396,7 @@
             <div class="flex items-center gap-2">
               <select
                 v-model="horaHH"
-                class="h-9 w-20 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+                class="h-9 w-20 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
               >
                 <option value="">--</option>
                 <option v-for="h in 24" :key="h - 1" :value="String(h - 1).padStart(2, '0')">
@@ -407,7 +407,7 @@
               <select
                 v-model="horaMM"
                 :disabled="horaHH === ''"
-                class="h-9 w-20 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-40"
+                class="h-9 w-20 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-40 dark:[color-scheme:dark]"
               >
                 <option value="00">00</option>
                 <option value="15">15</option>
@@ -434,13 +434,13 @@
             <div class="flex items-center gap-2">
               <select
                 v-model="previsaoHoras"
-                class="h-9 w-24 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+                class="h-9 w-24 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
               >
                 <option v-for="h in 13" :key="h - 1" :value="h - 1">{{ h - 1 }}h</option>
               </select>
               <select
                 v-model="previsaoMinutos"
-                class="h-9 w-24 rounded-md border border-border bg-muted/20 px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors"
+                class="h-9 w-24 rounded-md border border-border bg-background px-2 text-sm text-foreground hover:border-blue-500/50 focus:border-blue-500 focus:outline-none transition-colors dark:[color-scheme:dark]"
               >
                 <option :value="0">00 min</option>
                 <option :value="15">15 min</option>
@@ -487,7 +487,7 @@
               'border rounded-lg p-4 transition-all select-none',
               // Indisponível no dia selecionado → bloqueado
               !tecnicoDisponivelNoDia(tec.id)
-                ? 'opacity-55 cursor-not-allowed border-red-500/30 bg-red-500/5'
+                ? 'cursor-not-allowed border-red-500/40 bg-red-500/8 dark:bg-red-500/5'
                 : tecnicoResponsavelId === tec.id
                   ? 'cursor-pointer border-blue-600 bg-blue-500/15 ring-2 ring-blue-500/40'
                   : tecnicosSelecionados.has(tec.id)
@@ -538,7 +538,7 @@
               <!-- Badge indisponível -->
               <span
                 v-if="!tecnicoDisponivelNoDia(tec.id)"
-                class="text-[9px] font-bold uppercase tracking-wider bg-red-500/15 text-red-400 border border-red-500/30 px-1.5 py-0.5 rounded-full shrink-0"
+                class="text-[9px] font-bold uppercase tracking-wider bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/40 dark:border-red-500/30 px-1.5 py-0.5 rounded-full shrink-0"
               >
                 Indisponível
               </span>
@@ -583,14 +583,14 @@
                     class="flex items-center gap-1.5 mb-1"
                   >
                     <div class="w-1.5 h-1.5 rounded-full bg-red-400/80 shrink-0" />
-                    <span class="text-xs text-red-300/80">
+                    <span class="text-xs text-red-500/80 dark:text-red-300/80">
                       Ocupado das {{ ocup.inicio }}<template v-if="ocup.fim"> às {{ ocup.fim }}</template>
                     </span>
                   </div>
                   <!-- Horário livre (com buffer) -->
                   <div class="flex items-center gap-2 mt-0.5">
                     <div class="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                    <span class="text-xs font-semibold text-amber-400">
+                    <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">
                       Disponível neste dia a partir das {{ horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) }}
                     </span>
                   </div>
@@ -606,11 +606,11 @@
                 <template v-else>
                   <div class="flex items-center gap-2">
                     <div class="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-                    <span class="text-xs font-semibold text-red-400">Ocupado neste dia</span>
+                    <span class="text-xs font-semibold text-red-600 dark:text-red-400">Ocupado neste dia</span>
                   </div>
                   <div
                     v-if="proximoDiaDisponivel.get(tec.id)"
-                    class="mt-1.5 flex items-center gap-1.5 text-xs text-amber-400"
+                    class="mt-1.5 flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400"
                   >
                     <CalendarClock class="w-3 h-3 shrink-0" />
                     Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
@@ -654,7 +654,7 @@
                     class="flex items-center gap-1.5 mt-1"
                   >
                     <div class="w-1.5 h-1.5 rounded-full bg-red-400/80 shrink-0" />
-                    <span class="text-xs text-red-300/80">
+                    <span class="text-xs text-red-500/80 dark:text-red-300/80">
                       Ocupado das {{ ocup.inicio }}<template v-if="ocup.fim"> às {{ ocup.fim }}</template>
                     </span>
                   </div>
@@ -664,14 +664,14 @@
                     class="flex items-center gap-1.5 mt-1"
                   >
                     <div class="w-1.5 h-1.5 rounded-full bg-amber-400/80 shrink-0" />
-                    <span class="text-xs font-semibold text-amber-400">
+                    <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">
                       Disponível neste dia a partir das {{ horaLivreParaTecnicoNoDia(tec.id, form.values.dataAgendamento) }}
                     </span>
                   </div>
                   <!-- Próximo dia livre (quando dia completamente bloqueado sem horário) -->
                   <div
                     v-else-if="proximoDiaDisponivel.get(tec.id)"
-                    class="flex items-center gap-1.5 mt-1 text-xs text-amber-400"
+                    class="flex items-center gap-1.5 mt-1 text-xs text-amber-600 dark:text-amber-400"
                   >
                     <CalendarClock class="w-3 h-3 shrink-0" />
                     Próximo disponível: <span class="font-semibold ml-0.5">{{ formatDayChip(proximoDiaDisponivel.get(tec.id)!) }}</span>
@@ -1020,11 +1020,42 @@
       </div>
     </div>
 
+  <!-- Confirmação de preparações de viagem criadas -->
+  <div
+    v-if="confirmacaoViagem"
+    class="absolute inset-0 z-10 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center gap-6 p-8 rounded-xl"
+  >
+    <div class="flex items-center justify-center w-16 h-16 rounded-full bg-cyan-500/15 border border-cyan-500/30">
+      <Route class="w-8 h-8 text-cyan-400" />
+    </div>
+    <div class="text-center space-y-2 max-w-sm">
+      <h3 class="text-xl font-bold text-foreground">Ordem #{{ confirmacaoViagem.codigoOrdem }} criada!</h3>
+      <p class="text-sm text-muted-foreground">
+        {{
+          confirmacaoViagem.qtdTecnicos === 1
+            ? 'Uma preparação de viagem foi criada automaticamente para o técnico.'
+            : `${confirmacaoViagem.qtdTecnicos} preparações de viagem foram criadas automaticamente, uma para cada técnico.`
+        }}
+      </p>
+      <p class="text-sm font-medium text-cyan-500 dark:text-cyan-400">
+        Acesse a área de Preparação de Viagem para preencher os detalhes.
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <Button variant="outline" class="border-border hover:bg-muted/30" @click="fecharConfirmacao">
+        Fechar
+      </Button>
+      <Button class="bg-cyan-600 hover:bg-cyan-700 text-white px-6" @click="irParaViagens">
+        Ver Preparações de Viagem
+      </Button>
+    </div>
+  </div>
   </form>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -1039,7 +1070,7 @@ import { DatePickerInput } from '@/components/ui/date-picker'
 import {
   ChevronRight, FileText, Server, UserCheck, ArrowRight,
   Loader2, PackageCheck, PackageX, UserX, CheckCircle2,
-  ListChecks, Plus, Trash2, Search, X, Wrench, AlertTriangle, Star, CalendarClock,
+  ListChecks, Plus, Trash2, Search, X, Wrench, AlertTriangle, Star, CalendarClock, Route,
 } from 'lucide-vue-next'
 
 import { clienteService } from '@/services/clienteService'
@@ -1072,6 +1103,21 @@ const isEditMode = computed(() => !!props.initialData)
 const maxStep = computed(() => 5)
 
 const emit = defineEmits(['fechar', 'success'])
+
+const router = useRouter()
+
+const confirmacaoViagem = ref<{ codigoOrdem: number; qtdTecnicos: number } | null>(null)
+
+function fecharConfirmacao() {
+  confirmacaoViagem.value = null
+  emit('fechar')
+}
+
+function irParaViagens() {
+  confirmacaoViagem.value = null
+  emit('fechar')
+  router.push('/viagem-preparacao')
+}
 
 const step = ref(1)
 const stepsList = [
@@ -1652,7 +1698,7 @@ const nextStep = async () => {
 }
 
 function getInitials(nome: string): string {
-  return nome.split(' ').filter(Boolean).slice(0, 2).map(n => n[0].toUpperCase()).join('')
+  return nome.split(' ').filter(Boolean).slice(0, 2).map(n => n[0]?.toUpperCase() ?? '').join('')
 }
 
 function onAtivoSelect(val: string) {
@@ -1793,6 +1839,13 @@ const onSubmit = form.handleSubmit(async (values) => {
         for (const codigoTarefa of todasSelecionadas) {
           await ordemServicoService.adicionarChecklistMaquinaItem(historicoId, codigoTarefa)
         }
+      }
+
+      if (ordemCriada && horaAgendamento.value !== '') {
+        const qtdTecnicos = tecnicosSelecionados.value.size || 1
+        emit('success')
+        confirmacaoViagem.value = { codigoOrdem: ordemCriada.codigo, qtdTecnicos }
+        return
       }
     }
 

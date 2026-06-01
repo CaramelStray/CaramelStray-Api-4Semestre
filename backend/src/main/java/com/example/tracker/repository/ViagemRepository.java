@@ -18,6 +18,8 @@ public interface ViagemRepository extends JpaRepository<Viagem, Integer> {
 
     List<Viagem> findByStatus(String status);
 
+    boolean existsByOrdemServicoCodigoAndFuncionarioResponsavelId(Integer codigoOrdemServico, Integer codigoFuncionario);
+
     @Query("""
         SELECT CASE WHEN COUNT(v) > 0 THEN true ELSE false END
         FROM Viagem v

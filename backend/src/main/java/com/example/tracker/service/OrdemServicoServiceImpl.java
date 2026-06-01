@@ -15,6 +15,10 @@ import com.example.tracker.entity.OrdemServico;
 import com.example.tracker.entity.OrdemServicoChecklistAtivo;
 import com.example.tracker.entity.OrdemServicoTecnico;
 import com.example.tracker.entity.Tecnico;
+import com.example.tracker.entity.TipoViagem;
+import com.example.tracker.entity.Viagem;
+import com.example.tracker.repository.TipoViagemRepository;
+import com.example.tracker.repository.ViagemRepository;
 import com.example.tracker.enums.StatusAusenciaTecnico;
 import com.example.tracker.enums.StatusTecnico;
 import com.example.tracker.repository.ClienteRepository;
@@ -84,6 +88,8 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
     private final MaquinaChecklistManutencaoRepository maquinaChecklistManutencaoRepository;
     private final OrdemServicoTecnicoRepository ordemServicoTecnicoRepository;
     private final TecnicoAusenciaRepository tecnicoAusenciaRepository;
+    private final ViagemRepository viagemRepository;
+    private final TipoViagemRepository tipoViagemRepository;
 
     public OrdemServicoServiceImpl(
             OrdemServicoRepository ordemServicoRepository,
@@ -98,7 +104,9 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
             OrdemServicoChecklistAtivoRepository ordemServicoChecklistAtivoRepository,
             MaquinaChecklistManutencaoRepository maquinaChecklistManutencaoRepository,
             OrdemServicoTecnicoRepository ordemServicoTecnicoRepository,
-            TecnicoAusenciaRepository tecnicoAusenciaRepository) {
+            TecnicoAusenciaRepository tecnicoAusenciaRepository,
+            ViagemRepository viagemRepository,
+            TipoViagemRepository tipoViagemRepository) {
         this.ordemServicoRepository = ordemServicoRepository;
         this.clienteRepository = clienteRepository;
         this.tecnicoRepository = tecnicoRepository;
@@ -112,6 +120,8 @@ public class OrdemServicoServiceImpl implements OrdemServicoService {
         this.maquinaChecklistManutencaoRepository = maquinaChecklistManutencaoRepository;
         this.ordemServicoTecnicoRepository = ordemServicoTecnicoRepository;
         this.tecnicoAusenciaRepository = tecnicoAusenciaRepository;
+        this.viagemRepository = viagemRepository;
+        this.tipoViagemRepository = tipoViagemRepository;
     }
 
     @Override
@@ -410,6 +420,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         sincronizarChecklistSeInformado(dto, ordemServicoSalva);
         criarHistoricoManutencaoVinculado(ordemServicoSalva);
         atualizarDisponibilidadeTecnicos(relacoes.tecnicos(), ordemServicoSalva);
+        criarViagensParaOrdem(ordemServicoSalva, relacoes.tecnicos());
         return ordemServicoSalva;
     }
 
@@ -433,6 +444,7 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
         sincronizarChecklistSeInformado(dto, ordemServicoSalva);
         sincronizarHistorico(ordemServicoSalva);
         atualizarDisponibilidadeTecnicos(unirTecnicos(tecnicosAnteriores, relacoes.tecnicos()), ordemServicoSalva);
+        criarViagensParaOrdem(ordemServicoSalva, relacoes.tecnicos());
         return ordemServicoSalva;
     }
 
@@ -654,6 +666,37 @@ public List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario) {
     public List<MaquinaChecklistManutencaoResponseDTO> listarChecklistMaquina(Integer id) {
         requireId(id, "Id da ordem de servico e obrigatorio");
         return maquinaChecklistManutencaoService.listarPorOrdemServico(id);
+    }
+
+    private void criarViagensParaOrdem(OrdemServico os, List<Tecnico> tecnicos) {
+        if (os == null || os.getDataAgendamento() == null || tecnicos.isEmpty()) {
+            return;
+        }
+
+        TipoViagem tipoViagem = null;
+        String tipoOrdemStr = os.getTipoOrdem();
+        if (tipoOrdemStr != null && !tipoOrdemStr.isBlank()) {
+            tipoViagem = tipoViagemRepository.findByDescricaoIgnoreCase(tipoOrdemStr).orElse(null);
+        }
+        if (tipoViagem == null) {
+            List<TipoViagem> ativos = tipoViagemRepository.findByAtivoTrue();
+            if (ativos.isEmpty()) return;
+            tipoViagem = ativos.get(0);
+        }
+
+        for (Tecnico tecnico : tecnicos) {
+            if (viagemRepository.existsByOrdemServicoCodigoAndFuncionarioResponsavelId(
+                    os.getCodigo(), tecnico.getId())) {
+                continue;
+            }
+            Viagem viagem = new Viagem();
+            viagem.setTipoViagem(tipoViagem);
+            viagem.setCliente(os.getCliente());
+            viagem.setFuncionarioResponsavel(tecnico);
+            viagem.setOrdemServico(os);
+            viagem.setStatus("ABERTA");
+            viagemRepository.save(viagem);
+        }
     }
 
     private void criarHistoricoManutencaoVinculado(OrdemServico os) {

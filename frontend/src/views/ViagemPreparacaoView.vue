@@ -8,19 +8,29 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import {
-  CheckCircle2, Clock, Eye, MapPinned, Plus, Route, Search, Truck,
+  AlertTriangle, CheckCircle2, Clock, Eye, MapPinned, Pencil, Route, Search, Truck,
 } from 'lucide-vue-next'
 import { viagemService, type ViagemResponseDTO } from '@/services/viagemService'
-import EmbarcacoesAtracadasCard from '@/components/viagem/EmbarcacoesAtracadasCard.vue'
-import ViagemPreparacaoCadastroModal from '@/components/viagem/ViagemPreparacaoCadastroModal.vue'
+import ViagemPreparacaoEdicaoModal from '@/components/viagem/ViagemPreparacaoEdicaoModal.vue'
 
 const router = useRouter()
+
+const editandoViagemId = ref<number | null>(null)
+
+function abrirEdicao(codigo: number) {
+  editandoViagemId.value = codigo
+}
+
+function onViagemAtualizada(atualizada: ViagemResponseDTO) {
+  const index = viagens.value.findIndex(v => v.codigo === atualizada.codigo)
+  if (index !== -1) viagens.value[index] = atualizada
+  editandoViagemId.value = null
+}
 
 const viagens = ref<ViagemResponseDTO[]>([])
 const searchQuery = ref('')
 const loading = ref(false)
 const erro = ref('')
-const showCadastroModal = ref(false)
 
 const statusConfig: Record<string, { dot: string; label: string }> = {
   ABERTA: { dot: 'bg-amber-500', label: 'Aberta' },
@@ -60,11 +70,20 @@ const stats = computed(() => [
   },
 ])
 
-const filteredViagens = computed(() => {
-  const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return viagens.value
+// Viagens auto-criadas ainda sem preenchimento (sem rota e sem data de saída)
+const viagensPendentes = computed(() =>
+  viagens.value.filter(v =>
+    v.status === 'ABERTA' && !v.origem && !v.dataSaidaPrevista
+  )
+)
 
-  return viagens.value.filter(v =>
+const filteredViagens = computed(() => {
+  const pendentesIds = new Set(viagensPendentes.value.map(v => v.codigo))
+  const q = searchQuery.value.trim().toLowerCase()
+  const base = viagens.value.filter(v => !pendentesIds.has(v.codigo))
+  if (!q) return base
+
+  return base.filter(v =>
     String(v.codigo).includes(q) ||
     v.nomeCliente?.toLowerCase().includes(q) ||
     v.nomeFuncionarioResponsavel?.toLowerCase().includes(q) ||
@@ -101,11 +120,6 @@ async function carregarViagens() {
   }
 }
 
-async function onViagemCriada() {
-  showCadastroModal.value = false
-  await carregarViagens()
-}
-
 onMounted(carregarViagens)
 </script>
 
@@ -119,13 +133,6 @@ onMounted(carregarViagens)
         </p>
       </div>
 
-      <Button
-        class="bg-blue-600 hover:bg-blue-700 text-white border-none"
-        @click="showCadastroModal = true"
-      >
-        <Plus class="size-4 mr-2" />
-        Nova Preparação
-      </Button>
     </div>
 
     <div v-if="loading" class="text-center py-12 text-muted-foreground">
@@ -150,6 +157,46 @@ onMounted(carregarViagens)
             <p class="text-[10px] text-muted-foreground mt-1">{{ stat.sub }}</p>
           </CardContent>
         </Card>
+      </div>
+
+      <!-- Seção: Preparações pendentes de preenchimento -->
+      <div v-if="viagensPendentes.length" class="rounded-xl border border-amber-500/40 bg-amber-500/5 overflow-hidden">
+        <div class="flex items-center gap-3 px-5 py-4 border-b border-amber-500/30 bg-amber-500/10">
+          <AlertTriangle class="size-5 text-amber-500 dark:text-amber-400 shrink-0" />
+          <div>
+            <p class="text-sm font-semibold text-amber-700 dark:text-amber-300">
+              {{ viagensPendentes.length === 1 ? '1 preparação pendente de preenchimento' : `${viagensPendentes.length} preparações pendentes de preenchimento` }}
+            </p>
+            <p class="text-xs text-amber-600/80 dark:text-amber-400/70 mt-0.5">
+              Criadas automaticamente ao agendar a ordem de serviço. Clique em Editar para preencher os detalhes da viagem.
+            </p>
+          </div>
+        </div>
+        <div class="divide-y divide-amber-500/20">
+          <div
+            v-for="viagem in viagensPendentes"
+            :key="viagem.codigo"
+            class="flex items-center justify-between px-5 py-3.5 hover:bg-amber-500/5 transition-colors"
+          >
+            <div class="flex items-center gap-4">
+              <span class="font-mono text-sm font-semibold text-foreground">#{{ viagem.codigo }}</span>
+              <div>
+                <p class="text-sm font-medium text-foreground">{{ viagem.nomeCliente ?? `Cliente #${viagem.codigoCliente}` }}</p>
+                <p class="text-xs text-muted-foreground">
+                  Técnico: {{ viagem.nomeFuncionarioResponsavel ?? 'Não atribuído' }}
+                  <span v-if="viagem.descricaoTipoViagem"> · {{ viagem.descricaoTipoViagem }}</span>
+                </p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              class="bg-amber-600 hover:bg-amber-700 text-white text-xs"
+              @click="abrirEdicao(viagem.codigo)"
+            >
+              Preencher dados
+            </Button>
+          </div>
+        </div>
       </div>
 
       <div class="relative">
@@ -223,14 +270,24 @@ onMounted(carregarViagens)
               </TableCell>
 
               <TableCell class="text-right pr-6">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  class="h-9 w-9 text-muted-foreground hover:text-white transition-colors"
-                  @click="router.push(`/viagem-preparacao/${viagem.codigo}`)"
-                >
-                  <Eye class="size-5" />
-                </Button>
+                <div class="flex items-center justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-9 w-9 text-muted-foreground hover:text-white transition-colors"
+                    @click="abrirEdicao(viagem.codigo)"
+                  >
+                    <Pencil class="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-9 w-9 text-muted-foreground hover:text-white transition-colors"
+                    @click="router.push(`/viagem-preparacao/${viagem.codigo}`)"
+                  >
+                    <Eye class="size-5" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
 
@@ -244,10 +301,13 @@ onMounted(carregarViagens)
       </div>
     </template>
 
-    <ViagemPreparacaoCadastroModal
-      :open="showCadastroModal"
-      @close="showCadastroModal = false"
-      @created="onViagemCriada"
-    />
   </div>
+
+  <!-- Edit modal -->
+  <ViagemPreparacaoEdicaoModal
+    :open="editandoViagemId !== null"
+    :codigoViagem="editandoViagemId ?? 0"
+    @close="editandoViagemId = null"
+    @updated="onViagemAtualizada"
+  />
 </template>

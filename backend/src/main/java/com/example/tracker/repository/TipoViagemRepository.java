@@ -9,5 +9,7 @@ public interface TipoViagemRepository extends JpaRepository<TipoViagem, Integer>
 
     Optional<TipoViagem> findByDescricao(String descricao);
 
+    Optional<TipoViagem> findByDescricaoIgnoreCase(String descricao);
+
     List<TipoViagem> findByAtivoTrue();
 }

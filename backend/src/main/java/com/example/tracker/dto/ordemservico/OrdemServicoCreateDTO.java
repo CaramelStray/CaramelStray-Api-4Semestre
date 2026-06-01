@@ -16,6 +16,8 @@ public class OrdemServicoCreateDTO {
 
     private Integer codigoFuncionario;
 
+    private List<Integer> codigosFuncionarios;
+
     private Integer codigoSoftwareInstalado;
 
     @NotNull(message = "O codigo do contrato e obrigatorio.")
@@ -36,6 +38,8 @@ public class OrdemServicoCreateDTO {
     private LocalDateTime dataFimExecucao;
 
     private String observacaoGeral;
+
+    private Integer previsaoManutencao;
 
     @Valid
     private List<OrdemServicoChecklistAtivoCreateDTO> checklistAtivos;

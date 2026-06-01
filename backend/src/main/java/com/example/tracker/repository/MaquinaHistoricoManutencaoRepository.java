@@ -53,4 +53,27 @@ public interface MaquinaHistoricoManutencaoRepository extends JpaRepository<Maqu
     boolean existsTecnicoVinculado(
             @Param("codigoHistorico") Integer codigoHistorico,
             @Param("codigoFuncionario") Integer codigoFuncionario);
+
+    @Query(
+            value = """
+                    select codigo_funcionario
+                    from tb_srv_maquina_funcionario_manutencao
+                    where codigo_historico_manutencao = :codigoHistorico
+                    """,
+            nativeQuery = true)
+    List<Integer> findFuncionarioIdsByHistoricoId(@Param("codigoHistorico") Integer codigoHistorico);
+
+    @Query(
+            value = """
+                    select case when count(*) > 0 then true else false end
+                    from tb_srv_maquina_historico_manutencao h
+                    join tb_srv_maquina_funcionario_manutencao f
+                      on f.codigo_historico_manutencao = h.codigo
+                    where f.codigo_funcionario = :codigoFuncionario
+                      and h.data_fim_execucao is null
+                      and (h.status is null or upper(h.status) not in ('FINALIZADA', 'FINALIZADO', 'CONCLUIDA', 'CONCLUIDO', 'CANCELADA', 'CANCELADO'))
+                      and (upper(h.status) = 'EM_EXECUCAO' or h.data_inicio_execucao is not null)
+                    """,
+            nativeQuery = true)
+    boolean existsHistoricoAtivoPorTecnico(@Param("codigoFuncionario") Integer codigoFuncionario);
 }

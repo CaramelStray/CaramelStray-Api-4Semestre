@@ -61,23 +61,23 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 | 11 | Média | Como técnico, quero acessar o checklist da manutenção durante a visita para garantir que todos os procedimentos foram seguidos | 8 | 2 |
 | 12 | Média | Como gestor, quero cadastrar os ativos da empresa para ter um controle centralizado do inventário próprio | 13 | 2 |
 | 13 | Média | Como gestor, quero visualizar o dashboard de ordens de manutenção para acompanhar o status geral das atividades | 13 | 3 |
-| 14 | Média | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 8 | 3 |
+| 14 | Média | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 13 | 3 |
 | 15 | Baixa | Como gestor, quero cadastrar clientes com informações de localização para saber onde cada sistema está instalado | 5 | 1 |
 | 16 | Baixa | Como gestor, quero cadastrar técnicos com suas competências para saber quem está apto a atender cada chamado | 5 | 1 |
-| 17 | Baixa | Como gestor, quero visualizar a disponibilidade dos técnicos em um calendário para evitar conflitos de agendamento | 13 | 3 |
+| 17 | Baixa | Como gestor, quero registrar o ciclo de embarcações para planejar manutenções enquanto estão atracadas | 8 | 3 |
 | 18 | Baixa | Como gestor, quero visualizar no mapa a localização de todos os sistemas instalados para ter uma visão geográfica da operação | 13 | 3 |
 | 19 | Baixa | Como gestor, quero rastrear a localização dos técnicos no mapa para saber se estão em campo ou em terra | 13 | 3 |
 
 ---
 
 ## 📅 Cronograma de Sprints <a id="sprint"></a>
-| Sprint          |    Período    | Documentação                                     |            Alocação das tasks               | Video Tracker                                  |
-| --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------- |----------------------------------------------- |
-| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [Sprint 1 Tasks](documentacao/sprints/sprint-1/tasks_sprint1.csv) ||
-| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](documentacao/sprints/sprint2) |[Sprint 2 Tasks Semana 1](documentacao/sprints/sprint2/primeira_semana.csv) <br> [Sprint 2 Tasks Semana 2](documentacao/sprints/sprint2/segunda_semana.csv) <br> [Sprint 2 Tasks Semana 3](documentacao/sprints/sprint2/terceira_semana.csv)|  [Sprint 2 Video](https://youtu.be/xsFScifns6g)|
-| 🔖 **SPRINT 3** | 11/05 - 31/05 | [Em processo...](#)| [Em processo...](#) ||
-| ⚡️ **feira de soluções** |  |  |  ||
 
+| Sprint | Período | Documentação | DOR e DOD Sprint | Alocação das tasks | Video Tracker |
+| --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------------ | ------------------------------------------- |----------------------------------------------- |
+| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./documentacao/sprints/sprint-1) | [DoR e DoD Sprint 1](#) | [Sprint 1 Tasks](documentacao/sprints/sprint-1/tasks_sprint1.csv) | |
+| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](documentacao/sprints/sprint2) | [DoR e DoD Sprint 2](#) | [Sprint 2 Tasks Semana 1](documentacao/sprints/sprint2/primeira_semana.csv) <br> [Sprint 2 Tasks Semana 2](documentacao/sprints/sprint2/segunda_semana.csv) <br> [Sprint 2 Tasks Semana 3](documentacao/sprints/sprint2/terceira_semana.csv) | [Sprint 2 Video](https://youtu.be/xsFScifns6g) |
+| 🔖 **SPRINT 3** | 11/05 - 31/05 | [Sprint 3 Docs](./documentacao/sprints/sprints3) | [DoR e DoD Sprint 3](./documentacao/sprints/sprints3) |  [Sprint 3 Tasks Semana 1](./documentacao/sprints/sprints3/primeira-semana.csv) <br> [Sprint 3 Tasks Semana 2](./documentacao/sprints/sprints3/segunda-semana.csv) <br> [Sprint 3 Tasks Semana 3](./documentacao/sprints/sprints3/terceira-semana.csv)| [Sprint 3 Video](https://youtu.be/olo369Qum8Q) |
+| ⚡️ **Feira de Soluções** | 25/06 |  |  |  | |
 ## 💻 Product backlog -> DOR e DOD <a id="sprintdor"></a>
 [Sprints DOR e DOD](./documentacao/sprints)
 
@@ -103,7 +103,7 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
 
 # 📉 Burn Down <a id="down"></a>
 
-[📄 Burn Down](./documentacao/burn_down.md)
+[📄 Burn Down](./documentacao/sprints/sprints3/BurnDown.md)
 
 
 # 📚 Manual de usuário <a id="manual"></a>
@@ -159,8 +159,12 @@ A solução consiste em um Sistema de Gestão de Manutenções que centraliza o 
       <td>Thor Lyndgaard</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/thorlyndgaard"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href="https://www.linkedin.com/in/thor-lyndgaard-b2155826b/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>      
+      <td><a href="https://www.linkedin.com/in/thor-lyndgaard-b2155826b/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td> 
     </tr>
+      <td>Guilherme Bezerra</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/GuilhermebJunqueira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/guilherme-bezerra-a01035170/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td> 
   </table>
 </div>
 

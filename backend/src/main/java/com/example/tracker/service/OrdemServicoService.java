@@ -1,16 +1,24 @@
 package com.example.tracker.service;
 
+import com.example.tracker.dto.dashboard.DashboardCardDTO;
 import com.example.tracker.dto.maquinachecklistmanutencao.MaquinaChecklistManutencaoResponseDTO;
+import com.example.tracker.dto.ordemservico.AgendaOrdemResponseDTO;
+import com.example.tracker.dto.ordemservico.TecnicoAgendaResponseDTO;
 import com.example.tracker.dto.ordemservico.TecnicosOrdensResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoCreateDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoDadosBasicosResponseDTO;
 import com.example.tracker.dto.ordemservico.OrdemServicoResponseDTO;
 import com.example.tracker.entity.OrdemServico;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface OrdemServicoService {
 
     List<OrdemServico> listarTodos();
+
+    List<OrdemServico> buscarPorPeriodo(LocalDate dataInicio, LocalDate dataFim);
+
+    List<TecnicoAgendaResponseDTO> buscarAgendaPorPeriodo(LocalDate dataInicio, LocalDate dataFim, Integer codigoFuncionario);
 
     List<TecnicosOrdensResponseDTO> buscarMinhasOrdens(String emailUsuario);
 
@@ -28,11 +36,15 @@ public interface OrdemServicoService {
 
     List<OrdemServico> buscarPorFuncionario(Integer codigoFuncionario);
 
+    List<OrdemServico> buscarPorStatus(String status);
+
     List<OrdemServico> buscarPorSoftwareInstalado(Integer codigoSoftwareInstalado);
 
     List<OrdemServico> buscarPorContrato(Integer codigoContrato);
 
     List<OrdemServico> buscarPorMaquinaContrato(Integer codigoMaquinaContrato);
+
+    List<DashboardCardDTO> obterDashboardOrdens();
 
     OrdemServico cadastrar(OrdemServicoCreateDTO dto);
 
@@ -43,4 +55,5 @@ public interface OrdemServicoService {
     void deletar(Integer id);
 
     List<MaquinaChecklistManutencaoResponseDTO> listarChecklistMaquina(Integer id);
+
 }

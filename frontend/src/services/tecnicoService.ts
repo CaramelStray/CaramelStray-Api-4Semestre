@@ -34,6 +34,7 @@ export interface TecnicoCreateDTO {
 
 export const tecnicoService = {
   listar: () => apiFetch<TecnicoResponseDTO[]>('/tecnicos'),
+  listarSelecionaveis: () => apiFetch<TecnicoResponseDTO[]>('/tecnicos/selecionaveis'),
   buscarPorId: (id: number) => apiFetch<TecnicoResponseDTO>(`/tecnicos/${id}`),
   criar: (dto: TecnicoCreateDTO) => apiFetch<TecnicoResponseDTO>('/tecnicos', {
     method: 'POST',

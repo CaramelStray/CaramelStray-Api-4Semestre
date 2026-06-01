@@ -6,9 +6,17 @@ import com.example.tracker.dto.tecnico.TecnicoResponseDTO;
 import com.example.tracker.entity.Perfil;
 import com.example.tracker.entity.Tecnico;
 import com.example.tracker.entity.Usuario;
+import com.example.tracker.enums.StatusAusenciaTecnico;
+import com.example.tracker.enums.StatusTecnico;
+import com.example.tracker.repository.MaquinaHistoricoManutencaoRepository;
+import com.example.tracker.repository.OrdemServicoRepository;
 import com.example.tracker.repository.PerfilRepository;
+import com.example.tracker.repository.TecnicoAusenciaRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import com.example.tracker.repository.UsuarioRepository;
+import com.example.tracker.repository.ViagemRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,10 +30,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TecnicoServiceImpl implements TecnicoService {
 
+    private static final StatusTecnico DISPONIBILIDADE_PADRAO = StatusTecnico.DISPONIVEL;
+
     private final TecnicoRepository tecnicoRepository;
     private final UsuarioRepository usuarioRepository;
     private final PerfilRepository perfilRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OrdemServicoRepository ordemServicoRepository;
+    private final MaquinaHistoricoManutencaoRepository maquinaHistoricoManutencaoRepository;
+    private final ViagemRepository viagemRepository;
+    private final TecnicoAusenciaRepository tecnicoAusenciaRepository;
 
     @Override
     @Transactional
@@ -51,9 +65,14 @@ public class TecnicoServiceImpl implements TecnicoService {
         novoTecnico.setTelefone(limpar(dto.getTelefone()));
         novoTecnico.setLatitude(dto.getLatitude());
         novoTecnico.setLongitude(dto.getLongitude());
+
+        if (dto.getLatitude() != null && dto.getLongitude() != null) {
+            novoTecnico.setUltimaAtualizacaoLocalizacao(LocalDateTime.now());
+        }
+
         novoTecnico.setCertificacao(limpar(dto.getCertificacao()));
         novoTecnico.setEstado(limpar(dto.getEstado()));
-        novoTecnico.setDisponibilidade(limpar(dto.getDisponibilidade()));
+        novoTecnico.setDisponibilidade(normalizarDisponibilidade(dto.getDisponibilidade()));
 
         Tecnico salvo = tecnicoRepository.save(novoTecnico);
         return toDTO(salvo);
@@ -63,6 +82,15 @@ public class TecnicoServiceImpl implements TecnicoService {
     @Transactional(readOnly = true)
     public List<TecnicoResponseDTO> listarTecnicos() {
         return tecnicoRepository.findAllComHabilidades()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TecnicoResponseDTO> listarSelecionaveis() {
+        return tecnicoRepository.findAllComPerfilTecnico()
                 .stream()
                 .map(this::toDTO)
                 .toList();
@@ -91,15 +119,42 @@ public class TecnicoServiceImpl implements TecnicoService {
 
         validarCpfDuplicado(dto, id);
 
+        boolean localizacaoAlterada =
+                dto.getLatitude() != null
+                && dto.getLongitude() != null
+                && (
+                    !dto.getLatitude().equals(tecnico.getLatitude())
+                    || !dto.getLongitude().equals(tecnico.getLongitude())
+                );
+
         tecnico.setNome(limpar(dto.getNome()));
         tecnico.setCpf(limpar(dto.getCpf()));
         tecnico.setCargo(limpar(dto.getCargo()));
         tecnico.setTelefone(limpar(dto.getTelefone()));
         tecnico.setLatitude(dto.getLatitude());
         tecnico.setLongitude(dto.getLongitude());
+
+        if (localizacaoAlterada) {
+            tecnico.setUltimaAtualizacaoLocalizacao(LocalDateTime.now());
+        }
+
         tecnico.setCertificacao(limpar(dto.getCertificacao()));
         tecnico.setEstado(limpar(dto.getEstado()));
-        tecnico.setDisponibilidade(limpar(dto.getDisponibilidade()));
+        tecnico.setDisponibilidade(normalizarDisponibilidade(dto.getDisponibilidade()));
+
+        if (tecnico.getUsuario() != null) {
+            String novoEmail = normalizar(dto.getEmail());
+            if (novoEmail != null && !novoEmail.equals(tecnico.getUsuario().getEmail())) {
+                if (usuarioRepository.findByEmail(novoEmail).isPresent()) {
+                    throw new IllegalArgumentException("Ja existe usuario cadastrado com este email.");
+                }
+                tecnico.getUsuario().setEmail(novoEmail);
+            }
+            if (dto.getSenha() != null && !dto.getSenha().trim().isEmpty()) {
+                tecnico.getUsuario().setSenha(passwordEncoder.encode(dto.getSenha()));
+            }
+            usuarioRepository.save(tecnico.getUsuario());
+        }
 
         Tecnico atualizado = tecnicoRepository.save(tecnico);
         return toDTO(atualizado);
@@ -131,9 +186,10 @@ public class TecnicoServiceImpl implements TecnicoService {
         dto.setTelefone(tecnico.getTelefone());
         dto.setCertificacao(tecnico.getCertificacao());
         dto.setEstado(tecnico.getEstado());
-        dto.setDisponibilidade(tecnico.getDisponibilidade());
+        dto.setDisponibilidade(calcularDisponibilidade(tecnico));
         dto.setLatitude(tecnico.getLatitude());
         dto.setLongitude(tecnico.getLongitude());
+        dto.setUltimaAtualizacaoLocalizacao(tecnico.getUltimaAtualizacaoLocalizacao());
 
         if (tecnico.getHabilidades() != null) {
             dto.setHabilidades(
@@ -151,6 +207,38 @@ public class TecnicoServiceImpl implements TecnicoService {
         }
 
         return dto;
+    }
+
+    private String calcularDisponibilidade(Tecnico tecnico) {
+        if (tecnico == null || tecnico.getId() == null) {
+            return DISPONIBILIDADE_PADRAO.name();
+        }
+
+        Integer codigoTecnico = tecnico.getId();
+        if (viagemRepository.existsRotaAtivaPorTecnico(codigoTecnico)) {
+            return StatusTecnico.EM_ROTA.name();
+        }
+
+        if (ordemServicoRepository.existsManutencaoAtivaPorTecnico(codigoTecnico)
+                || maquinaHistoricoManutencaoRepository.existsHistoricoAtivoPorTecnico(codigoTecnico)) {
+            return StatusTecnico.EM_ATENDIMENTO.name();
+        }
+
+        boolean possuiAusenciaAtiva = tecnicoAusenciaRepository.existsAusenciaAtivaNaData(
+                codigoTecnico,
+                LocalDate.now(),
+                StatusAusenciaTecnico.ATIVA);
+
+        if (possuiAusenciaAtiva) {
+            return StatusTecnico.INDISPONIVEL.name();
+        }
+
+        StatusTecnico disponibilidadeAtual = StatusTecnico.from(tecnico.getDisponibilidade());
+        if (disponibilidadeAtual == StatusTecnico.INDISPONIVEL) {
+            return disponibilidadeAtual.name();
+        }
+
+        return DISPONIBILIDADE_PADRAO.name();
     }
 
     private void validarTecnico(TecnicoCreateDTO dto) {
@@ -211,5 +299,10 @@ public class TecnicoServiceImpl implements TecnicoService {
         }
         String valorLimpo = valor.trim();
         return valorLimpo.isEmpty() ? null : valorLimpo;
+    }
+
+    private String normalizarDisponibilidade(String valor) {
+        StatusTecnico disponibilidade = StatusTecnico.from(valor);
+        return disponibilidade == null ? DISPONIBILIDADE_PADRAO.name() : disponibilidade.name();
     }
 }

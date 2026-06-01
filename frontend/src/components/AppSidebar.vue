@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 import type { SidebarProps } from '@/components/ui/sidebar'
 import {
-  LayoutDashboard, Map, Wrench, ClipboardList,CalendarDays,
+  LayoutDashboard, Map, Wrench, ClipboardList, CalendarDays,
   Users, Bot, UserCog, FileText,
   Settings2, GalleryVerticalEnd, Plus, Monitor, Award, Server, Package,Laptop, Cpu, Route
 } from "lucide-vue-next"
@@ -19,8 +20,10 @@ const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
 })
 
-const role = computed(() => localStorage.getItem('user_role'))
-const userEmail = computed(() => localStorage.getItem('user_email') ?? 'usuario@altave.com.br')
+const role = useLocalStorage('user_role', '')
+const userEmail = useLocalStorage('user_email', 'usuario@altave.com.br')
+const userName = useLocalStorage('user_name', '')
+const userAvatar = useLocalStorage('user_avatar', '')
 const isTecnico = computed(() => role.value === 'ROLE_TECNICO')
 
 const teams = [
@@ -30,6 +33,7 @@ const teams = [
 const navGeralAdmin = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Mapa", url: "/mapa", icon: Map },
+  { title: "Calendário", url: "/calendario-gerente", icon: CalendarDays },
   { title: "Gestão de Ordens", url: "/ordens", icon: ClipboardList },
   { title: "Preparação de Viagem", url: "/viagem-preparacao", icon: Route },
   { title: "Histórico de Manutenções", url: "/relatorio-manutencao", icon: Wrench }
@@ -59,9 +63,9 @@ const navGeralTecnico = [
 ]
 
 const currentUser = computed(() => ({
-  name: userEmail.value,
+  name: userName.value || (isTecnico.value ? 'Técnico' : 'Administrador'),
   email: userEmail.value,
-  avatar: "",
+  avatar: userAvatar.value,
 }))
 
 </script>

@@ -14,6 +14,7 @@ import { ordemServicoService, type OrdemServicoResponseDTO } from '@/services/or
 import { clienteService } from '@/services/clienteService'
 import { tecnicoService } from '@/services/tecnicoService'
 import OrdemServicoCadastroPopup from '@/components/ordemServico/OrdemServicoCadastroPopup.vue'
+import OrdemDashboardCards from '@/components/ordemServico/OrdemDashboardCards.vue'
 
 const router = useRouter()
 const isCadastroOpen = ref(false)
@@ -169,20 +170,7 @@ onMounted(carregarOrdens)
     <div v-if="erro" class="text-center py-12 text-red-400">{{ erro }}</div>
 
     <!-- Stats -->
-    <div :class="['grid gap-4 xl:grid-cols-4', stats.length > 1 ? 'grid-cols-2' : 'grid-cols-1']">
-      <Card v-for="stat in stats" :key="stat.label" class="bg-sidebar border-border">
-        <CardHeader class="flex flex-row items-center justify-between pb-2">
-          <CardTitle class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-            {{ stat.label }}
-          </CardTitle>
-          <component :is="stat.icon" class="w-4 h-4" :class="stat.color" />
-        </CardHeader>
-        <CardContent>
-          <div class="text-3xl font-bold text-foreground">{{ stat.value }}</div>
-          <p class="text-[10px] text-muted-foreground mt-1">{{ stat.sub }}</p>
-        </CardContent>
-      </Card>
-    </div>
+    <OrdemDashboardCards :cards="stats" />
 
     <!-- Busca + botão -->
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between w-full">

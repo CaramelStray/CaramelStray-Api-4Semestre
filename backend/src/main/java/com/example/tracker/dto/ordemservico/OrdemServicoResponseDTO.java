@@ -2,6 +2,7 @@ package com.example.tracker.dto.ordemservico;
 
 import com.example.tracker.dto.CatalogoMaquinaChecklistPadrao.CatalogoMaquinaChecklistPadraoResponseDTO;
 import com.example.tracker.entity.OrdemServico;
+import com.example.tracker.entity.OrdemServicoTecnico;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ public class OrdemServicoResponseDTO {
     private Integer codigo;
     private Integer codigoCliente;
     private Integer codigoFuncionario;
+    private List<Integer> codigosFuncionarios;
     private Integer codigoSoftwareInstalado;
     private Integer codigoContrato;
     private Integer codigoMaquinaContrato;
@@ -22,6 +24,7 @@ public class OrdemServicoResponseDTO {
     private LocalDateTime dataInicioExecucao;
     private LocalDateTime dataFimExecucao;
     private String observacaoGeral;
+    private Integer previsaoManutencao;
     private Integer quantidadeChecklistAtivos;
     private Integer codigoHistoricoManutencao;
     private List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos;
@@ -39,6 +42,19 @@ public class OrdemServicoResponseDTO {
     if (os.getFuncionario() != null) {
         dto.setCodigoFuncionario(os.getFuncionario().getId());
     }
+
+    List<Integer> codigosFuncionarios = os.getTecnicos() == null
+            ? List.of()
+            : os.getTecnicos().stream()
+                    .map(OrdemServicoTecnico::getTecnico)
+                    .filter(tecnico -> tecnico != null && tecnico.getId() != null)
+                    .map(tecnico -> tecnico.getId())
+                    .distinct()
+                    .collect(Collectors.toList());
+    if (codigosFuncionarios.isEmpty() && os.getFuncionario() != null) {
+        codigosFuncionarios = List.of(os.getFuncionario().getId());
+    }
+    dto.setCodigosFuncionarios(codigosFuncionarios);
 
     if (os.getSoftwareInstalado() != null) {
         dto.setCodigoSoftwareInstalado(os.getSoftwareInstalado().getCodigo());
@@ -60,6 +76,7 @@ public class OrdemServicoResponseDTO {
     dto.setDataInicioExecucao(os.getDataInicioExecucao());
     dto.setDataFimExecucao(os.getDataFimExecucao());
     dto.setObservacaoGeral(os.getObservacaoGeral());
+    dto.setPrevisaoManutencao(os.getPrevisaoManutencao());
 
     List<OrdemServicoChecklistAtivoResponseDTO> checklistAtivos = os.getChecklistAtivos() == null
             ? List.of()
@@ -113,6 +130,14 @@ public class OrdemServicoResponseDTO {
 
     public void setCodigoFuncionario(Integer codigoFuncionario) {
         this.codigoFuncionario = codigoFuncionario;
+    }
+
+    public List<Integer> getCodigosFuncionarios() {
+        return codigosFuncionarios;
+    }
+
+    public void setCodigosFuncionarios(List<Integer> codigosFuncionarios) {
+        this.codigosFuncionarios = codigosFuncionarios;
     }
 
     public Integer getCodigoSoftwareInstalado() {
@@ -201,6 +226,14 @@ public class OrdemServicoResponseDTO {
 
     public void setObservacaoGeral(String observacaoGeral) {
         this.observacaoGeral = observacaoGeral;
+    }
+
+    public Integer getPrevisaoManutencao() {
+        return previsaoManutencao;
+    }
+
+    public void setPrevisaoManutencao(Integer previsaoManutencao) {
+        this.previsaoManutencao = previsaoManutencao;
     }
 
     public Integer getQuantidadeChecklistAtivos() {

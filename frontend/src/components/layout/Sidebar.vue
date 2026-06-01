@@ -41,6 +41,7 @@ const basePageTitle = computed(() => {
     '/minhas-ordens': 'Minhas Ordens',
     '/calendario': 'Calendário',
     '/ordens-tecnico': 'Ordens',
+    '/minha-conta': 'Minha Conta',
   }
   return titles[route.path] ?? 'Altave'
 })

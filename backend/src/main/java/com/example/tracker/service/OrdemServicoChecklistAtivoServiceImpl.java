@@ -10,6 +10,7 @@ import com.example.tracker.entity.Tecnico;
 import com.example.tracker.repository.AtivoRepository;
 import com.example.tracker.repository.OrdemServicoChecklistAtivoRepository;
 import com.example.tracker.repository.OrdemServicoRepository;
+import com.example.tracker.repository.OrdemServicoTecnicoRepository;
 import com.example.tracker.repository.TecnicoRepository;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -37,16 +38,19 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
     private final OrdemServicoRepository ordemServicoRepository;
     private final AtivoRepository ativoRepository;
     private final TecnicoRepository tecnicoRepository;
+    private final OrdemServicoTecnicoRepository ordemServicoTecnicoRepository;
 
     public OrdemServicoChecklistAtivoServiceImpl(
             OrdemServicoChecklistAtivoRepository checklistRepository,
             OrdemServicoRepository ordemServicoRepository,
             AtivoRepository ativoRepository,
-            TecnicoRepository tecnicoRepository) {
+            TecnicoRepository tecnicoRepository,
+            OrdemServicoTecnicoRepository ordemServicoTecnicoRepository) {
         this.checklistRepository = checklistRepository;
         this.ordemServicoRepository = ordemServicoRepository;
         this.ativoRepository = ativoRepository;
         this.tecnicoRepository = tecnicoRepository;
+        this.ordemServicoTecnicoRepository = ordemServicoTecnicoRepository;
     }
 
     @Override
@@ -295,6 +299,8 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
         Ativo ativo = ativoRepository.findById(Objects.requireNonNull(codigoAtivoNaoNulo))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ativo nao encontrado"));
 
+        validarAtivoPertenceAMaquinaDaOrdem(ordemServico, ativo);
+
         Tecnico funcionario = buscarFuncionarioDoItem(ordemServico, dto.getCodigoFuncionario());
 
         boolean levado = Boolean.TRUE.equals(dto.getLevado());
@@ -319,6 +325,21 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
         return new ItemValidado(ativo, funcionario, descricaoAtivo);
     }
 
+    private void validarAtivoPertenceAMaquinaDaOrdem(OrdemServico ordemServico, Ativo ativo) {
+        if (ativo.getMaquinaContrato() == null) {
+            return;
+        }
+
+        if (ordemServico.getMaquinaContrato() == null
+                || !Objects.equals(
+                        ativo.getMaquinaContrato().getCodigo(),
+                        ordemServico.getMaquinaContrato().getCodigo())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "O ativo informado nao pertence a maquina da ordem de servico");
+        }
+    }
+
     private Tecnico buscarFuncionarioDoItem(OrdemServico ordemServico, Integer codigoFuncionario) {
         Tecnico funcionarioOrdem = ordemServico.getFuncionario();
         if (codigoFuncionario == null) {
@@ -328,7 +349,7 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
         Tecnico funcionario = tecnicoRepository.findById(codigoFuncionario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario nao encontrado"));
 
-        if (funcionarioOrdem != null && !Objects.equals(funcionarioOrdem.getId(), funcionario.getId())) {
+        if (!tecnicoParticipaDaOrdem(ordemServico, funcionario.getId())) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "O funcionario informado nao pertence a ordem de servico");
@@ -403,12 +424,27 @@ public class OrdemServicoChecklistAtivoServiceImpl implements OrdemServicoCheckl
                         HttpStatus.FORBIDDEN,
                         "Tecnico nao encontrado para o usuario autenticado"));
 
-        if (ordemServico.getFuncionario() == null
-                || !Objects.equals(ordemServico.getFuncionario().getId(), tecnico.getId())) {
+        if (!tecnicoParticipaDaOrdem(ordemServico, tecnico.getId())) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Acesso negado: esta ordem nao esta atribuida a voce");
         }
+    }
+
+    private boolean tecnicoParticipaDaOrdem(OrdemServico ordemServico, Integer codigoFuncionario) {
+        if (ordemServico == null || codigoFuncionario == null) {
+            return false;
+        }
+        if (ordemServico.getFuncionario() != null
+                && Objects.equals(ordemServico.getFuncionario().getId(), codigoFuncionario)) {
+            return true;
+        }
+        if (ordemServico.getCodigo() == null) {
+            return false;
+        }
+        return ordemServicoTecnicoRepository.existsByOrdemServicoCodigoAndTecnicoId(
+                ordemServico.getCodigo(),
+                codigoFuncionario);
     }
 
     private void validarOrdemEditavel(OrdemServico ordemServico) {

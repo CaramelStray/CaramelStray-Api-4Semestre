@@ -82,6 +82,7 @@ export interface OrdemServicoResponseDTO {
   dataInicioExecucao?: string
   dataFimExecucao?: string
   observacaoGeral?: string
+  previsaoManutencao?: number
 }
 
 export interface OrdemServicoChecklistAtivoResponseDTO {
@@ -102,12 +103,26 @@ export interface OrdemServicoChecklistAtivoResponseDTO {
   observacao?: string
 }
 
+export interface AgendaOrdemDTO {
+  codigo: number
+  dataAgendamento?: string
+  previsaoManutencao?: number | null
+}
+
+export interface TecnicoAgendaItem {
+  id: number
+  nome: string
+  disponibilidade: string
+  ordens: AgendaOrdemDTO[]
+}
+
 export interface OrdemServicoCreateDTO {
   codigoCliente: number
   codigoFuncionario?: number
   codigoSoftwareInstalado?: number
   codigoContrato: number
   codigoMaquinaContrato: number
+  codigosFuncionarios?: number[]
   status?: string
   criticidade?: string
   tipoOrdem?: string
@@ -116,6 +131,24 @@ export interface OrdemServicoCreateDTO {
   dataInicioExecucao?: string
   dataFimExecucao?: string
   observacaoGeral?: string
+  previsaoManutencao?: number
+}
+
+export interface DashboardCardDTO {
+  label: string
+  value: number
+  sub?: string
+  color?: string
+  icon?: string
+}
+
+export interface OrdemMapaDTO {
+  codigo: number
+  codigoCliente?: number
+  latitude?: number
+  longitude?: number
+  endereco?: string
+  status?: string
 }
 
 export const ordemServicoService = {
@@ -162,6 +195,9 @@ export const ordemServicoService = {
     apiFetch<void>(`/ordens-servico/${id}`, {
       method: 'DELETE',
     }),
+
+  dashboardStats: () =>
+    apiFetch<DashboardCardDTO[]>('/ordens-servico/dashboard'),
 
   substituirChecklistAtivos: (id: number, items: Array<{ codigoAtivo: number; codigoFuncionario?: number; descricaoAtivo?: string }>) =>
     apiFetch<OrdemServicoChecklistAtivoResponseDTO[]>(`/ordens-servico/${id}/checklist-ativos`, {
@@ -212,6 +248,15 @@ export const ordemServicoService = {
       `/maquinas-historicos-manutencao/${codigoHistoricoManutencao}/checklist`,
       { method: 'POST', body: JSON.stringify({ codigoTarefa }) },
     ),
+
+  buscarAgenda: (dataInicio: string, dataFim: string, codigoFuncionario: number) =>
+    apiFetch<TecnicoAgendaItem[]>(
+      `/ordens-servico/agenda?dataInicio=${dataInicio}&dataFim=${dataFim}&codigoFuncionario=${codigoFuncionario}`,
+    ),
+
+  // Endpoint to provide orders with geolocation for map display.
+  // Expected shape: [{ codigo, codigoCliente, latitude, longitude, endereco, status }, ...]
+  listarMapa: () => apiFetch<OrdemMapaDTO[]>('/ordens-servico/mapa'),
 
   atualizarChecklistMaquinaItem: (
     codigoHistoricoManutencao: number,
